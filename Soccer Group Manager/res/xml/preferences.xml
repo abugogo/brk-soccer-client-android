@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory 
+        android:title="Rest Call Selection"
+        android:key="callselection_category">
+        
+        <!-- CheckBoxPreference 
+            android:key="perform_updates"
+            android:summary="Enable or disable data updates"
+            android:title="Enable updates" 
+            android:defaultValue="true"
+        /-->
+        
+        <ListPreference 
+            android:key="rest_call_id"
+            android:title="Rest Call ID"
+            android:summary="Define which rest call to trigger"
+            android:defaultValue="1000" 
+            android:entries="@array/restCallIds"
+            android:entryValues="@array/restCallIdsValues"
+        />    
+            
+    </PreferenceCategory>
+
+    <PreferenceCategory 
+        android:title="Connection String"
+        android:key="connstr_category">
+
+        <EditTextPreference
+            android:key="server_port"
+            android:title="Connection Settings" 
+            android:summary="Define the server and port"
+            android:dialogTitle="Server and Port"
+            android:dialogMessage="Provide details"    
+            android:defaultValue="http://23.23.186.205:8080" />
+
+    </PreferenceCategory>
+    
+</PreferenceScreen>
