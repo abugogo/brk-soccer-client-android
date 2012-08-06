@@ -21,10 +21,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONObject;
 
-import com.soccer.async.AsyncTaskCompleteListener;
-import com.soccer.connector.RemoteDBAdapter.RequestMethod;
-
-import android.os.AsyncTask;
+import com.soccer.db.remote.RemoteDBAdapter.RequestMethod;
 
 public class RestClient {
 	protected void onPostExecute(String result) {

@@ -15,9 +15,9 @@
     <string name="pause_button">Pause</string>
     <string name="goal_button">Goal!</string>
     <string name="end_game_button">End Game</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_soccer_prefs">SoccerPrefsActivity</string>
-    <string name="title_activity_show_settings">ShowSettingsActivity</string>
+    <string name="title_activity_main">Indoor Stats</string>
+    <string name="title_activity_soccer_prefs">Indoor Soccer Prefrences</string>
+    <string name="title_activity_show_settings">Show Settings</string>
     <string name="timer">00:00:00</string>
     <string name="timerMs">.0</string>
     <string name="startText">start</string>
@@ -27,7 +27,8 @@
     <string name="adsText">Ads Go Here</string>
     <string name="goalText">goal</string>
     <string name="PlayerName">Player name</string>
-    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_login">Login Indoor Stats</string>
     <string name="buttonLogin">Login</string>
+    <string name="no_players">No Players</string>
 
 </resources>

@@ -1,11 +1,12 @@
 package com.soccer.preferences;
 
-import com.example.indoorstats.R;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.soccer.indoorstats.R;
 
 public class SoccerPrefsActivity extends PreferenceActivity {
     

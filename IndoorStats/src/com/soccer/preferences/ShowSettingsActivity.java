@@ -2,19 +2,16 @@ package com.soccer.preferences;
 
 import java.util.List;
 
-/*import com.soccer.async.AsyncGetPlayerListener;
-import com.soccer.connector.RemoteDBAdapter;
-import com.soccer.connector.callers.Players;*/
-import com.example.indoorstats.R;
-import com.soccer.connector.RemoteDBAdapter;
-import com.soccer.dal.entities.api.IDAOPlayer;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.TextView;
+
+import com.soccer.indoorstats.R;
+import com.soccer.db.remote.RemoteDBAdapter;
+import com.soccer.entities.IDAOPlayer;
 
 public class ShowSettingsActivity extends Activity {
 
