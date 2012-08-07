@@ -41,7 +41,7 @@ public class LoginActivity extends Activity {
 
 		String sUrl = sharedPrefs.getString("server_port", "NULL");
 		if (sUrl.equals("NULL")) {
-			showAlertMessage("Please set server and port");
+			sUrl = "http://23.23.186.205:8080/";
 		}
 
 		try {
