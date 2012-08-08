@@ -3,6 +3,7 @@ package com.soccer.entities.impl;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import com.soccer.entities.IDAOPlayer;
@@ -98,6 +99,19 @@ public class DAOPlayer implements Serializable, IDAOPlayer {
 		return this.bday;
 	}
 
+    public String getBdayAsString(String format) {
+    	String retStr = "";
+    	if(this.bday != null) {
+    		Calendar cal = Calendar.getInstance();
+    		cal.setTime(this.bday);
+            int day = cal.get(Calendar.DATE);
+            int month = cal.get(Calendar.MONTH) + 1;
+            int year = cal.get(Calendar.YEAR);
+    		retStr = day + "." + month + "." + year;
+    	}
+		return retStr;
+	}
+    
 	public void setBday(Date bday) {
 		this.bday = bday;
 	}
