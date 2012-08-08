@@ -38,171 +38,191 @@ import android.util.Log;
  */
 public class PlayersDbAdapter {
 
-    public static final String KEY_ID = "id";
-    public static final String KEY_BDAY = "bday";
-    public static final String KEY_EMAIL = "email";
-    public static final String KEY_FNAME = "fname";
-    public static final String KEY_LNAME = "lname";
-    public static final String KEY_TEL1 = "tel1";
+	public static final String KEY_ID = "id";
+	public static final String KEY_BDAY = "bday";
+	public static final String KEY_EMAIL = "email";
+	public static final String KEY_FNAME = "fname";
+	public static final String KEY_LNAME = "lname";
+	public static final String KEY_TEL1 = "tel1";
 
-    private static final String TAG = "PlayersDbAdapter";
-    private DatabaseHelper mDbHelper;
-    private SQLiteDatabase mDb;
+	private static final String TAG = "PlayersDbAdapter";
+	private DatabaseHelper mDbHelper;
+	private SQLiteDatabase mDb;
 
-    /**
-     * Database creation sql statement
-     */
-    private static final String DATABASE_CREATE =
-        "create table players (_id integer primary key autoincrement, " + KEY_ID + " integer not null, "
-        + KEY_EMAIL + " text, " + KEY_FNAME + " text not null, " + KEY_LNAME + " text, " +
-        		KEY_TEL1 + " text, " + KEY_BDAY + " text);";
+	private static final String DATABASE_PLAYERS_TABLE = "players";
 
-    private static final String DATABASE_NAME = "indoorsoccer";
-    private static final String DATABASE_PLAYERS_TABLE = "players";
-    private static final int DATABASE_VERSION = 3;
+	/**
+	 * Database creation sql statement
+	 */
+	private static final String PLAYERS_TBL_CREATE = "create table " + DATABASE_PLAYERS_TABLE + " (_id integer primary key autoincrement, "
+			+ KEY_ID
+			+ " integer not null, "
+			+ KEY_EMAIL
+			+ " text, "
+			+ KEY_FNAME
+			+ " text not null, "
+			+ KEY_LNAME
+			+ " text, "
+			+ KEY_TEL1
+			+ " text, " + KEY_BDAY + " text);";
 
-    private final Context mCtx;
+	private static final String DATABASE_NAME = "indoorsoccer";
 
-    private static class DatabaseHelper extends SQLiteOpenHelper {
+	private static final int DATABASE_VERSION = 3;
 
-        DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
+	private final Context mCtx;
 
-        @Override
-        public void onCreate(SQLiteDatabase db) {
+	private static class DatabaseHelper extends SQLiteOpenHelper {
 
-            db.execSQL(DATABASE_CREATE);
-        }
+		DatabaseHelper(Context context) {
+			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		}
 
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-                    + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS players");
-            onCreate(db);
-        }
-    }
+		@Override
+		public void onCreate(SQLiteDatabase db) {
 
-    /**
-     * Constructor - takes the context to allow the database to be
-     * opened/created
-     * 
-     * @param ctx the Context within which to work
-     */
-    public PlayersDbAdapter(Context ctx) {
-        this.mCtx = ctx;
-    }
+			db.execSQL(PLAYERS_TBL_CREATE);
+		}
 
-    /**
-     * Open the notes database. If it cannot be opened, try to create a new
-     * instance of the database. If it cannot be created, throw an exception to
-     * signal the failure
-     * 
-     * @return this (self reference, allowing this to be chained in an
-     *         initialization call)
-     * @throws SQLException if the database could be neither opened or created
-     */
-    public PlayersDbAdapter open() throws SQLException {
-        mDbHelper = new DatabaseHelper(mCtx);
-        mDb = mDbHelper.getWritableDatabase();
-        return this;
-    }
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
+					+ newVersion + ", which will destroy all old data");
+			db.execSQL("DROP TABLE IF EXISTS players");
+			onCreate(db);
+		}
+	}
 
-    public void close() {
-        mDbHelper.close();
-    }
+	/**
+	 * Constructor - takes the context to allow the database to be
+	 * opened/created
+	 * 
+	 * @param ctx
+	 *            the Context within which to work
+	 */
+	public PlayersDbAdapter(Context ctx) {
+		this.mCtx = ctx;
+	}
 
+	/**
+	 * Open the notes database. If it cannot be opened, try to create a new
+	 * instance of the database. If it cannot be created, throw an exception to
+	 * signal the failure
+	 * 
+	 * @return this (self reference, allowing this to be chained in an
+	 *         initialization call)
+	 * @throws SQLException
+	 *             if the database could be neither opened or created
+	 */
+	public PlayersDbAdapter open() throws SQLException {
+		mDbHelper = new DatabaseHelper(mCtx);
+		mDb = mDbHelper.getWritableDatabase();
+		return this;
+	}
 
-    /**
-     * Create a new note using the title and body provided. If the note is
-     * successfully created return the new rowId for that note, otherwise return
-     * a -1 to indicate failure.
-     * 
-     * @param title the title of the note
-     * @param body the body of the note
-     * @return rowId or -1 if failed
-     */
-    public long createPlayer(DAOPlayer p) {
-        ContentValues initialValues = new ContentValues();
-        if(p.getBday() != null)
-        	initialValues.put(KEY_BDAY, p.getBday().toString());
-        initialValues.put(KEY_EMAIL, p.getEmail());
-        initialValues.put(KEY_FNAME, p.getFname());
-        initialValues.put(KEY_ID, p.getId());
-        initialValues.put(KEY_LNAME, p.getLname());
-        initialValues.put(KEY_TEL1, p.getTel1());
-        
-        return mDb.insert(DATABASE_PLAYERS_TABLE, null, initialValues);
-    }
+	public void close() {
+		mDbHelper.close();
+	}
 
-    /**
-     * Delete the note with the given rowId
-     * 
-     * @param rowId id of note to delete
-     * @return true if deleted, false otherwise
-     */
-    public boolean deletePlayer(long id) {
+	/**
+	 * Create a new note using the title and body provided. If the note is
+	 * successfully created return the new rowId for that note, otherwise return
+	 * a -1 to indicate failure.
+	 * 
+	 * @param title
+	 *            the title of the note
+	 * @param body
+	 *            the body of the note
+	 * @return rowId or -1 if failed
+	 */
+	public long createPlayer(DAOPlayer p) {
+		ContentValues initialValues = new ContentValues();
+		if (p.getBday() != null)
+			initialValues.put(KEY_BDAY, p.getBday().toString());
+		initialValues.put(KEY_EMAIL, p.getEmail());
+		initialValues.put(KEY_FNAME, p.getFname());
+		initialValues.put(KEY_ID, p.getId());
+		initialValues.put(KEY_LNAME, p.getLname());
+		initialValues.put(KEY_TEL1, p.getTel1());
 
-        return mDb.delete(DATABASE_PLAYERS_TABLE, KEY_ID + "=" + id, null) > 0;
-    }
+		return mDb.insert(DATABASE_PLAYERS_TABLE, null, initialValues);
+	}
 
-    
-    public boolean deletePlayers() {
+	/**
+	 * Delete the note with the given rowId
+	 * 
+	 * @param rowId
+	 *            id of note to delete
+	 * @return true if deleted, false otherwise
+	 */
+	public boolean deletePlayer(long id) {
 
-        return mDb.delete(DATABASE_PLAYERS_TABLE, null, null) > 0;
-    }
-    /**
-     * Return a Cursor over the list of all notes in the database
-     * 
-     * @return Cursor over all notes
-     */
-    public Cursor fetchAllPlayers() {
+		return mDb.delete(DATABASE_PLAYERS_TABLE, KEY_ID + "=" + id, null) > 0;
+	}
 
-        return mDb.query(DATABASE_PLAYERS_TABLE, new String[] {"_id", KEY_ID, KEY_BDAY,
-                KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1}, null, null, null, null, null);
-    }
+	public boolean deletePlayers() {
 
-    /**
-     * Return a Cursor positioned at the note that matches the given rowId
-     * 
-     * @param rowId id of note to retrieve
-     * @return Cursor positioned to matching note, if found
-     * @throws SQLException if note could not be found/retrieved
-     */
-    public Cursor fetchPlayer(long id) throws SQLException {
+		return mDb.delete(DATABASE_PLAYERS_TABLE, null, null) > 0;
+	}
 
-        Cursor mCursor =
+	/**
+	 * Return a Cursor over the list of all notes in the database
+	 * 
+	 * @return Cursor over all notes
+	 */
+	public Cursor fetchAllPlayers() {
 
-            mDb.query(true, DATABASE_PLAYERS_TABLE, new String[] {"_id", KEY_ID, KEY_BDAY,
-                    KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1}, KEY_ID + "=" + id, null,
-                    null, null, null, null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
+		return mDb.query(DATABASE_PLAYERS_TABLE, new String[] { "_id", KEY_ID,
+				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1 }, null,
+				null, null, null, null);
+	}
 
-    }
+	/**
+	 * Return a Cursor positioned at the note that matches the given rowId
+	 * 
+	 * @param rowId
+	 *            id of note to retrieve
+	 * @return Cursor positioned to matching note, if found
+	 * @throws SQLException
+	 *             if note could not be found/retrieved
+	 */
+	public Cursor fetchPlayer(long id) throws SQLException {
 
-    /**
-     * Update the note using the details provided. The note to be updated is
-     * specified using the rowId, and it is altered to use the title and body
-     * values passed in
-     * 
-     * @param rowId id of note to update
-     * @param title value to set note title to
-     * @param body value to set note body to
-     * @return true if the note was successfully updated, false otherwise
-     */
-    public boolean updatePlayer(DAOPlayer p) {
-        ContentValues args = new ContentValues();
+		Cursor mCursor =
 
-        args.put(KEY_BDAY, p.getBday().toString());
-        args.put(KEY_EMAIL, p.getEmail());
-        args.put(KEY_FNAME, p.getFname());
-        args.put(KEY_ID, p.getId());
-        args.put(KEY_LNAME, p.getLname());
-        args.put(KEY_TEL1, p.getTel1());
-        return mDb.update(DATABASE_PLAYERS_TABLE, args, KEY_ID + "=" + p.getId(), null) > 0;
-    }
+		mDb.query(true, DATABASE_PLAYERS_TABLE, new String[] { "_id", KEY_ID,
+				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1 }, KEY_ID
+				+ "=" + id, null, null, null, null, null);
+		if (mCursor != null) {
+			mCursor.moveToFirst();
+		}
+		return mCursor;
+
+	}
+
+	/**
+	 * Update the note using the details provided. The note to be updated is
+	 * specified using the rowId, and it is altered to use the title and body
+	 * values passed in
+	 * 
+	 * @param rowId
+	 *            id of note to update
+	 * @param title
+	 *            value to set note title to
+	 * @param body
+	 *            value to set note body to
+	 * @return true if the note was successfully updated, false otherwise
+	 */
+	public boolean updatePlayer(DAOPlayer p) {
+		ContentValues args = new ContentValues();
+
+		args.put(KEY_BDAY, p.getBday().toString());
+		args.put(KEY_EMAIL, p.getEmail());
+		args.put(KEY_FNAME, p.getFname());
+		args.put(KEY_ID, p.getId());
+		args.put(KEY_LNAME, p.getLname());
+		args.put(KEY_TEL1, p.getTel1());
+		return mDb.update(DATABASE_PLAYERS_TABLE, args,
+				KEY_ID + "=" + p.getId(), null) > 0;
+	}
 }

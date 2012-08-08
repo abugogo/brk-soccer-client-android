@@ -23,7 +23,7 @@
           android:layout_height="wrap_content"
           android:ems="10"
           android:inputType="textPersonName"
-          android:text="@+String/PlayerName" >
+          android:text="@string/PlayerName" >
 
           <requestFocus />
       </EditText>
