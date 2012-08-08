@@ -7,8 +7,6 @@ package com.soccer.indoorstats;
  * ShawnBe.com
  */
 
-import com.soccer.indoorstats.R;
-
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
@@ -201,6 +199,12 @@ public class GameActivity extends Activity{
 			TextView timer = (TextView) findViewById(R.id.timer);
 			timer.setTextSize(TypedValue.COMPLEX_UNIT_SP, 70);
 		}
+	}
+    
+    @Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putSerializable("State", 4);
 	}
 
 }

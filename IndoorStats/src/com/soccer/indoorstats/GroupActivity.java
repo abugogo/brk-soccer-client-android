@@ -19,6 +19,13 @@ public class GroupActivity extends ListActivity {
 		fillData();
 	}
 
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		mDbHelper.close();
+	}
+
 	private void fillData() {
 		// Get all of the rows from the database and create the item list
 		Cursor PlayersCursor = mDbHelper.fetchAllPlayers();
@@ -34,5 +41,11 @@ public class GroupActivity extends ListActivity {
 		SimpleCursorAdapter players = new SimpleCursorAdapter(this,
 				R.layout.player_row, PlayersCursor, from, to);
 		setListAdapter(players);
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putSerializable("State", 3);
 	}
 }

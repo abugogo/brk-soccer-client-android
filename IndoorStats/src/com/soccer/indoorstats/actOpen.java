@@ -14,21 +14,22 @@ import com.soccer.preferences.SoccerPrefsActivity;
 
 public class actOpen extends TabActivity {
 
+	private String mPID = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
 		TabHost tabHost = getTabHost();
-
+		Intent i = getIntent();
+		mPID = (String)i.getSerializableExtra("player_id");
+		
 		// Tab for Photos
 		TabSpec playerspec = tabHost.newTabSpec("Player");
 		playerspec.setIndicator("Player",
 				getResources().getDrawable(R.drawable.icon_photos_tab));
 		Intent playerIntent = new Intent(this, PlayerActivity.class);
-		Intent i = getIntent();
-		DAOPlayer p = (DAOPlayer)i.getSerializableExtra("player");
-		playerIntent.putExtra("player", p);
+		playerIntent.putExtra("player_id", mPID);
 		playerspec.setContent(playerIntent);
 		
 
@@ -39,6 +40,7 @@ public class actOpen extends TabActivity {
 		groupspec.setIndicator("Group",
 				getResources().getDrawable(R.drawable.icon_songs_tab));
 		Intent groupIntent = new Intent(this, GroupActivity.class);
+		groupIntent.putExtra("player_id", mPID);
 		groupspec.setContent(groupIntent);
 
 		// Tab for Videos
@@ -46,6 +48,7 @@ public class actOpen extends TabActivity {
 		gamespec.setIndicator("Game",
 				getResources().getDrawable(R.drawable.icon_videos_tab));
 		Intent gameIntent = new Intent(this, GameActivity.class);
+		gameIntent.putExtra("player_id", mPID);
 		gamespec.setContent(gameIntent);
 
 		// Adding all TabSpec to TabHost
