@@ -27,6 +27,7 @@ public class RestClient {
 	protected void onPostExecute(String result) {
 	}
 
+	private String jsonBody;
 	private ArrayList<NameValuePair> params;
 	private ArrayList<NameValuePair> headers;
 
@@ -52,11 +53,16 @@ public class RestClient {
 	public RestClient(String url) {
 		this.url = url;
 		params = new ArrayList<NameValuePair>();
+		jsonBody = new String("");
 		headers = new ArrayList<NameValuePair>();
 	}
 
 	public void AddParam(String name, String value) {
 		params.add(new BasicNameValuePair(name, value));
+	}
+
+	public void setJSonBody(String value) {
+		jsonBody = value;
 	}
 
 	public void AddHeader(String name, String value) {
@@ -98,23 +104,27 @@ public class RestClient {
 			for (NameValuePair h : headers) {
 				request.addHeader(h.getName(), h.getValue());
 			}
-			JSONObject jo = new JSONObject();
-
+			JSONObject jo;
+			if (jsonBody != "")
+				jo = new JSONObject(jsonBody);
+			else
+				jo = new JSONObject();
 			if (!params.isEmpty()) {
+
 				for (int i = 0; i < params.size(); i++) {
 					jo.put(params.get(i).getName(), params.get(i).getValue());
 
 				}
-				StringEntity se = new StringEntity(jo.toString());
-				se.setContentType("text/xml");
-				se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,
-						"application/json"));
 
-				request.setEntity(se);
 				// request.setEntity(new UrlEncodedFormEntity(params,
 				// HTTP.UTF_8));
 			}
+			StringEntity se = new StringEntity(jo.toString());
+			se.setContentType("text/xml");
+			se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,
+					"application/json"));
 
+			request.setEntity(se);
 			executeRequest(request, url);
 			break;
 		}

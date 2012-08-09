@@ -30,5 +30,8 @@
     <string name="title_activity_login">Login Indoor Stats</string>
     <string name="buttonLogin">Login</string>
     <string name="no_players">No Players</string>
-
+	<string name="reload">Reload</string>
+	<string name="send...">Send...</string>
+	<string name="empty_player_name">No Name</string>
+	<string name="space"> </string>
 </resources>

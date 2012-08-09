@@ -3,23 +3,27 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" >
 
-    <EditText
-        android:id="@+id/editPFname"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/editPFName"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:ems="10"
-        android:inputType="textPersonName" >
+        android:text="@string/empty_player_name" >
+    </TextView>
 
-        <requestFocus />
-    </EditText>
-
-    <EditText
-        android:id="@+id/editPLname"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/editSep"
+        android:layout_width="10dip"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:ems="10"
-        android:inputType="textPersonName" />
+        android:text="@string/space" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/editPLName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" >
+    </TextView>
 
 </LinearLayout>

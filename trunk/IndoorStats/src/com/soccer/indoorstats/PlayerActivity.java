@@ -2,6 +2,7 @@ package com.soccer.indoorstats;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -9,13 +10,21 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.soccer.db.local.PlayersDbAdapter;
+import com.soccer.db.remote.RemoteDBAdapter;
+import com.soccer.entities.EntityManager;
+import com.soccer.entities.IDAOPlayer;
 import com.soccer.entities.impl.DAOPlayer;
+import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
 
 public class PlayerActivity extends Activity {
@@ -57,18 +66,17 @@ public class PlayerActivity extends Activity {
 				String bDay = mPlayer.getBdayAsString(null);
 				if (bDay != null)
 					((EditText) findViewById(R.id.editBirth)).setText(bDay);
-			}
-			else {
+			} else {
 				Prefs sharedPrefs = new Prefs(this);
 				sharedPrefs.setPreference("LoggedIn", -1);
 				Bundle args = new Bundle();
 				args.putString("msg", "Failed to load player");
 				showDialog(0, args);
-				
+
 			}
 
 		}
-		
+
 	}
 
 	@Override
@@ -86,7 +94,7 @@ public class PlayerActivity extends Activity {
 		DAOPlayer p = new DAOPlayer();
 		Cursor cP = mDbHelper.fetchPlayer(Long.parseLong(id));
 		startManagingCursor(cP);
-		if(cP.getCount() > 0) {
+		if (cP.getCount() > 0) {
 			p.setFname(cP.getString(cP
 					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_FNAME)));
 			p.setLname(cP.getString(cP
@@ -98,9 +106,10 @@ public class PlayerActivity extends Activity {
 				String sBDate = cP.getString(cP
 						.getColumnIndexOrThrow(PlayersDbAdapter.KEY_BDAY));
 				if (sBDate != null && !sBDate.equals(""))
-					d = (Date) new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.ENGLISH)
+					d = (Date) new SimpleDateFormat(
+							"EEE MMM d HH:mm:ss zzz yyyy", Locale.ENGLISH)
 							.parse(sBDate);
-	
+
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -110,11 +119,12 @@ public class PlayerActivity extends Activity {
 			}
 			if (d != null)
 				p.setBday(d);
-			p.setId(cP.getString(cP.getColumnIndexOrThrow(PlayersDbAdapter.KEY_ID)));
+			p.setId(cP.getString(cP
+					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_ID)));
 			p.setTel1(cP.getString(cP
 					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_TEL1)));
-		}	
-		
+		}
+
 		mPlayer = p;
 	}
 
@@ -148,5 +158,43 @@ public class PlayerActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		mDbHelper.close();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(Menu.NONE, 0, 0, "Save");
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case 0:
+			updatePlayer();
+
+			return true;
+		}
+		return false;
+	}
+
+	private void updatePlayer() {
+		if (mPlayer != null) {
+			mPlayer.setEmail(((EditText) findViewById(R.id.editEmail))
+					.getText().toString());
+			RemoteDBAdapter rdb = new RemoteDBAdapter();
+			SharedPreferences sharedPrefs = PreferenceManager
+					.getDefaultSharedPreferences(this);
+			String sUrl = sharedPrefs.getString("server_port", "NULL");
+			if (sUrl.equals("NULL")) {
+				sUrl = "http://23.23.186.205:8080/";
+			}
+			try {
+				rdb.updatePlayer(sUrl, mPlayer);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 }

@@ -9,7 +9,7 @@ import com.soccer.entities.IDAOPlayer;
 public class RemoteDBAdapter {
 	
 	public enum RequestMethod {
-		GET, POST
+		GET, POST, PUT
 	}
 
 	public IDAOPlayer getPlayer(String sUrl, String id) throws Exception {
@@ -37,4 +37,18 @@ public class RemoteDBAdapter {
 		return pArr;
 
 	}
+	
+	public IDAOPlayer updatePlayer(String sUrl, IDAOPlayer p) throws Exception {
+		RestClient c = new RestClient(sUrl + "/SoccerServer/rest/players/" + p.getId());
+		c.AddHeader("Accept", "application/json");
+		c.AddHeader("Content-type", "application/json");
+		c.setJSonBody(EntityManager.writePlayer(p));
+		
+		c.ExecuteCall(RequestMethod.POST);
+		if(c.getResponseCode() == 200)
+			p = EntityManager.readPlayer(c.getResponse()); 
+		return p;
+
+	}
+
 }

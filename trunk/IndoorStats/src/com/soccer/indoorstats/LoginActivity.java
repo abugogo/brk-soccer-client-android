@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
@@ -22,6 +23,7 @@ import com.soccer.db.remote.RemoteDBAdapter;
 import com.soccer.entities.IDAOPlayer;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.preferences.Prefs;
+import com.soccer.preferences.SoccerPrefsActivity;
 
 public class LoginActivity extends Activity {
 
@@ -37,9 +39,20 @@ public class LoginActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_login, menu);
-		return true;
+		menu.add(Menu.NONE, 0, 0, "Preferences");
+		return super.onCreateOptionsMenu(menu);
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case 0:
+			startActivity(new Intent(this, SoccerPrefsActivity.class));
+			return true;
+		}
+		return false;
+	}
+
 
 	public void loginClick(View view) {
 		Prefs sharedPrefs = new Prefs(this);
