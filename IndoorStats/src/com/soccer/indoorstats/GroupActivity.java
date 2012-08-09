@@ -35,7 +35,7 @@ public class GroupActivity extends ListActivity {
 		String[] from = new String[] { PlayersDbAdapter.KEY_FNAME, PlayersDbAdapter.KEY_LNAME };
 
 		// and an array of the fields we want to bind those fields to 
-		int[] to = new int[] { R.id.editPFname, R.id.editPLname };
+		int[] to = new int[] { R.id.editPFName, R.id.editPLName };
 
 		// Now create a simple cursor adapter and set it to display
 		SimpleCursorAdapter players = new SimpleCursorAdapter(this,

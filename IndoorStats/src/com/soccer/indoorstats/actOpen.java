@@ -8,8 +8,6 @@ import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
-import com.soccer.indoorstats.R;
-import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.preferences.SoccerPrefsActivity;
 
 public class actOpen extends TabActivity {
@@ -56,21 +54,4 @@ public class actOpen extends TabActivity {
 		tabHost.addTab(groupspec); // Adding songs tab
 		tabHost.addTab(gamespec); // Adding videos tab
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(Menu.NONE, 0, 0, "Preferences");
-		return super.onCreateOptionsMenu(menu);
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case 0:
-			startActivity(new Intent(this, SoccerPrefsActivity.class));
-			return true;
-		}
-		return false;
-	}
-
 }
