@@ -1,16 +1,12 @@
 package com.soccer.indoorstats;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -85,38 +81,6 @@ public class LoginActivity extends Activity {
 		} else {
 			showAlertMessage("Failed login");
 		}
-	}
-
-	private DAOPlayer LoadPlayerFromDB(String id) {
-		DAOPlayer p = new DAOPlayer();
-		Cursor cP = mDbHelper.fetchPlayer(Long.parseLong(id));
-		startManagingCursor(cP);
-		p.setFname(cP.getString(cP
-				.getColumnIndexOrThrow(PlayersDbAdapter.KEY_FNAME)));
-		p.setLname(cP.getString(cP
-				.getColumnIndexOrThrow(PlayersDbAdapter.KEY_LNAME)));
-		p.setEmail(cP.getString(cP
-				.getColumnIndexOrThrow(PlayersDbAdapter.KEY_EMAIL)));
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
-		java.sql.Date d = new java.sql.Date(0);
-		try {
-			d = new java.sql.Date(formatter.parse(cP.getString(cP
-					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_BDAY))).getTime());
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if(d!= null)
-			p.setBday(d);
-		p.setId(cP.getString(cP
-				.getColumnIndexOrThrow(PlayersDbAdapter.KEY_ID)));
-		p.setTel1(cP.getString(cP
-				.getColumnIndexOrThrow(PlayersDbAdapter.KEY_TEL1)));
-		
-		return p;
 	}
 
 	private void LoadPlayers() {

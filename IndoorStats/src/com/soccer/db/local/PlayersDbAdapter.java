@@ -44,7 +44,8 @@ public class PlayersDbAdapter {
 	public static final String KEY_FNAME = "fname";
 	public static final String KEY_LNAME = "lname";
 	public static final String KEY_TEL1 = "tel1";
-
+	public static final String KEY_IMG = "P_img";
+	
 	private static final String TAG = "PlayersDbAdapter";
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
@@ -64,11 +65,14 @@ public class PlayersDbAdapter {
 			+ KEY_LNAME
 			+ " text, "
 			+ KEY_TEL1
-			+ " text, " + KEY_BDAY + " text);";
+			+ " text, "
+			+ KEY_IMG
+			+ " text, "
+			+ KEY_BDAY + " text);";
 
 	private static final String DATABASE_NAME = "indoorsoccer";
 
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 4;
 
 	private final Context mCtx;
 
@@ -144,6 +148,7 @@ public class PlayersDbAdapter {
 		initialValues.put(KEY_ID, p.getId());
 		initialValues.put(KEY_LNAME, p.getLname());
 		initialValues.put(KEY_TEL1, p.getTel1());
+		initialValues.put(KEY_IMG, p.getP_img());
 
 		return mDb.insert(DATABASE_PLAYERS_TABLE, null, initialValues);
 	}
@@ -166,14 +171,14 @@ public class PlayersDbAdapter {
 	}
 
 	/**
-	 * Return a Cursor over the list of all notes in the database
+	 * Return a Cursor over the list of all players in the database
 	 * 
 	 * @return Cursor over all notes
 	 */
 	public Cursor fetchAllPlayers() {
 
 		return mDb.query(DATABASE_PLAYERS_TABLE, new String[] { "_id", KEY_ID,
-				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1 }, null,
+				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1, KEY_IMG }, null,
 				null, null, null, null);
 	}
 
@@ -191,7 +196,7 @@ public class PlayersDbAdapter {
 		Cursor mCursor =
 
 		mDb.query(true, DATABASE_PLAYERS_TABLE, new String[] { "_id", KEY_ID,
-				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1 }, KEY_ID
+				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1, KEY_IMG }, KEY_ID
 				+ "=" + id, null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
@@ -222,6 +227,8 @@ public class PlayersDbAdapter {
 		args.put(KEY_ID, p.getId());
 		args.put(KEY_LNAME, p.getLname());
 		args.put(KEY_TEL1, p.getTel1());
+		args.put(KEY_IMG, p.getP_img());
+		
 		return mDb.update(DATABASE_PLAYERS_TABLE, args,
 				KEY_ID + "=" + p.getId(), null) > 0;
 	}
