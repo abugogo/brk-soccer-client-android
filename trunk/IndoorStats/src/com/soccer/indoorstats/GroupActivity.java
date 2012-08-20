@@ -2,22 +2,28 @@ package com.soccer.indoorstats;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
-import android.widget.SimpleCursorAdapter;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
 import com.soccer.db.local.PlayersDbAdapter;
+import com.soccer.imageListUtils.LazyAdapter;
 
 public class GroupActivity extends ListActivity {
 
 	PlayersDbAdapter mDbHelper = null;
+	ListView list;
+    LazyAdapter adapter;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -35,24 +41,39 @@ public class GroupActivity extends ListActivity {
 	}
 
 	private void fillData() {
+		ArrayList<HashMap<String, String>> pList = new ArrayList<HashMap<String, String>>();
 		// Get all of the rows from the database and create the item list
 		Cursor PlayersCursor = mDbHelper.fetchAllPlayers();
-		startManagingCursor(PlayersCursor);
+		if (PlayersCursor.moveToFirst()) {
+			do {
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put(PlayersDbAdapter.KEY_FNAME, PlayersCursor.getString(4));
+				map.put(PlayersDbAdapter.KEY_LNAME, PlayersCursor.getString(5));
+				map.put(PlayersDbAdapter.KEY_TEL1, PlayersCursor.getString(6));
+				map.put(PlayersDbAdapter.KEY_IMG, PlayersCursor.getString(7));
+				pList.add(map);
+			} while (PlayersCursor.moveToNext());
+		}
+		if (PlayersCursor != null && !PlayersCursor.isClosed()) {
+			PlayersCursor.close();
+		}
 
-		// Create an array to specify the fields we want to display in the list
-		String[] from = new String[] { PlayersDbAdapter.KEY_IMG,
-				PlayersDbAdapter.KEY_FNAME, PlayersDbAdapter.KEY_LNAME };
+		list = (ListView) findViewById(android.R.id.list);
 
-		// and an array of the fields we want to bind those fields to
-		int[] to = new int[] { R.id.player_icon, R.id.editPFName,
-				R.id.editPLName };
+		// Getting adapter by passing xml data ArrayList
+		adapter = new LazyAdapter(this, pList);
+		list.setAdapter(adapter);
 
-		// Now create a simple cursor adapter and set it to display
-		SimpleCursorAdapter players = new SimpleCursorAdapter(this,
-				R.layout.player_row, PlayersCursor, from, to);
-		players.setViewBinder(new IconViewBinder());
+		// Click event for single list row
+		list.setOnItemClickListener(new OnItemClickListener() {
 
-		setListAdapter(players);
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+
+			}
+
+			
+		});
 	}
 
 	private static class IconViewBinder implements ViewBinder {
