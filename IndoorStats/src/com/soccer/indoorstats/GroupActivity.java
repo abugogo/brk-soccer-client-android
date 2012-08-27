@@ -6,14 +6,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.ListActivity;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
 import com.soccer.db.local.PlayersDbAdapter;
@@ -69,6 +74,18 @@ public class GroupActivity extends ListActivity {
 
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				
+				LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				View vi=view;
+		        if(view==null)
+		            vi = inflater.inflate(R.layout.player_row, null);
+		        TextView tel = (TextView)vi.findViewById(R.id.ptel1);
+		        /*Intent intent = new Intent(Intent.ACTION_CALL);
+		        intent.setData(Uri.parse("tel:" + tel.getText()));*/
+				
+		        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + tel.getText()));
+                startActivity(intent);
+
 
 			}
 
