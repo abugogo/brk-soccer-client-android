@@ -19,11 +19,11 @@
 			android:id="@+id/list_image"   
 	        android:layout_width="50dip"
 	        android:layout_height="50dip"
-	        android:src="@drawable/rihanna"/>
+	        android:src="@drawable/no_image"/>
         
 	</LinearLayout>
     
-	<!-- Title Of Song-->
+	<!-- First name of player-->
     <TextView
         android:id="@+id/pfname"
         android:layout_width="wrap_content"
@@ -36,7 +36,7 @@
         android:textSize="15dip"
         android:textStyle="bold"/>
 
-	<!-- Artist Name -->
+	<!-- Last name of player -->
     <TextView
         android:id="@+id/plname"
         android:layout_width="fill_parent"
@@ -48,7 +48,7 @@
         android:layout_toRightOf="@+id/thumbnail"
         android:text="Just gona stand there and ..." />
 
-	<!-- Rightend Duration -->
+	<!-- Tel1 of player -->
     <TextView
         android:id="@+id/ptel1"
         android:layout_width="wrap_content"
