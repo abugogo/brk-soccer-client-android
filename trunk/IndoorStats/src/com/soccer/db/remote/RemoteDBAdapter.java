@@ -41,7 +41,7 @@ public class RemoteDBAdapter {
 	public IDAOPlayer updatePlayer(String sUrl, IDAOPlayer p) throws Exception {
 		RestClient c = new RestClient(sUrl + "/SoccerServer/rest/players/" + p.getId());
 		c.AddHeader("Accept", "application/json");
-		c.AddHeader("Content-type", "application/json");
+		c.AddHeader("Content-type", "application/x-www-form-urlencoded");
 		c.setJSonBody(EntityManager.writePlayer(p));
 		
 		c.ExecuteCall(RequestMethod.POST);

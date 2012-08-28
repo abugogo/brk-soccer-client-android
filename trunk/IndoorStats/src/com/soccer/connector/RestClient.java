@@ -120,9 +120,9 @@ public class RestClient {
 				// HTTP.UTF_8));
 			}
 			StringEntity se = new StringEntity(jo.toString());
-			se.setContentType("text/xml");
-			se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,
-					"application/json"));
+			//se.setContentType("text/xml");
+			//se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,
+			//		"application/json"));
 
 			request.setEntity(se);
 			executeRequest(request, url);
