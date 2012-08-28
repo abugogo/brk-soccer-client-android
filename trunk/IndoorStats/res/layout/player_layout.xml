@@ -1,54 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent">
-  
-  <!-- Screen Design for Photos -->
-  <TextView android:text="Player Info"
-  			android:padding="15dip"
-  			android:textSize="18dip"
-  			android:layout_width="fill_parent"
-  			android:layout_height="wrap_content"/>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal"
+    android:padding="5dip" >
 
-  <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="vertical" >
+    <!-- ListRow Left sied Thumbnail image -->
 
-      <EditText
-          android:id="@+id/editPlayerName"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:ems="10"
-          android:inputType="textPersonName"
-          android:text="@string/PlayerName" >
+    <LinearLayout
+        android:id="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dip"
+        android:background="@drawable/image_bg"
+        android:padding="3dip" >
 
-          <requestFocus />
-      </EditText>
+        <ImageView
+            android:id="@+id/pimage"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:src="@drawable/no_image" />
+    </LinearLayout>
 
-      <EditText
-          android:id="@+id/editEmail"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:ems="10"
-          android:inputType="textEmailAddress" />
+    <!-- First name of player -->
 
-      <EditText
-          android:id="@+id/editPhone"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:ems="10"
-          android:inputType="phone" />
+    <TextView
+        android:id="@+id/pfname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/thumbnail"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:text="Player first name"
+        android:textColor="#040404"
+        android:textSize="15dip"
+        android:textStyle="bold"
+        android:typeface="sans" />
 
-      <EditText
-          android:id="@+id/editBirth"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:ems="10"
-          android:inputType="date" />
+    <!-- Last name of player -->
 
-  </LinearLayout>
+    <TextView
+        android:id="@+id/plname"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/pfname"
+        android:layout_marginTop="1dip"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:text="Player last name"
+        android:textColor="#343434"
+        android:textSize="15dip" />
+
+    <View
+        android:id="@+id/sepa1"
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:layout_below="@id/thumbnail"
+        android:background="#FFFFFFFF" />
+
+    <TextView
+        android:id="@+id/ptel1Caption"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/thumbnail"
+        android:layout_below="@id/sepa1"
+        android:layout_marginTop="12dip"
+        android:text="Phone:"
+        android:textColor="#343434"
+        android:textSize="12dip" />
+
+    <TextView
+        android:id="@+id/ptel1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/ptel1Caption"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:text="Player telephone number"
+        android:textColor="#343434"
+        android:textSize="12dip" />
+
+    <TextView
+        android:id="@+id/emailCaption"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/thumbnail"
+        android:layout_below="@id/ptel1Caption"
+        android:text="Email:"
+        android:textColor="#343434"
+        android:textSize="12dip" />
+
+    <TextView
+        android:id="@+id/email"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/emailCaption"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:text="Player email"
+        android:textColor="#343434"
+        android:clickable="true"
+        android:onClick="promptEmail"
+        android:textSize="12dip" />
     
-</LinearLayout>
+    <TextView
+        android:id="@+id/bdayCaption"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/thumbnail"
+        android:layout_below="@id/emailCaption"
+        android:text="Birthday:"
+        android:textColor="#343434"
+        android:textSize="12dip" />
+
+    <TextView
+        android:id="@+id/bday"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/bdayCaption"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:text="Player bday"
+        android:textColor="#343434"
+        android:textSize="12dip" />
+    <!-- Tel1 of player -->
+
+</RelativeLayout>

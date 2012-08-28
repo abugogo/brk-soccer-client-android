@@ -1,7 +1,5 @@
 package com.soccer.indoorstats;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -9,17 +7,14 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.SimpleCursorAdapter.ViewBinder;
 
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.imageListUtils.LazyAdapter;
@@ -91,29 +86,6 @@ public class GroupActivity extends ListActivity {
 
 			
 		});
-	}
-
-	private static class IconViewBinder implements ViewBinder {
-
-		public boolean setViewValue(View view, Cursor c, int colIndex) {
-			if (view instanceof ImageView) {
-				String src = c.getString(7);
-				if (src != null && !src.equals("")) {
-					try {
-						InputStream is = (InputStream) new URL(src)
-								.getContent();
-						Drawable d = Drawable.createFromStream(is,
-								"player_icon.png");
-						((ImageView) view).setImageDrawable(d);
-						return true;
-					} catch (Exception e) {
-						System.out.println(e);
-					}
-				}
-			}
-			return false;
-		}
-
 	}
 
 	@Override

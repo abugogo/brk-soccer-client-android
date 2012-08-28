@@ -34,4 +34,8 @@
 	<string name="send...">Send...</string>
 	<string name="empty_player_name">No Name</string>
 	<string name="space"> </string>
+	<string name="ok">Ok</string>
+	<string name="cancel">Cancel</string>
+	<string name="newVal">New value</string>
+	<string name="emailTtl">Update Email</string>
 </resources>

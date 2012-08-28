@@ -45,8 +45,8 @@ public class RemoteDBAdapter {
 		c.setJSonBody(EntityManager.writePlayer(p));
 		
 		c.ExecuteCall(RequestMethod.POST);
-		if(c.getResponseCode() == 200)
-			p = EntityManager.readPlayer(c.getResponse()); 
+		if(c.getResponseCode() != 200)
+			throw new Exception("Error code:" + c.getResponseCode() + ", Error:" + c.getErrorMessage()); 
 		return p;
 
 	}

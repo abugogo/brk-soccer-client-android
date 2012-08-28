@@ -1,8 +1,8 @@
 package com.soccer.indoorstats;
 
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -17,14 +17,15 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.db.remote.RemoteDBAdapter;
-import com.soccer.entities.EntityManager;
-import com.soccer.entities.IDAOPlayer;
+import com.soccer.dialog.PromptDialog;
 import com.soccer.entities.impl.DAOPlayer;
-import com.soccer.lib.SoccerException;
+import com.soccer.imageListUtils.ImageLoader;
 import com.soccer.preferences.Prefs;
 
 public class PlayerActivity extends Activity {
@@ -32,6 +33,7 @@ public class PlayerActivity extends Activity {
 	private PlayersDbAdapter mDbHelper;
 	private DAOPlayer mPlayer = null;
 	private String mPID = null;
+	public ImageLoader imageLoader;
 
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i("LifeCycle", "PlayerActivity onCreate");
@@ -42,6 +44,7 @@ public class PlayerActivity extends Activity {
 				: (String) savedInstanceState
 						.getSerializable(PlayersDbAdapter.KEY_ID);
 		setContentView(R.layout.player_layout);
+		imageLoader = new ImageLoader(this.getApplicationContext());
 
 		if (mPID == null) {
 			Intent i = getIntent();
@@ -57,15 +60,20 @@ public class PlayerActivity extends Activity {
 
 			if (mPlayer != null && mPlayer.getId() != null
 					&& mPlayer.getId() != "") {
-				((EditText) findViewById(R.id.editPlayerName)).setText(mPlayer
+				((TextView) findViewById(R.id.pfname)).setText(mPlayer
+						.getFname());
+				((TextView) findViewById(R.id.plname)).setText(mPlayer
 						.getFname() + " " + mPlayer.getLname());
-				((EditText) findViewById(R.id.editEmail)).setText(mPlayer
+				((TextView) findViewById(R.id.email)).setText(mPlayer
 						.getEmail());
-				((EditText) findViewById(R.id.editPhone)).setText(mPlayer
-						.getTel1());
+				((TextView) findViewById(R.id.ptel1))
+						.setText(mPlayer.getTel1());
 				String bDay = mPlayer.getBdayAsString(null);
 				if (bDay != null)
-					((EditText) findViewById(R.id.editBirth)).setText(bDay);
+					((TextView) findViewById(R.id.bday)).setText(bDay);
+				ImageView thumb_image = (ImageView) findViewById(R.id.pimage); // thumb
+																				// image
+				imageLoader.DisplayImage(mPlayer.getP_img(), thumb_image);
 			} else {
 				Prefs sharedPrefs = new Prefs(this);
 				sharedPrefs.setPreference("LoggedIn", -1);
@@ -95,12 +103,15 @@ public class PlayerActivity extends Activity {
 		Cursor cP = mDbHelper.fetchPlayer(Long.parseLong(id));
 		startManagingCursor(cP);
 		if (cP.getCount() > 0) {
+			p.setIdNum(BigInteger.valueOf(1));
 			p.setFname(cP.getString(cP
 					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_FNAME)));
 			p.setLname(cP.getString(cP
 					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_LNAME)));
 			p.setEmail(cP.getString(cP
 					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_EMAIL)));
+			p.setP_img(cP.getString(cP
+					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_IMG)));
 			Date d = null;
 			try {
 				String sBDate = cP.getString(cP
@@ -111,10 +122,8 @@ public class PlayerActivity extends Activity {
 							.parse(sBDate);
 
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			if (d != null)
@@ -155,7 +164,6 @@ public class PlayerActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
 		mDbHelper.close();
 	}
@@ -171,27 +179,43 @@ public class PlayerActivity extends Activity {
 		switch (item.getItemId()) {
 		case 0:
 			updatePlayer();
-
 			return true;
 		}
 		return false;
 	}
 
+	public void promptEmail(View view) {
+		PromptDialog dlg = new PromptDialog(this, R.string.emailTtl, R.string.newVal, ((TextView)view).getText().toString()) {
+			@Override
+			public boolean onOkClicked(String input) {
+				((TextView) findViewById(R.id.email)).setText(input);
+				return true; 
+			}
+		};
+		dlg.show();
+	}
+
 	private void updatePlayer() {
 		if (mPlayer != null) {
-			mPlayer.setEmail(((EditText) findViewById(R.id.editEmail))
-					.getText().toString());
+			mPlayer.setEmail(((TextView) findViewById(R.id.email)).getText()
+					.toString());
 			RemoteDBAdapter rdb = new RemoteDBAdapter();
 			SharedPreferences sharedPrefs = PreferenceManager
 					.getDefaultSharedPreferences(this);
 			String sUrl = sharedPrefs.getString("server_port", "NULL");
-			if (sUrl.equals("NULL")) {
-				sUrl = "http://23.23.186.205:8080/";
-			}
 			try {
-				rdb.updatePlayer(sUrl, mPlayer);
+				if (rdb.updatePlayer(sUrl, mPlayer)==null) {
+					Bundle args = new Bundle();
+					args.putString("msg", "Failed to update player");
+					showDialog(0, args);					
+				}
+				else {
+					mDbHelper.updatePlayer(mPlayer);
+				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				Bundle args = new Bundle();
+				args.putString("msg", "Failed to update player:" + e.getMessage());
+				showDialog(0, args);
 				e.printStackTrace();
 			}
 		}
