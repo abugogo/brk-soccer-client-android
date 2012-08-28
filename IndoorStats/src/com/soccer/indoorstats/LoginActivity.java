@@ -6,9 +6,7 @@ import java.util.Iterator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +20,7 @@ import com.soccer.preferences.Prefs;
 import com.soccer.preferences.SoccerPrefsActivity;
 
 public class LoginActivity extends Activity {
-
+	private static final String SERVER_DEFAULT = "http://ellgad.com/";
 	private PlayersDbAdapter mDbHelper;
 
 	@Override
@@ -38,7 +36,7 @@ public class LoginActivity extends Activity {
 		menu.add(Menu.NONE, 0, 0, "Preferences");
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -49,49 +47,41 @@ public class LoginActivity extends Activity {
 		return false;
 	}
 
-
 	public void loginClick(View view) {
 		Prefs sharedPrefs = new Prefs(this);
 		EditText et = (EditText) findViewById(R.id.editIdNumber);
 		String id = et.getText().toString();
-		boolean loggedin = (sharedPrefs.getIntPreference("LoggedIn", -1) == 1);
+		int loggedInId = sharedPrefs.getIntPreference("LoggedIn", -1);
 
-		if(!loggedin) {
+		if (loggedInId == -1 || loggedInId != Integer.parseInt(id)) {
 			String sUrl = sharedPrefs.getPreference("server_port", "NULL");
 			if (sUrl.equals("NULL")) {
-				sUrl = "http://23.23.186.205:8080/";
+				sUrl = LoginActivity.SERVER_DEFAULT;
 			}
-	
+
 			try {
-				LoadPlayers();
-	
+				LoadPlayers(sUrl);
+
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				showAlertMessage(e.getMessage());
 			}
 		}
 
 		if (id != "") {
-			
+			sharedPrefs.setPreference("LoggedIn", Integer.parseInt(id));
 			Intent appIntent = new Intent(this, actOpen.class);
 			appIntent.putExtra("player_id", id);
-			sharedPrefs.setPreference("LoggedIn", 1);
 			startActivity(appIntent);
 		} else {
+			sharedPrefs.setPreference("LoggedIn", -1);
 			showAlertMessage("Failed login");
 		}
 	}
 
-	private void LoadPlayers() {
-		
+	private void LoadPlayers(String sUrl) {
+
 		RemoteDBAdapter rdb = new RemoteDBAdapter();
-		SharedPreferences sharedPrefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		String sUrl = sharedPrefs.getString("server_port", "NULL");
-		if (sUrl.equals("NULL")) {
-			sUrl = "http://23.23.186.205:8080/";
-		}
 		try {
 			ArrayList<IDAOPlayer> pArr = rdb.getPlayers(sUrl);
 			if (pArr != null) {
@@ -103,25 +93,15 @@ public class LoginActivity extends Activity {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public void showPlayerInfoOnScreen(IDAOPlayer p) {
-		StringBuilder builder = new StringBuilder();
-
-		builder.append("\n" + p.getFname());
-		builder.append("\n" + p.getLname());
-
-		showAlertMessage(builder.toString());
 	}
 
 	private void showAlertMessage(String msg) {
 		AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 		alertDialog.setMessage(msg);
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -130,7 +110,6 @@ public class LoginActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
 		mDbHelper.close();
 	}
