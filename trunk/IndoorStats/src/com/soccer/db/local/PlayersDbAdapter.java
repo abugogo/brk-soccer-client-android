@@ -221,7 +221,7 @@ public class PlayersDbAdapter {
 	public boolean updatePlayer(DAOPlayer p) {
 		ContentValues args = new ContentValues();
 
-		args.put(KEY_BDAY, p.getBday().toString());
+		args.put(KEY_BDAY, (null != p.getBday())? p.getBday().toString() : "");
 		args.put(KEY_EMAIL, p.getEmail());
 		args.put(KEY_FNAME, p.getFname());
 		args.put(KEY_ID, p.getId());

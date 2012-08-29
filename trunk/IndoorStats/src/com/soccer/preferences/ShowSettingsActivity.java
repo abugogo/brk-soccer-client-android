@@ -31,12 +31,12 @@ public class ShowSettingsActivity extends Activity {
 
 		try {
 			String option = sharedPrefs.getString("rest_call_id", "1");
-			RemoteDBAdapter rda = new RemoteDBAdapter();
+			//RemoteDBAdapter rda = new RemoteDBAdapter();
 			
 			switch ((int)Integer.parseInt(option)){
 			case 1:
-				IDAOPlayer p = rda.getPlayer(sUrl, "3");
-				showPlayerInfoOnScreen(p);
+				//IDAOPlayer p = rda.getPlayer(sUrl, "3");
+				//showPlayerInfoOnScreen(p);
 				break;
 			case 2:
 				//List<IDAOPlayer> lst = RemoteDBAdapter.getAllPlayers(sUrl);

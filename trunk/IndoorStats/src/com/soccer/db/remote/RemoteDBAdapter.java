@@ -2,52 +2,57 @@ package com.soccer.db.remote;
 
 import java.util.ArrayList;
 
-import com.soccer.connector.RestClient;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.IDAOPlayer;
+import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
+import com.soccer.rest.RestClient;
+import com.soccer.rest.RestClient.RequestMethod;
+import com.soccer.rest.asynctask.AsyncRestCallParams;
+import com.soccer.rest.asynctask.AsyncRestCallPlayers;
 
 public class RemoteDBAdapter {
-	
-	public enum RequestMethod {
-		GET, POST, PUT
+	/*
+	 * public static IDAOPlayer getPlayer(IAsyncTaskAct caller, String sUrl,
+	 * String id) throws Exception { IDAOPlayer p = null; RestClient c = new
+	 * RestClient(sUrl + "/SoccerServer/rest/players/" + id);
+	 * c.AddHeader("Accept", "application/json"); c.AddHeader("Content-type",
+	 * "application/json");
+	 * 
+	 * c.ExecuteCall(RequestMethod.GET); if (c.getResponseCode() == 200) p =
+	 * EntityManager.readPlayer(c.getResponse()); return p;
+	 * 
+	 * }
+	 */
+
+	public static void getPlayers(IAsyncTaskAct caller, String sUrl,
+			String status) throws Exception {
+		AsyncRestCallPlayers asyncCall = new AsyncRestCallPlayers(caller,
+				status);
+		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
+		nva.add(new BasicNameValuePair("Accept", "application/json"));
+		nva.add(new BasicNameValuePair("Content-type", "application/json"));
+
+		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
+				+ "/SoccerServer/rest/players", RequestMethod.GET, nva, "");
+		asyncCall.execute(params);
 	}
 
-	public IDAOPlayer getPlayer(String sUrl, String id) throws Exception {
-		IDAOPlayer p = null;
-		RestClient c = new RestClient(sUrl + "/SoccerServer/rest/players/" + id);
-		c.AddHeader("Accept", "application/json");
-		c.AddHeader("Content-type", "application/json");
+	public static void updatePlayer(IAsyncTaskAct caller, String sUrl,
+			String status, IDAOPlayer p) throws Exception {
+		AsyncRestCallPlayers asyncCall = new AsyncRestCallPlayers(caller,
+				status);
+		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
+		nva.add(new BasicNameValuePair("Accept", "application/json"));
+		nva.add(new BasicNameValuePair("Content-type",
+				"application/x-www-form-urlencoded"));
 
-		c.ExecuteCall(RequestMethod.GET);
-		if(c.getResponseCode() == 200)
-			p = EntityManager.readPlayer(c.getResponse()); 
-		return p;
-
-	}
-	
-	public ArrayList<IDAOPlayer> getPlayers(String sUrl) throws Exception {
-		ArrayList<IDAOPlayer> pArr = null;
-		RestClient c = new RestClient(sUrl + "/SoccerServer/rest/players");
-		c.AddHeader("Accept", "application/json");
-		c.AddHeader("Content-type", "application/json");
-
-		c.ExecuteCall(RequestMethod.GET);
-		if(c.getResponseCode() == 200)
-			pArr = EntityManager.readPlayers(c.getResponse()); 
-		return pArr;
-
-	}
-	
-	public IDAOPlayer updatePlayer(String sUrl, IDAOPlayer p) throws Exception {
-		RestClient c = new RestClient(sUrl + "/SoccerServer/rest/players/" + p.getId());
-		c.AddHeader("Accept", "application/json");
-		c.AddHeader("Content-type", "application/x-www-form-urlencoded");
-		c.setJSonBody(EntityManager.writePlayer(p));
-		
-		c.ExecuteCall(RequestMethod.POST);
-		if(c.getResponseCode() != 200)
-			throw new Exception("Error code:" + c.getResponseCode() + ", Error:" + c.getErrorMessage()); 
-		return p;
+		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
+				+ "/SoccerServer/rest/players/" + p.getId(),
+				RequestMethod.POST, nva, EntityManager.writePlayer(p));
+		asyncCall.execute(params);
 
 	}
 
