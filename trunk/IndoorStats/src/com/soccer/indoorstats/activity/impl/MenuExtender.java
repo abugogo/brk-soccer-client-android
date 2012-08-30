@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coboltforge.slidemenu.SlideMenu;
@@ -21,7 +20,9 @@ public class MenuExtender implements OnSlideMenuItemClickListener {
 	private static LayoutInflater inflater=null;
 	private float initialX = 0;
 	private float deltaX = 0;
-
+	private final int DRAG_MAX_RIGHT_SENSOR = 30;
+	private final int DRAG_MIN_DRAG_SENSOR = 10;
+	
 	public MenuExtender(Activity act, String pId) {
 		mAct = act;
 		mPID = pId;
@@ -42,7 +43,7 @@ public class MenuExtender implements OnSlideMenuItemClickListener {
 		slidemenu.init(mAct, R.menu.slide, this, 333);
 
 		// set optional header image
-		slidemenu.setHeaderImage(R.drawable.ic_launcher);
+		//slidemenu.setHeaderImage(R.drawable.no_image);
 	}
 
 	public void showMenu() {
@@ -54,24 +55,16 @@ public class MenuExtender implements OnSlideMenuItemClickListener {
 		Intent appIntent = null;
 		switch (itemId) {
 		case R.id.item_player:
-			Toast.makeText(mAct, "Item one selected", Toast.LENGTH_SHORT)
-					.show();
+			//Toast.makeText(mAct, "Item one selected", Toast.LENGTH_SHORT).show();
 			appIntent = new Intent(mAct, PlayerActivity.class);
 			break;
 		case R.id.item_group:
-			Toast.makeText(mAct, "Item two selected", Toast.LENGTH_SHORT)
-					.show();
+			//Toast.makeText(mAct, "Item two selected", Toast.LENGTH_SHORT).show();
 			appIntent = new Intent(mAct, GroupActivity.class);
 			break;
 		case R.id.item_game:
-			Toast.makeText(mAct, "Item three selected", Toast.LENGTH_SHORT)
-					.show();
+			//Toast.makeText(mAct, "Item three selected", Toast.LENGTH_SHORT).show();
 			appIntent = new Intent(mAct, GameActivity.class);
-			break;
-		case R.id.item_exit:
-			Toast.makeText(mAct, "Item four selected", Toast.LENGTH_SHORT)
-					.show();
-			mAct.finish();
 			break;
 		}
 
@@ -95,20 +88,20 @@ public class MenuExtender implements OnSlideMenuItemClickListener {
 
 					// get initial positions
 					initialX = event.getRawX();
-					if(initialX < 10) 
+					if(initialX < DRAG_MAX_RIGHT_SENSOR) 
 						return true;
 				}
 				else if (event.getAction() == MotionEvent.ACTION_UP) {
-					if(initialX < 10) {
+					if(initialX < DRAG_MAX_RIGHT_SENSOR) {
 						deltaX = event.getRawX() - initialX;
 	
-						if (deltaX > 10) {
+						if (deltaX > DRAG_MIN_DRAG_SENSOR) {
 							showMenu();
 							return true;
 						}
 					}
 				}
-				else if(initialX < 10) {
+				else if(initialX < DRAG_MAX_RIGHT_SENSOR) {
 					return true;
 				}
 				

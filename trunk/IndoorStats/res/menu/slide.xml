@@ -3,23 +3,17 @@
 
     <item
         android:id="@+id/item_player"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/player_white"
         android:title="@string/player">
     </item>
     <item
         android:id="@+id/item_group"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/players_white"
         android:title="@string/group">
     </item>
     <item
         android:id="@+id/item_game"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/game_white"
         android:title="@string/game">
     </item>
-    <item
-        android:id="@+id/item_exit"
-        android:icon="@drawable/ic_launcher"
-        android:title="@string/exit">
-    </item>
-
 </menu>

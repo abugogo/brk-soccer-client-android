@@ -27,6 +27,7 @@ import com.soccer.preferences.SoccerPrefsActivity;
 public class LoginActivity extends Activity implements IAsyncTaskAct {
 	private static final String SERVER_DEFAULT = "http://ellgad.com/";
 	private PlayersDbAdapter mDbHelper;
+	Prefs sharedPrefs;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 		setContentView(R.layout.activity_login);
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
+		sharedPrefs = new Prefs(this);
 	}
 
 	@Override
@@ -53,25 +55,31 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 	}
 
 	public void loginClick(View view) {
-		Prefs sharedPrefs = new Prefs(this);
+
 		EditText et = (EditText) findViewById(R.id.editIdNumber);
 		String id = et.getText().toString();
-		int loggedInId = sharedPrefs.getIntPreference("LoggedIn", -1);
 
-		if (loggedInId == -1 || loggedInId != Integer.parseInt(id)) {
-			String sUrl = sharedPrefs.getPreference("server_port", "NULL");
-			if (sUrl.equals("NULL")) {
-				sUrl = LoginActivity.SERVER_DEFAULT;
-			}
+		if (id != null && !id.equals("")) {
+			String loggedInId = sharedPrefs.getPreference(
+					PlayersDbAdapter.KEY_ID, "");
+			if (!loggedInId.equals(id)) {
+				String sUrl = sharedPrefs.getPreference("server_port", "NULL");
+				if (sUrl.equals("NULL")) {
+					sUrl = LoginActivity.SERVER_DEFAULT;
+				}
 
-			try {
-				RemoteDBAdapter.getPlayers(this, sUrl, "Downloading data");
-			} catch (Exception e) {
-				e.printStackTrace();
-				showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
+				try {
+					RemoteDBAdapter.getPlayers(this, sUrl, "Downloading data");
+				} catch (Exception e) {
+					e.printStackTrace();
+					showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
+				}
+			} else {
+				loadApp(id);
 			}
 		} else {
-			loadApp(id, sharedPrefs);
+			showDialog(0,
+					DlgUtils.prepareDlgBundle("Please provide a valid ID"));
 		}
 	}
 
@@ -102,15 +110,12 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 		mDbHelper.close();
 	}
 
-	private void loadApp(String id, Prefs sharedPrefs) {
+	private void loadApp(String id) {
+		sharedPrefs.setPreference(PlayersDbAdapter.KEY_ID, id);
 		if (id != "") {
-			sharedPrefs.setPreference("LoggedIn", Integer.parseInt(id));
-			//Intent appIntent = new Intent(this, actOpen.class);
 			Intent appIntent = new Intent(this, PlayerActivity.class);
-			appIntent.putExtra("player_id", id);
 			startActivity(appIntent);
 		} else {
-			sharedPrefs.setPreference("LoggedIn", -1);
 			showDialog(0, DlgUtils.prepareDlgBundle("Failed login"));
 		}
 	}
@@ -123,10 +128,9 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 			e.printStackTrace();
 		}
 
-		Prefs sharedPrefs = new Prefs(this);
 		EditText et = (EditText) findViewById(R.id.editIdNumber);
 		String id = et.getText().toString();
-		loadApp(id, sharedPrefs);
+		loadApp(id);
 	}
 
 	public void onFailure(int responseCode, String result) {
