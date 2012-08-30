@@ -39,7 +39,7 @@ public class PlayerActivity extends Activity implements IAsyncTaskAct {
 	private String mPID = null;
 	private ImageLoader imageLoader;
 	private MenuExtender slidingMenu;
-	private SharedPreferences mPrefs;
+	private Prefs mPrefs;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i("LifeCycle", "PlayerActivity onCreate");
@@ -49,9 +49,8 @@ public class PlayerActivity extends Activity implements IAsyncTaskAct {
 		Intent i = getIntent();
 		mPID = (String) i.getSerializableExtra("player_id");
 
-		mPrefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		mPID = (String) mPrefs.getString(PlayersDbAdapter.KEY_ID, mPID);
+		mPrefs = new Prefs(this);
+		mPID = (String) mPrefs.getPreference(PlayersDbAdapter.KEY_ID, mPID);
 
 		setContentView(R.layout.player_layout);
 		if (slidingMenu == null) {
@@ -156,7 +155,7 @@ public class PlayerActivity extends Activity implements IAsyncTaskAct {
 	protected void onResume() {
 		Log.i("LifeCycle", "PlayerActivity onResume");
 		super.onResume();
-		mPID = (String) mPrefs.getString(PlayersDbAdapter.KEY_ID, mPID);
+		mPID = mPrefs.getPreference(PlayersDbAdapter.KEY_ID, mPID);
 		populateFields();
 	}
 
@@ -168,9 +167,7 @@ public class PlayerActivity extends Activity implements IAsyncTaskAct {
 	}
 
 	private void saveState() {
-		SharedPreferences.Editor ed = mPrefs.edit();
-		ed.putString(PlayersDbAdapter.KEY_ID, mPID);
-		ed.commit();
+		mPrefs.setPreference(PlayersDbAdapter.KEY_ID, mPID);
 	}
 
 	@Override
@@ -211,7 +208,7 @@ public class PlayerActivity extends Activity implements IAsyncTaskAct {
 		if (mPlayer != null) {
 			mPlayer.setEmail(((TextView) findViewById(R.id.email)).getText()
 					.toString());
-			String sUrl = mPrefs.getString("server_port", "NULL");
+			String sUrl = mPrefs.getPreference("server_port", "NULL");
 			try {
 				RemoteDBAdapter.updatePlayer(this, sUrl,
 						"Updating player info", mPlayer);
