@@ -6,13 +6,16 @@ import java.util.HashMap;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -24,11 +27,17 @@ public class GroupActivity extends ListActivity {
 
 	PlayersDbAdapter mDbHelper = null;
 	ListView list;
-    LazyAdapter adapter;
+	LazyAdapter adapter;
+	private MenuExtender slidingMenu;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.group_layout);
+		if (slidingMenu == null) {
+			slidingMenu = new MenuExtender(this, "");
+			slidingMenu.initSlideMenu();
+		}
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
 		fillData();
@@ -66,26 +75,33 @@ public class GroupActivity extends ListActivity {
 		list.setAdapter(adapter);
 
 		// Click event for single list row
-		list.setOnItemClickListener(new OnItemClickListener() {
+		list.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				
-				LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				View vi=view;
-		        if(view==null)
-		            vi = inflater.inflate(R.layout.player_row, null);
-		        TextView tel = (TextView)vi.findViewById(R.id.ptel1);
-		        /*Intent intent = new Intent(Intent.ACTION_CALL);
-		        intent.setData(Uri.parse("tel:" + tel.getText()));*/
-				
-		        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + tel.getText()));
-                startActivity(intent);
+			public boolean onItemLongClick(AdapterView<?> arg0, View view,
+					int arg2, long arg3) {
+				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				View vi = view;
+				if (view == null)
+					vi = inflater.inflate(R.layout.player_row, null);
+				TextView tel = (TextView) vi.findViewById(R.id.ptel1);
+				/*
+				 * Intent intent = new Intent(Intent.ACTION_CALL);
+				 * intent.setData(Uri.parse("tel:" + tel.getText()));
+				 */
 
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:"
+						+ tel.getText()));
+				startActivity(intent);
 
+				return false;
 			}
+		});
 
-			
+		list.setOnTouchListener(new OnTouchListener() {
+
+			public boolean onTouch(View v, MotionEvent event) {
+				return slidingMenu.handleTouchEvent(event);
+			}
 		});
 	}
 
@@ -94,4 +110,10 @@ public class GroupActivity extends ListActivity {
 		super.onSaveInstanceState(outState);
 		outState.putSerializable("State", 3);
 	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		return slidingMenu.handleTouchEvent(event);
+	}
+
 }
