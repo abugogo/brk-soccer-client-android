@@ -105,7 +105,8 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 	private void loadApp(String id, Prefs sharedPrefs) {
 		if (id != "") {
 			sharedPrefs.setPreference("LoggedIn", Integer.parseInt(id));
-			Intent appIntent = new Intent(this, actOpen.class);
+			//Intent appIntent = new Intent(this, actOpen.class);
+			Intent appIntent = new Intent(this, PlayerActivity.class);
 			appIntent.putExtra("player_id", id);
 			startActivity(appIntent);
 		} else {

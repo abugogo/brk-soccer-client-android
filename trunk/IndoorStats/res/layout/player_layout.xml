@@ -6,8 +6,6 @@
     android:orientation="horizontal"
     android:padding="5dip" >
 
-    <!-- ListRow Left sied Thumbnail image -->
-
     <LinearLayout
         android:id="@+id/thumbnail"
         android:layout_width="wrap_content"
@@ -95,12 +93,12 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/emailCaption"
         android:layout_toRightOf="@+id/thumbnail"
-        android:text="Player email"
-        android:textColor="#343434"
         android:clickable="true"
         android:onClick="promptEmail"
+        android:text="Player email"
+        android:textColor="#343434"
         android:textSize="12dip" />
-    
+
     <TextView
         android:id="@+id/bdayCaption"
         android:layout_width="fill_parent"

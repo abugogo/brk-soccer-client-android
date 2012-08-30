@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/item_player"
+        android:icon="@drawable/ic_launcher"
+        android:title="@string/player">
+    </item>
+    <item
+        android:id="@+id/item_group"
+        android:icon="@drawable/ic_launcher"
+        android:title="@string/group">
+    </item>
+    <item
+        android:id="@+id/item_game"
+        android:icon="@drawable/ic_launcher"
+        android:title="@string/game">
+    </item>
+    <item
+        android:id="@+id/item_exit"
+        android:icon="@drawable/ic_launcher"
+        android:title="@string/exit">
+    </item>
+
+</menu>
