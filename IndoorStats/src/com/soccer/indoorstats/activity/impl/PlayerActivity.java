@@ -9,11 +9,9 @@ import java.util.Locale;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.db.remote.RemoteDBAdapter;
@@ -192,40 +191,74 @@ public class PlayerActivity extends Activity implements IAsyncTaskAct {
 		return false;
 	}
 
-	public void promptEmail(View view) {
-		PromptDialog dlg = new PromptDialog(this, R.string.emailTtl,
-				R.string.newVal, ((TextView) view).getText().toString()) {
-			@Override
-			public boolean onOkClicked(String input) {
-				((TextView) findViewById(R.id.email)).setText(input);
-				return true;
-			}
-		};
-		dlg.show();
+	public void promptUpdate(final View view) {
+		int captionStrId = -1;
+		switch(view.getId()) {
+		case R.id.email:
+			captionStrId = R.string.emailTtl;
+			break;
+		case R.id.ptel1:
+			captionStrId = R.string.phoneTtl;
+			break;
+		case R.id.bday:
+			captionStrId = R.string.bdayTtl;
+			break;
+		}
+		
+		if(captionStrId != -1) {
+			PromptDialog dlg = new PromptDialog(this, captionStrId,
+					R.string.newVal, ((TextView) view).getText().toString()) {
+				@Override
+				public boolean onOkClicked(String input) {
+					((TextView) view).setText(input);
+					return true;
+				}
+			};
+			dlg.show();
+		}
 	}
 
 	private void updatePlayer() {
 		if (mPlayer != null) {
-			mPlayer.setEmail(((TextView) findViewById(R.id.email)).getText()
-					.toString());
-			String sUrl = mPrefs.getPreference("server_port", "NULL");
-			try {
-				RemoteDBAdapter.updatePlayer(this, sUrl,
-						"Updating player info", mPlayer);
-
-			} catch (Exception e) {
-				showDialog(
-						0,
-						DlgUtils.prepareDlgBundle("Failed to update player:"
-								+ e.getMessage()));
-				e.printStackTrace();
+			String newEmail = ((TextView) findViewById(R.id.email)).getText().toString();
+			String newPhone = ((TextView) findViewById(R.id.ptel1)).getText().toString();
+			String newBday = ((TextView) findViewById(R.id.bday)).getText().toString();
+			if(!mPlayer.getBdayAsString("").equals(newBday)) {
+				Toast toast = Toast.makeText(this.getApplicationContext(), "Birthday modification is not supported", Toast.LENGTH_SHORT);
+				toast.show();
 			}
+			boolean dirty = (!mPlayer.getEmail().equals(newEmail) ||
+					!mPlayer.getTel1().equals(newPhone));
+			if(dirty) {
+				// add support to birth date
+				mPlayer.setEmail(newEmail);
+				mPlayer.setTel1(newPhone);
+				String sUrl = mPrefs.getPreference("server_port", "NULL");
+				try {
+					RemoteDBAdapter.updatePlayer(this, sUrl,
+							"Updating player info", mPlayer);
+	
+				} catch (Exception e) {
+					showDialog(
+							0,
+							DlgUtils.prepareDlgBundle("Failed to update player:"
+									+ e.getMessage()));
+					e.printStackTrace();
+				}
+			}
+			else {
+				Toast toast = Toast.makeText(this.getApplicationContext(), "No changes detected", Toast.LENGTH_SHORT);
+				toast.show();
+			}
+			
 		}
 
 	}
 
 	public void onSuccess(String result) {
 		mDbHelper.updatePlayer(mPlayer);
+		Toast toast = Toast.makeText(this.getApplicationContext(), "Updated successfully", Toast.LENGTH_SHORT);
+		toast.show();
 	}
 
 	public void onFailure(int responseCode, String result) {
