@@ -7,68 +7,98 @@ package com.soccer.indoorstats.activity.impl;
  * ShawnBe.com
  */
 
+import java.util.ArrayList;
+
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
+import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.utils.StopWatch;
 
-public class GameActivity extends Activity {
-	/** Called when the activity is first created. */
+public class GameActivity extends Activity implements OnClickListener  {
+	private static final int MSG_START_TIMER = 0;
+	private static final int MSG_STOP_TIMER = 1;
+	private static final int MSG_UPDATE_TIMER = 2;
+	private static final int MSG_RESET_TIMER = 3;
+	private static final String INIT_TIME = "0:0";
 
-	// AdView adView;
-	private TextView tempTextView; // Temporary TextView
-	private Button tempBtn; // Temporary Button
-	private Handler mHandler = new Handler();
-	private long startTime;
-	private long stopTime;
-	private long elapsedTime;
-	private final int REFRESH_RATE = 100;
-	private String hours, minutes, seconds, milliseconds;
-	private long secs, mins, hrs, msecs;
-	private boolean stopped = false;
+	private static StopWatch timer = new StopWatch();
+	private static final int REFRESH_RATE = 1000;
 
 	private MenuExtender slidingMenu;
+
+	private static Handler mHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case MSG_START_TIMER:
+				timer.start(tvTextView.getText().equals(INIT_TIME));
+				mHandler.sendEmptyMessage(MSG_UPDATE_TIMER);
+				break;
+			case MSG_UPDATE_TIMER:
+				int mins = (int) (timer.getElapsedTimeSecs() / 60);
+				int secs = (int) (timer.getElapsedTimeSecs() % 60);
+				tvTextView.setText(mins + ":" + secs);
+				mHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIMER, REFRESH_RATE);
+				break;
+			case MSG_STOP_TIMER:
+				mHandler.removeMessages(MSG_UPDATE_TIMER);
+				timer.stop();
+				break;
+			case MSG_RESET_TIMER:
+				mHandler.removeMessages(MSG_UPDATE_TIMER);
+				timer.stop();
+				btnStart.setChecked(false);
+				tvTextView.setText(INIT_TIME);
+				break;
+
+			default:
+				break;
+			}
+		}
+	};
+
+	private static TextView tvTextView;
+	private static ToggleButton btnStart;
+	Button btnReset;
+	// LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
+	ArrayList<String> listItems = new ArrayList<String>();
+
+	// DEFINING STRING ADAPTER WHICH WILL HANDLE DATA OF LISTVIEW
+	ArrayAdapter<String> adapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.swmain);
+		setContentView(R.layout.game_main);
 		if (slidingMenu == null) {
 			slidingMenu = new MenuExtender(this, "");
 			slidingMenu.initSlideMenu();
 		}
 
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		checkScreenDensity();
+		tvTextView = (TextView) findViewById(R.id.textViewTimer);
 
-		/*-------Setting the TextView Fonts-----------*/
+		btnStart = (ToggleButton) findViewById(R.id.toggleButtonStart);
+		btnReset = (Button) findViewById(R.id.buttonReset);
+		btnStart.setOnClickListener(this);
+		btnReset.setOnClickListener(this);
 
-		Typeface font = Typeface.createFromAsset(getAssets(),
-				"altehaasgroteskbold.ttf");
-		tempTextView = (TextView) findViewById(R.id.timer);
-		tempTextView.setTypeface(font);
-		// tempTextView = (TextView) findViewById(R.id.timerMs);
-		// tempTextView.setTypeface(font);
-		font = Typeface.createFromAsset(getAssets(), "coolvetica.ttf");
-		tempTextView = (TextView) findViewById(R.id.backgroundText);
-		tempTextView.setTypeface(font);
-		Button tempBtn = (Button) findViewById(R.id.startButton);
-		tempBtn.setTypeface(font);
-		tempBtn = (Button) findViewById(R.id.resetButton);
-		tempBtn.setTypeface(font);
-		tempBtn = (Button) findViewById(R.id.stopButton);
-		tempBtn.setTypeface(font);
+		ListView lstView = (ListView) findViewById(R.id.listView1);
+		adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1, listItems);
+		lstView.setAdapter(adapter);
 
 	}
 
@@ -77,142 +107,27 @@ public class GameActivity extends Activity {
 		super.onDestroy();
 	}
 
-	private void checkScreenDensity() {
-		tempTextView = (TextView) findViewById(R.id.backgroundText);
-		switch (getResources().getDisplayMetrics().densityDpi) {
-		case DisplayMetrics.DENSITY_LOW:
-			tempTextView.setVisibility(View.GONE);
-			break;
-		case DisplayMetrics.DENSITY_MEDIUM:
-			tempTextView.setVisibility(View.GONE);
-			break;
-		case DisplayMetrics.DENSITY_HIGH:
-			tempTextView.setVisibility(View.VISIBLE);
-			break;
+	public void onClick(View v) {
+		if (btnStart == v) {
+			if (btnStart.isChecked())
+				mHandler.sendEmptyMessage(MSG_START_TIMER);
+			else
+				mHandler.sendEmptyMessage(MSG_STOP_TIMER);
+		} else if (btnReset == v) {
+			mHandler.sendEmptyMessage(MSG_RESET_TIMER);
 		}
+
 	}
 
-	public void startClick(View view) {
-		showStopButton();
-		if (stopped) {
-			startTime = System.currentTimeMillis() - elapsedTime;
-		} else {
-			startTime = System.currentTimeMillis();
-		}
-		mHandler.removeCallbacks(startTimer);
-		mHandler.postDelayed(startTimer, 0);
-	}
+	public static int stat_index = 0;
 
-	public void stopClick(View view) {
-		hideStopButton();
-		mHandler.removeCallbacks(startTimer);
-		stopped = true;
-	}
-
-	public void resetClick(View view) {
-		stopped = false;
-		((TextView) findViewById(R.id.timer)).setText("00:00:00");
-	}
-
-	private Runnable startTimer = new Runnable() {
-		public void run() {
-			elapsedTime = System.currentTimeMillis() - startTime;
-			updateTimer(elapsedTime);
-			mHandler.postDelayed(this, REFRESH_RATE);
-		}
-	};
-
-	private void updateTimer(float time) {
-		secs = (long) (time / 1000);
-		mins = (long) ((time / 1000) / 60);
-		hrs = (long) (((time / 1000) / 60) / 60);
-
-		/*
-		 * Convert the seconds to String and format to ensure it has a leading
-		 * zero when required
-		 */
-		secs = secs % 60;
-		seconds = String.valueOf(secs);
-		if (secs == 0) {
-			seconds = "00";
-		}
-		if (secs < 10 && secs > 0) {
-			seconds = "0" + seconds;
-		}
-
-		/* Convert the minutes to String and format the String */
-
-		mins = mins % 60;
-		minutes = String.valueOf(mins);
-		if (mins == 0) {
-			minutes = "00";
-		}
-		if (mins < 10 && mins > 0) {
-			minutes = "0" + minutes;
-		}
-
-		/* Convert the hours to String and format the String */
-
-		hours = String.valueOf(hrs);
-		if (hrs == 0) {
-			hours = "00";
-		}
-		if (hrs < 10 && hrs > 0) {
-			hours = "0" + hours;
-		}
-
-		/*
-		 * Although we are not using milliseconds on the timer in this example I
-		 * included the code in the event that you wanted to include it on your
-		 * own
-		 */
-		milliseconds = String.valueOf((long) time);
-		if (milliseconds.length() == 2) {
-			milliseconds = "0" + milliseconds;
-		}
-		if (milliseconds.length() <= 1) {
-			milliseconds = "00";
-		}
-		milliseconds = milliseconds.substring(milliseconds.length() - 3,
-				milliseconds.length() - 2);
-
-		/* Setting the timer text to the elapsed time */
-		((TextView) findViewById(R.id.timer)).setText(hours + ":" + minutes
-				+ ":" + seconds);
+	public void onAddItem(View v) {
+		listItems.add("item " + stat_index++);
+		adapter.notifyDataSetChanged();
 	}
 
 	public void goalClick(View view) {
 		;
-	}
-
-	private void showStopButton() {
-		((Button) findViewById(R.id.startButton)).setVisibility(View.GONE);
-		((Button) findViewById(R.id.resetButton)).setVisibility(View.GONE);
-		((Button) findViewById(R.id.stopButton)).setVisibility(View.VISIBLE);
-	}
-
-	private void hideStopButton() {
-		((Button) findViewById(R.id.startButton)).setVisibility(View.VISIBLE);
-		((Button) findViewById(R.id.resetButton)).setVisibility(View.VISIBLE);
-		((Button) findViewById(R.id.stopButton)).setVisibility(View.GONE);
-	}
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			TextView timer = (TextView) findViewById(R.id.timer);
-			timer.setTextSize(TypedValue.COMPLEX_UNIT_SP, 90);
-		} else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-			TextView timer = (TextView) findViewById(R.id.timer);
-			timer.setTextSize(TypedValue.COMPLEX_UNIT_SP, 70);
-		}
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putSerializable("State", 4);
 	}
 
 	@Override
