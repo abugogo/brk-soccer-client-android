@@ -27,7 +27,7 @@
     <string name="adsText">Ads Go Here</string>
     <string name="goalText">goal</string>
     <string name="PlayerName">Player name</string>
-    <string name="title_activity_login">Login Indoor Stats</string>
+    <string name="title_activity_login">My Soccer Stats</string>
     <string name="buttonLogin">Login</string>
     <string name="no_players">No Players</string>
 	<string name="reload">Reload</string>
