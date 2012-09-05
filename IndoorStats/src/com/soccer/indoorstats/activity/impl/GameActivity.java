@@ -10,6 +10,7 @@ package com.soccer.indoorstats.activity.impl;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.soccer.dialog.MultiSelectListDialog;
+import com.soccer.dialog.lstItem;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.utils.StopWatch;
 
@@ -37,6 +39,7 @@ public class GameActivity extends Activity implements OnClickListener {
 	private static final int REFRESH_RATE = 1000;
 
 	private MenuExtender slidingMenu;
+	final ArrayList<lstItem> tempList = new ArrayList<lstItem>();
 
 	private static Handler mHandler = new Handler() {
 		@Override
@@ -101,6 +104,10 @@ public class GameActivity extends Activity implements OnClickListener {
 				android.R.layout.simple_list_item_1, listItems);
 		lstView.setAdapter(adapter);
 
+		tempList.add(new lstItem("guy",0, true));
+		tempList.add(new lstItem("udi",1,false));
+		tempList.add(new lstItem("modshe",2,true));
+
 	}
 
 	@Override
@@ -124,14 +131,16 @@ public class GameActivity extends Activity implements OnClickListener {
 	}
 
 	public static int stat_index = 0;
-	final CharSequence[] tempList= { "Guy","Udi","Koko" };
+	
+	
 	public void onAddItem(View v) {
+		
 		MultiSelectListDialog dlg = new MultiSelectListDialog(this, 0, 0, tempList) {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
-				
+				ListView list = ((AlertDialog) dialog).getListView();
+				tempList.get(which).mChecked = list.isItemChecked(which);
 			}
 			
 			@Override
@@ -142,8 +151,9 @@ public class GameActivity extends Activity implements OnClickListener {
 		};
 		dlg.create();
 		dlg.show();
-		listItems.add("item " + stat_index++);
-		adapter.notifyDataSetChanged();
+		
+		//listItems.add("item " + stat_index++);
+		//adapter.notifyDataSetChanged();
 	}
 
 	public void goalClick(View view) {
