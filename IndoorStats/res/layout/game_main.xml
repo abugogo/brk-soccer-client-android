@@ -1,7 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal" >
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -11,14 +13,14 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:orientation="vertical" >
-
+
         <TextView
             android:id="@+id/textViewTimer"
             android:layout_width="fill_parent"
             android:layout_height="70dp"
             android:gravity="center_horizontal|center_vertical"
             android:text="0:0"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#000000"
             android:textSize="35dp" />
 
         <LinearLayout
@@ -26,22 +28,22 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal" >
 
-            <ToggleButton
-                android:id="@+id/toggleButtonStart"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:textOff="Start"
-                android:textOn="Stop"
-                android:layout_gravity="center_vertical" />
+            <Button
+                android:id="@+id/buttonStart"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:height="50dp"
+                android:text="Start"
+                android:width="100dp" />
 
             <Button
                 android:id="@+id/buttonReset"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:text="Reset" />
-
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:height="50dp"
+                android:text="Reset"
+                android:width="100dp" />
         </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout
@@ -57,8 +59,8 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center_horizontal|center_vertical" >
+            android:gravity="center_horizontal|center_vertical"
+            android:orientation="vertical" >
 
             <Button
                 android:id="@+id/button2"
@@ -73,9 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" >
-
             </ListView>
-
         </LinearLayout>
 
         <LinearLayout
@@ -83,8 +83,8 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center_horizontal|center_vertical" >
+            android:gravity="center_horizontal|center_vertical"
+            android:orientation="vertical" >
 
             <Button
                 android:id="@+id/button3"
@@ -99,11 +99,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_weight="1" >
-
             </ListView>
-
         </LinearLayout>
-
     </LinearLayout>
 
 </RelativeLayout>
