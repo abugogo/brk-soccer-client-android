@@ -10,6 +10,7 @@ package com.soccer.indoorstats.activity.impl;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,12 +21,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
+import com.soccer.dialog.MultiSelectListDialog;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.utils.StopWatch;
 
-public class GameActivity extends Activity implements OnClickListener  {
+public class GameActivity extends Activity implements OnClickListener {
 	private static final int MSG_START_TIMER = 0;
 	private static final int MSG_STOP_TIMER = 1;
 	private static final int MSG_UPDATE_TIMER = 2;
@@ -59,7 +60,7 @@ public class GameActivity extends Activity implements OnClickListener  {
 			case MSG_RESET_TIMER:
 				mHandler.removeMessages(MSG_UPDATE_TIMER);
 				timer.stop();
-				btnStart.setChecked(false);
+				btnStart.setText("Start");
 				tvTextView.setText(INIT_TIME);
 				break;
 
@@ -70,7 +71,7 @@ public class GameActivity extends Activity implements OnClickListener  {
 	};
 
 	private static TextView tvTextView;
-	private static ToggleButton btnStart;
+	private static Button btnStart;
 	Button btnReset;
 	// LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
 	ArrayList<String> listItems = new ArrayList<String>();
@@ -90,7 +91,7 @@ public class GameActivity extends Activity implements OnClickListener  {
 
 		tvTextView = (TextView) findViewById(R.id.textViewTimer);
 
-		btnStart = (ToggleButton) findViewById(R.id.toggleButtonStart);
+		btnStart = (Button) findViewById(R.id.buttonStart);
 		btnReset = (Button) findViewById(R.id.buttonReset);
 		btnStart.setOnClickListener(this);
 		btnReset.setOnClickListener(this);
@@ -109,10 +110,13 @@ public class GameActivity extends Activity implements OnClickListener  {
 
 	public void onClick(View v) {
 		if (btnStart == v) {
-			if (btnStart.isChecked())
+			if (btnStart.getText().equals("Start")) {
 				mHandler.sendEmptyMessage(MSG_START_TIMER);
-			else
+				btnStart.setText("Stop");
+			} else {
 				mHandler.sendEmptyMessage(MSG_STOP_TIMER);
+				btnStart.setText("Start");
+			}
 		} else if (btnReset == v) {
 			mHandler.sendEmptyMessage(MSG_RESET_TIMER);
 		}
@@ -120,8 +124,24 @@ public class GameActivity extends Activity implements OnClickListener  {
 	}
 
 	public static int stat_index = 0;
-
+	final CharSequence[] tempList= { "Guy","Udi","Koko" };
 	public void onAddItem(View v) {
+		MultiSelectListDialog dlg = new MultiSelectListDialog(this, 0, 0, tempList) {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public boolean onOkClicked(String input) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		};
+		dlg.create();
+		dlg.show();
 		listItems.add("item " + stat_index++);
 		adapter.notifyDataSetChanged();
 	}
