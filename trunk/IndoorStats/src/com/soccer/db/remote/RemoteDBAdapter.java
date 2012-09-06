@@ -8,7 +8,6 @@ import org.apache.http.message.BasicNameValuePair;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.IDAOPlayer;
 import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
-import com.soccer.rest.RestClient;
 import com.soccer.rest.RestClient.RequestMethod;
 import com.soccer.rest.asynctask.AsyncRestCallParams;
 import com.soccer.rest.asynctask.AsyncRestCallPlayers;

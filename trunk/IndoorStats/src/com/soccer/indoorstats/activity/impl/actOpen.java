@@ -3,13 +3,10 @@ package com.soccer.indoorstats.activity.impl;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
 import com.soccer.indoorstats.R;
-import com.soccer.preferences.SoccerPrefsActivity;
 
 public class actOpen extends TabActivity {
 

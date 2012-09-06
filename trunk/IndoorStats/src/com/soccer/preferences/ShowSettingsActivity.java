@@ -9,9 +9,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.TextView;
 
-import com.soccer.indoorstats.R;
-import com.soccer.db.remote.RemoteDBAdapter;
 import com.soccer.entities.IDAOPlayer;
+import com.soccer.indoorstats.R;
 
 public class ShowSettingsActivity extends Activity {
 

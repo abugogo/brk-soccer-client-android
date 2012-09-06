@@ -16,6 +16,9 @@
 
 package com.soccer.db.local;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.soccer.entities.impl.DAOPlayer;
 
 import android.content.ContentValues;
@@ -182,6 +185,28 @@ public class PlayersDbAdapter {
 				null, null, null, null);
 	}
 
+	public ArrayList<DAOPlayer> fetchAllPlayersAsArray() {
+
+		ArrayList<DAOPlayer> pList = new ArrayList<DAOPlayer>();
+		// Get all of the rows from the database and create the item list
+		Cursor PlayersCursor = fetchAllPlayers();
+		if (PlayersCursor.moveToFirst()) {
+			do {
+				DAOPlayer p = new DAOPlayer();
+				p.setFname(PlayersCursor.getString(4));
+				p.setLname(PlayersCursor.getString(5));
+				p.setTel1(PlayersCursor.getString(6));
+				p.setP_img(PlayersCursor.getString(7));
+				pList.add(p);
+			} while (PlayersCursor.moveToNext());
+		}
+		if (PlayersCursor != null && !PlayersCursor.isClosed()) {
+			PlayersCursor.close();
+		}
+		
+		return pList;
+	}
+	
 	/**
 	 * Return a Cursor positioned at the note that matches the given rowId
 	 * 

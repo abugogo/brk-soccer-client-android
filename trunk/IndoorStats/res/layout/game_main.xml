@@ -68,7 +68,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="0"
                 android:onClick="onAddItem"
-                android:text="Team 1" />
+                android:text="@string/team_1" />
 
             <ListView
                 android:id="@+id/listView1"
@@ -91,7 +91,8 @@
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:layout_weight="0"
-                android:text="Team 2" />
+                android:onClick="onAddItem"
+                android:text="@string/team_2" />
 
             <ListView
                 android:id="@+id/listView2"
