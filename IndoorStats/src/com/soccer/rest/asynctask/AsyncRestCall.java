@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.soccer.entities.EntityManager;
 import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.rest.RestClient;
 

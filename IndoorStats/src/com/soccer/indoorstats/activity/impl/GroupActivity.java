@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.soccer.db.local.PlayersDbAdapter;
+import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.LazyAdapter;
 import com.soccer.indoorstats.R;
 
@@ -29,6 +30,7 @@ public class GroupActivity extends ListActivity {
 	ListView list;
 	LazyAdapter adapter;
 	private MenuExtender slidingMenu;
+	private ArrayList<DAOPlayer> mPList;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -40,6 +42,8 @@ public class GroupActivity extends ListActivity {
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
+		mPList = mDbHelper.fetchAllPlayersAsArray();
+		mDbHelper.close();
 		fillData();
 	}
 
@@ -47,31 +51,15 @@ public class GroupActivity extends ListActivity {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		mDbHelper.close();
+
 	}
 
 	private void fillData() {
-		ArrayList<HashMap<String, String>> pList = new ArrayList<HashMap<String, String>>();
-		// Get all of the rows from the database and create the item list
-		Cursor PlayersCursor = mDbHelper.fetchAllPlayers();
-		if (PlayersCursor.moveToFirst()) {
-			do {
-				HashMap<String, String> map = new HashMap<String, String>();
-				map.put(PlayersDbAdapter.KEY_FNAME, PlayersCursor.getString(4));
-				map.put(PlayersDbAdapter.KEY_LNAME, PlayersCursor.getString(5));
-				map.put(PlayersDbAdapter.KEY_TEL1, PlayersCursor.getString(6));
-				map.put(PlayersDbAdapter.KEY_IMG, PlayersCursor.getString(7));
-				pList.add(map);
-			} while (PlayersCursor.moveToNext());
-		}
-		if (PlayersCursor != null && !PlayersCursor.isClosed()) {
-			PlayersCursor.close();
-		}
 
 		list = (ListView) findViewById(android.R.id.list);
 
 		// Getting adapter by passing xml data ArrayList
-		adapter = new LazyAdapter(this, pList);
+		adapter = new LazyAdapter(this, mPList);
 		list.setAdapter(adapter);
 
 		// Click event for single list row

@@ -41,7 +41,6 @@ public abstract class MultiSelectListDialog extends AlertDialog.Builder
 				});
 
 		setPositiveButton("OK", new DialogInterface.OnClickListener() {
-			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
 				ListView list = ((AlertDialog) dialog).getListView();
@@ -50,13 +49,13 @@ public abstract class MultiSelectListDialog extends AlertDialog.Builder
 					boolean checked = list.isItemChecked(i);
 					mList.get(i).mChecked = checked;
 				}
+				onOkClicked("");
 			}
 		});
 
 		setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			@Override
 			public void onClick(DialogInterface dialog, int which) {
-
+				onCancelClicked(dialog);
 			}
 		});
 
