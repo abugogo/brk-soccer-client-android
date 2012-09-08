@@ -17,10 +17,9 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".activity.impl.actOpen"
-            android:label="@string/title_activity_act_open" >
-        </activity>
-        <activity android:name=".activity.impl.GroupActivity" />
+            android:name=".activity.impl.GroupActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme" />
         <activity android:name="com.soccer.preferences.ShowSettingsActivity" >
         </activity>
         <activity android:name="com.soccer.preferences.SoccerPrefsActivity" >
@@ -28,7 +27,7 @@
         <activity
             android:name=".activity.impl.GameActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar" >
+            android:theme="@style/AppTheme" >
         </activity>
         <activity
             android:name=".activity.impl.LoginActivity"
@@ -39,7 +38,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.impl.PlayerActivity" >
+        <activity
+            android:name=".activity.impl.PlayerActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme" >
         </activity>
     </application>
 

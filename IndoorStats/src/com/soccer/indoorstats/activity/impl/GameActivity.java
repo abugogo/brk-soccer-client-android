@@ -8,14 +8,15 @@ package com.soccer.indoorstats.activity.impl;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -23,6 +24,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
+import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.dialog.CheckedListAdapter;
 import com.soccer.dialog.MultiSelectListDialog;
@@ -37,12 +41,11 @@ public class GameActivity extends Activity implements OnClickListener {
 	private static final int MSG_STOP_TIMER = 1;
 	private static final int MSG_UPDATE_TIMER = 2;
 	private static final int MSG_RESET_TIMER = 3;
-	private static final String INIT_TIME = "0:0";
-
+	
 	private static StopWatch timer = new StopWatch();
 	private static final int REFRESH_RATE = 1000;
 
-	private MenuExtender slidingMenu;
+	//private MenuExtender slidingMenu;
 	final ArrayList<lstItem> team1List = new ArrayList<lstItem>();
 	final ArrayList<lstItem> team2List = new ArrayList<lstItem>();
 	private static TextView tvTextView;
@@ -50,7 +53,7 @@ public class GameActivity extends Activity implements OnClickListener {
 	Button btnReset;
 	CheckedListAdapter adapter;
 	CheckedListAdapter adapter2;
-	ArrayList<DAOPlayer> mPList;
+	HashMap<String, DAOPlayer> mPList = new HashMap<String, DAOPlayer>();
 	private PlayersDbAdapter mDbHelper = null;
 
 	@Override
@@ -58,10 +61,20 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.game_main);
-		if (slidingMenu == null) {
+		/*if (slidingMenu == null) {
 			slidingMenu = new MenuExtender(this, "");
 			slidingMenu.initSlideMenu();
-		}
+		}*/
+
+		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+        //actionBar.setHomeAction(new IntentAction(this, createIntent(this), R.drawable.ic_title_home_demo));
+        actionBar.setTitle(R.string.game);
+        actionBar.setHomeLogo(R.drawable.soccerstats);
+
+        final Action PlayerAction = new IntentAction(this, new Intent(this, PlayerActivity.class), R.drawable.player_white);
+        actionBar.addAction(PlayerAction);
+        final Action GroupAction = new IntentAction(this, new Intent(this, GroupActivity.class), R.drawable.players_white);
+        actionBar.addAction(GroupAction);
 
 		tvTextView = (TextView) findViewById(R.id.textViewTimer);
 
@@ -72,15 +85,16 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
-		mPList = mDbHelper.fetchAllPlayersAsArray();
+		ArrayList<DAOPlayer> pArr = mDbHelper.fetchAllPlayersAsArray();
 		mDbHelper.close();
 
-		int s = mPList.size();
+		int s = pArr.size();
 		for (int i = 0; i < s; i++) {
-			team1List.add(new lstItem(mPList.get(i).getFname() + " "
-					+ mPList.get(i).getLname(), mPList.get(i).getId(), false));
-			team2List.add(new lstItem(mPList.get(i).getFname() + " "
-					+ mPList.get(i).getLname(), mPList.get(i).getId(), false));
+			team1List.add(new lstItem(pArr.get(i).getFname() + " "
+					+ pArr.get(i).getLname(), pArr.get(i).getId(), false));
+			team2List.add(new lstItem(pArr.get(i).getFname() + " "
+					+ pArr.get(i).getLname(), pArr.get(i).getId(), false));
+			mPList.put(pArr.get(i).getId(), pArr.get(i));
 		}
 		ListView lstView = (ListView) findViewById(R.id.listView1);
 		adapter = new CheckedListAdapter(this, team1List);
@@ -149,11 +163,8 @@ public class GameActivity extends Activity implements OnClickListener {
 		dlg.show();
 	}
 
-	public void OnPlayerEvent(View view) {
-		openEventSelectionMenu();
-	}
-
-	private void openEventSelectionMenu() {
+	public void OnPlayerEvent(final View view) {
+		
 		final CharSequence[] items = { "Goal", "Cook", "Yellow card",
 				"Red card" };
 
@@ -161,7 +172,7 @@ public class GameActivity extends Activity implements OnClickListener {
 		builder.setTitle("Event");
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int item) {
-				Toast.makeText(getApplicationContext(), items[item],
+				Toast.makeText(getApplicationContext(), mPList.get(view.getTag()).getFname() + " received " + items[item],
 						Toast.LENGTH_SHORT).show();
 			}
 		});
@@ -169,24 +180,36 @@ public class GameActivity extends Activity implements OnClickListener {
 		alert.show();
 	}
 
+	/*
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		return slidingMenu.handleTouchEvent(event);
-	}
+	}*/
 
+	final private static int FULL_TIME = 7*60;
+	private static boolean backwards = false;
+	private static boolean started = false;
+	
+	public void setBackwards(View v) {
+		backwards = !backwards;
+	}
 	private static Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			switch (msg.what) {
 			case MSG_START_TIMER:
-				timer.start(tvTextView.getText().equals(INIT_TIME));
+				timer.start(!started);
+				started = true;
 				mHandler.sendEmptyMessage(MSG_UPDATE_TIMER);
 				break;
 			case MSG_UPDATE_TIMER:
-				int mins = (int) (timer.getElapsedTimeSecs() / 60);
-				int secs = (int) (timer.getElapsedTimeSecs() % 60);
-				tvTextView.setText(mins + ":" + secs);
+				int elapsed = (int) timer.getElapsedTimeSecs();
+				if (backwards)
+					elapsed = FULL_TIME - elapsed;
+				int mins = (int) (elapsed / 60);
+				int secs = (int) (elapsed % 60);
+				tvTextView.setText(((mins < 10)?"0":"") + mins + ":" + ((secs < 10)?"0":"") + secs);
 				mHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIMER, REFRESH_RATE);
 				break;
 			case MSG_STOP_TIMER:
@@ -196,8 +219,9 @@ public class GameActivity extends Activity implements OnClickListener {
 			case MSG_RESET_TIMER:
 				mHandler.removeMessages(MSG_UPDATE_TIMER);
 				timer.stop();
+				started = false;
 				btnStart.setText("Start");
-				tvTextView.setText(INIT_TIME);
+				tvTextView.setText("00:00");
 				break;
 
 			default:

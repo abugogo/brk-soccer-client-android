@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
 
 public class CheckedListAdapter extends BaseAdapter {
@@ -52,7 +51,7 @@ public class CheckedListAdapter extends BaseAdapter {
             vi = inflater.inflate(R.layout.player_row_in_game, null);
 
         TextView txtFirst = (TextView)vi.findViewById(R.id.pfname);
-        
+        txtFirst.setTag(data.get(position).mId);
         if(data.get(position).mChecked) {
         	txtFirst.setText(data.get(position).mText);
         }
