@@ -193,6 +193,7 @@ public class PlayersDbAdapter {
 		if (PlayersCursor.moveToFirst()) {
 			do {
 				DAOPlayer p = new DAOPlayer();
+				p.setId(PlayersCursor.getString(1));
 				p.setFname(PlayersCursor.getString(4));
 				p.setLname(PlayersCursor.getString(5));
 				p.setTel1(PlayersCursor.getString(6));

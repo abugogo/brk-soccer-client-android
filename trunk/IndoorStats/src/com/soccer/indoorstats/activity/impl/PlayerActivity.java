@@ -15,12 +15,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
+import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.db.remote.RemoteDBAdapter;
 import com.soccer.dialog.PromptDialog;
@@ -37,12 +39,25 @@ public class PlayerActivity extends Activity implements IAsyncTaskAct {
 	private DAOPlayer mPlayer = null;
 	private String mPID = null;
 	private ImageLoader imageLoader;
-	private MenuExtender slidingMenu;
+	//private MenuExtender slidingMenu;
 	private Prefs mPrefs;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i("LifeCycle", "PlayerActivity onCreate");
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.player_layout);
+		
+		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		actionBar.setHomeLogo(R.drawable.soccerstats);
+        //actionBar.setHomeAction(new IntentAction(this, createIntent(this), R.drawable.ic_title_home_demo));
+        actionBar.setTitle(R.string.player);
+
+        final Action GroupAction = new IntentAction(this, new Intent(this, GroupActivity.class), R.drawable.players_white);
+        actionBar.addAction(GroupAction);
+        final Action GameAction = new IntentAction(this, new Intent(this, GameActivity.class), R.drawable.videos_white);
+        actionBar.addAction(GameAction);
+        
+        
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
 		Intent i = getIntent();
@@ -51,20 +66,20 @@ public class PlayerActivity extends Activity implements IAsyncTaskAct {
 		mPrefs = new Prefs(this);
 		mPID = (String) mPrefs.getPreference(PlayersDbAdapter.KEY_ID, mPID);
 
-		setContentView(R.layout.player_layout);
-		if (slidingMenu == null) {
+		
+		/*if (slidingMenu == null) {
 			slidingMenu = new MenuExtender(this, mPID);
 			slidingMenu.initSlideMenu();
-		}
+		}*/
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		imageLoader = new ImageLoader(this.getApplicationContext());
 
 	}
 
-	@Override
+	/*@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		return slidingMenu.handleTouchEvent(event);
-	}
+	}*/
 
 	private void populateFields() {
 		Log.i("Info", "PlayerActivity populateFields");

@@ -1,24 +1,23 @@
 package com.soccer.indoorstats.activity.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
+import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.LazyAdapter;
@@ -29,16 +28,26 @@ public class GroupActivity extends ListActivity {
 	PlayersDbAdapter mDbHelper = null;
 	ListView list;
 	LazyAdapter adapter;
-	private MenuExtender slidingMenu;
+	//private MenuExtender slidingMenu;
 	private ArrayList<DAOPlayer> mPList;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.group_layout);
-		if (slidingMenu == null) {
+		/*if (slidingMenu == null) {
 			slidingMenu = new MenuExtender(this, "");
 			slidingMenu.initSlideMenu();
-		}
+		}*/
+		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+        //actionBar.setHomeAction(new IntentAction(this, createIntent(this), R.drawable.ic_title_home_demo));
+        actionBar.setTitle(R.string.group);
+        actionBar.setHomeLogo(R.drawable.soccerstats);
+
+        final Action PlayerAction = new IntentAction(this, new Intent(this, PlayerActivity.class), R.drawable.player_white);
+        actionBar.addAction(PlayerAction);
+        final Action GameAction = new IntentAction(this, new Intent(this, GameActivity.class), R.drawable.videos_white);
+        actionBar.addAction(GameAction);
+        
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
@@ -85,12 +94,12 @@ public class GroupActivity extends ListActivity {
 			}
 		});
 
-		list.setOnTouchListener(new OnTouchListener() {
+		/*list.setOnTouchListener(new OnTouchListener() {
 
 			public boolean onTouch(View v, MotionEvent event) {
 				return slidingMenu.handleTouchEvent(event);
 			}
-		});
+		});*/
 	}
 
 	@Override
@@ -99,9 +108,11 @@ public class GroupActivity extends ListActivity {
 		outState.putSerializable("State", 3);
 	}
 
+	/*
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		return slidingMenu.handleTouchEvent(event);
 	}
+	*/
 
 }

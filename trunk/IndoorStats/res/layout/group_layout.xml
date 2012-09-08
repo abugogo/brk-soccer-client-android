@@ -6,6 +6,11 @@
     android:paddingBottom="6dip"
     android:paddingTop="4dip" >
 
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar"
+        style="@style/ActionBar"
+        android:background="@drawable/list_selector" />
+
     <ListView
         android:id="@+id/android:list"
         android:layout_width="fill_parent"

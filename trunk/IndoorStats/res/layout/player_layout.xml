@@ -6,11 +6,17 @@
     android:orientation="horizontal"
     android:padding="5dip" >
 
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar"
+        style="@style/ActionBar"
+        android:background="@drawable/list_selector" />
+
     <LinearLayout
         android:id="@+id/thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_below="@id/actionbar"
         android:layout_marginRight="5dip"
         android:background="@drawable/image_bg"
         android:padding="3dip" >
@@ -19,8 +25,8 @@
             android:id="@+id/pimage"
             android:layout_width="50dip"
             android:layout_height="50dip"
-            android:src="@drawable/no_image"
-            android:contentDescription="@string/emptyString" />
+            android:contentDescription="@string/emptyString"
+            android:src="@drawable/no_image" />
     </LinearLayout>
 
     <!-- First name of player -->
@@ -74,9 +80,9 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/ptel1Caption"
         android:layout_toRightOf="@+id/thumbnail"
-        android:text=""
         android:clickable="true"
         android:onClick="promptUpdate"
+        android:text=""
         android:textColor="#343434"
         android:textSize="12dip" />
 
@@ -118,9 +124,9 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/bdayCaption"
         android:layout_toRightOf="@+id/thumbnail"
-        android:text=""
         android:clickable="true"
         android:onClick="promptUpdate"
+        android:text=""
         android:textColor="#343434"
         android:textSize="12dip" />
     <!-- Tel1 of player -->
