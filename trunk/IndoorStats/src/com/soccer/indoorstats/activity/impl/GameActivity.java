@@ -61,19 +61,13 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.game_main);
-		/*if (slidingMenu == null) {
-			slidingMenu = new MenuExtender(this, "");
-			slidingMenu.initSlideMenu();
-		}*/
-
+		
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-        //actionBar.setHomeAction(new IntentAction(this, createIntent(this), R.drawable.ic_title_home_demo));
         actionBar.setTitle(R.string.game);
-        actionBar.setHomeLogo(R.drawable.soccerstats);
-
-        final Action PlayerAction = new IntentAction(this, new Intent(this, PlayerActivity.class), R.drawable.player_white);
+        
+        final Action PlayerAction = new IntentAction(this, new Intent(this, PlayerActivity.class), R.drawable.player_icon);
         actionBar.addAction(PlayerAction);
-        final Action GroupAction = new IntentAction(this, new Intent(this, GroupActivity.class), R.drawable.players_white);
+        final Action GroupAction = new IntentAction(this, new Intent(this, GroupActivity.class), R.drawable.players_icon);
         actionBar.addAction(GroupAction);
 
 		tvTextView = (TextView) findViewById(R.id.textViewTimer);

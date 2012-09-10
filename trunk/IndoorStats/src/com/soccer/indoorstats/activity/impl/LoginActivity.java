@@ -134,8 +134,7 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 	}
 
 	public void onFailure(int responseCode, String result) {
-		// TODO Auto-generated method stub
-
+		showDialog(0, DlgUtils.prepareDlgBundle("Failed login: " + result));
 	}
 
 	public void onProgress() {

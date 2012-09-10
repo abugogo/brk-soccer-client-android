@@ -3,6 +3,7 @@ package com.soccer.indoorstats.activity.impl;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -13,20 +14,25 @@ import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
-import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.db.local.PlayersDbAdapter;
+import com.soccer.db.remote.RemoteDBAdapter;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.ImageLoader;
 import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.preferences.Prefs;
 
-public class PlayerActivity extends Activity {
+public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 
 	private PlayersDbAdapter mDbHelper;
 	private DAOPlayer mPlayer = null;
@@ -34,26 +40,18 @@ public class PlayerActivity extends Activity {
 	private ImageLoader imageLoader;
 	private Prefs mPrefs;
 
-	public void onCreate(Bundle savedInstanceState) {
-		Log.i("LifeCycle", "PlayerActivity onCreate");
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		Log.i("LifeCycle", "PlayerUpdateActivity onCreate");
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.player_layout);
+		setContentView(R.layout.player_update_layout);
 
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		actionBar.setTitle(R.string.player);
+		actionBar.setTitle(R.string.updatePlayer);
 
-		final Action EditAction = new IntentAction(this, new Intent(this,
-				PlayerUpdateActivity.class), R.drawable.edit);
-		actionBar.addAction(EditAction);
-		final Action GroupAction = new IntentAction(this, new Intent(this,
-				GroupActivity.class), R.drawable.players_icon);
-		actionBar.addAction(GroupAction);
-		final Action GameAction = new IntentAction(this, new Intent(this,
-				GameActivity.class), R.drawable.game_icon);
-		actionBar.addAction(GameAction);
+		final Action SaveAction = new SavePAction();
+		actionBar.addAction(SaveAction);
 
-		mDbHelper = new PlayersDbAdapter(this);
-		mDbHelper.open();
 		Intent i = getIntent();
 		mPID = (String) i.getSerializableExtra("player_id");
 
@@ -61,12 +59,16 @@ public class PlayerActivity extends Activity {
 		mPID = (String) mPrefs.getPreference(PlayersDbAdapter.KEY_ID, mPID);
 
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-		imageLoader = new ImageLoader(this.getApplicationContext());
 
+		imageLoader = new ImageLoader(this.getApplicationContext());
+		
+		mDbHelper = new PlayersDbAdapter(this);
+		mDbHelper.open();
+		LoadPlayerFromDB(mPID);
 	}
 
 	private void populateFields() {
-		Log.i("Info", "PlayerActivity populateFields");
+		Log.i("Info", "PlayerUpdateActivity populateFields");
 		if (mPID != null && !mPID.equals("")) {
 			LoadPlayerFromDB(mPID);
 
@@ -80,9 +82,12 @@ public class PlayerActivity extends Activity {
 						.getEmail());
 				((TextView) findViewById(R.id.ptel1))
 						.setText(mPlayer.getTel1());
-				String bDay = mPlayer.getBdayAsString(null);
-				if (bDay != null)
-					((TextView) findViewById(R.id.bday)).setText(bDay);
+				Date bDay = mPlayer.getBday();
+				if (bDay != null) {
+					Calendar c = Calendar.getInstance();
+					c.setTime(bDay);
+					((DatePicker) findViewById(R.id.bday)).init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), null);
+				}
 				ImageView thumb_image = (ImageView) findViewById(R.id.pimage); // thumb
 																				// image
 				imageLoader.DisplayImage(mPlayer.getP_img(), thumb_image);
@@ -97,10 +102,54 @@ public class PlayerActivity extends Activity {
 		}
 
 	}
+	private class SavePAction extends AbstractAction {
 
-	@Override
-	protected Dialog onCreateDialog(int id, Bundle args) {
-		return DlgUtils.createAlertMessage(this, args);
+		public SavePAction() {
+			super(R.drawable.save);
+		}
+
+		@Override
+		public void performAction(View view) {
+			updatePlayer();
+		}
+
+	}
+
+	private void updatePlayer() {
+		if (mPlayer != null) {
+			String newEmail = ((TextView) findViewById(R.id.email)).getText()
+					.toString();
+			String newPhone = ((TextView) findViewById(R.id.ptel1)).getText()
+					.toString();
+			DatePicker datePicker = ((DatePicker) findViewById(R.id.bday));
+			Date d = new Date(datePicker.getYear() - 1900, datePicker.getMonth(), datePicker.getDayOfMonth());
+			
+			boolean dirty = (!mPlayer.getEmail().equals(newEmail) || !mPlayer
+					.getTel1().equals(newPhone) || mPlayer.getBday() == null || !mPlayer.getBday().equals(d));
+			if (dirty) {
+				mPlayer.setBday(d);
+				mPlayer.setEmail(newEmail);
+				mPlayer.setTel1(newPhone);
+				String sUrl = mPrefs.getPreference("server_port", "NULL");
+				try {
+					RemoteDBAdapter.updatePlayer(this, sUrl,
+							"Updating player info", mPlayer);
+
+				} catch (Exception e) {
+					showDialog(
+							0,
+							DlgUtils.prepareDlgBundle("Failed to update player:"
+									+ e.getMessage()));
+					e.printStackTrace();
+				}
+			} else {
+				Toast toast = Toast.makeText(this.getApplicationContext(),
+						"No changes detected", Toast.LENGTH_SHORT);
+				toast.show();
+			}
+
+		}
+
 	}
 
 	private void LoadPlayerFromDB(String id) {
@@ -144,14 +193,14 @@ public class PlayerActivity extends Activity {
 
 	@Override
 	protected void onPause() {
-		Log.i("LifeCycle", "PlayerActivity onPause");
+		Log.i("LifeCycle", "PlayerUpdateActivity onPause");
 		super.onPause();
 		saveState();
 	}
 
 	@Override
 	protected void onResume() {
-		Log.i("LifeCycle", "PlayerActivity onResume");
+		Log.i("LifeCycle", "PlayerUpdateActivity onResume");
 		super.onResume();
 		mPID = mPrefs.getPreference(PlayersDbAdapter.KEY_ID, mPID);
 		populateFields();
@@ -159,7 +208,7 @@ public class PlayerActivity extends Activity {
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		Log.i("LifeCycle", "PlayerActivity onSaveInstanceState");
+		Log.i("LifeCycle", "PlayerUpdateActivity onSaveInstanceState");
 		super.onSaveInstanceState(outState);
 		saveState();
 	}
@@ -174,20 +223,29 @@ public class PlayerActivity extends Activity {
 		mDbHelper.close();
 	}
 
-	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(Menu.NONE, 0, 0, "Save");
-		return super.onCreateOptionsMenu(menu);
+	@Override
+	public void onSuccess(String result) {
+		mDbHelper.updatePlayer(mPlayer);
+		Toast toast = Toast.makeText(this.getApplicationContext(),
+				"Updated successfully", Toast.LENGTH_SHORT);
+		toast.show();
+		this.finish();
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case 0:
-			updatePlayer();
-			return true;
-		}
-		return false;
-	}*/
+	public void onFailure(int responseCode, String result) {
+		showDialog(0, DlgUtils.prepareDlgBundle("Failed updating player info: " + result));
+		populateFields();
+	}
 
+	@Override
+	public void onProgress() {
+		// TODO Auto-generated method stub
+
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id, Bundle args) {
+		return DlgUtils.createAlertMessage(this, args);
+	}
 }
