@@ -28,26 +28,21 @@ public class GroupActivity extends ListActivity {
 	PlayersDbAdapter mDbHelper = null;
 	ListView list;
 	LazyAdapter adapter;
-	//private MenuExtender slidingMenu;
 	private ArrayList<DAOPlayer> mPList;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.group_layout);
-		/*if (slidingMenu == null) {
-			slidingMenu = new MenuExtender(this, "");
-			slidingMenu.initSlideMenu();
-		}*/
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-        //actionBar.setHomeAction(new IntentAction(this, createIntent(this), R.drawable.ic_title_home_demo));
-        actionBar.setTitle(R.string.group);
-        actionBar.setHomeLogo(R.drawable.soccerstats);
+		actionBar.setTitle(R.string.group);
 
-        final Action PlayerAction = new IntentAction(this, new Intent(this, PlayerActivity.class), R.drawable.player_white);
-        actionBar.addAction(PlayerAction);
-        final Action GameAction = new IntentAction(this, new Intent(this, GameActivity.class), R.drawable.videos_white);
-        actionBar.addAction(GameAction);
-        
+		final Action PlayerAction = new IntentAction(this, new Intent(this,
+				PlayerActivity.class), R.drawable.player_icon);
+		actionBar.addAction(PlayerAction);
+		final Action GameAction = new IntentAction(this, new Intent(this,
+				GameActivity.class), R.drawable.game_icon);
+		actionBar.addAction(GameAction);
+
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
@@ -94,12 +89,6 @@ public class GroupActivity extends ListActivity {
 			}
 		});
 
-		/*list.setOnTouchListener(new OnTouchListener() {
-
-			public boolean onTouch(View v, MotionEvent event) {
-				return slidingMenu.handleTouchEvent(event);
-			}
-		});*/
 	}
 
 	@Override
@@ -107,12 +96,5 @@ public class GroupActivity extends ListActivity {
 		super.onSaveInstanceState(outState);
 		outState.putSerializable("State", 3);
 	}
-
-	/*
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		return slidingMenu.handleTouchEvent(event);
-	}
-	*/
 
 }

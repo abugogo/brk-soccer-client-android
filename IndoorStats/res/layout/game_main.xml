@@ -7,28 +7,27 @@
 
     <com.markupartist.android.widget.ActionBar
         android:id="@+id/actionbar"
-        style="@style/ActionBar"
-        android:background="@drawable/list_selector" />
+        style="@style/ActionBar" />
 
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
-        android:layout_below="@id/actionbar"
         android:layout_height="200dp"
         android:layout_alignLeft="@layout/activity_main"
         android:layout_alignParentLeft="true"
+        android:layout_below="@id/actionbar"
         android:orientation="vertical" >
 
         <TextView
             android:id="@+id/textViewTimer"
             android:layout_width="fill_parent"
             android:layout_height="100dp"
+            android:clickable="true"
             android:gravity="center_horizontal|center_vertical"
+            android:onClick="setBackwards"
             android:text="@string/_0_0"
             android:textColor="#000000"
-            android:textSize="80dp"
-            android:clickable="true"
-            android:onClick="setBackwards" />
+            android:textSize="80dp" />
 
         <LinearLayout
             android:layout_width="match_parent"

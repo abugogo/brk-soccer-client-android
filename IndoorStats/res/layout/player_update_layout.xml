@@ -68,14 +68,15 @@
         android:layout_alignLeft="@id/thumbnail"
         android:layout_below="@id/sepa1"
         android:layout_marginTop="12dip"
+        android:paddingTop="20dp"
         android:text="@string/phone"
         android:textColor="#343434"
         android:textSize="12dip" />
 
-    <TextView
+    <EditText
         android:id="@+id/ptel1"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_alignTop="@id/ptel1Caption"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
@@ -87,15 +88,16 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/thumbnail"
-        android:layout_below="@id/ptel1Caption"
+        android:layout_below="@id/ptel1"
+        android:paddingTop="20dp"
         android:text="@string/email"
         android:textColor="#343434"
         android:textSize="12dip" />
 
-    <TextView
+    <EditText
         android:id="@+id/email"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_alignTop="@id/emailCaption"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
@@ -107,12 +109,13 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/thumbnail"
-        android:layout_below="@id/emailCaption"
+        android:layout_below="@id/email"
+        android:paddingTop="100dp"
         android:text="@string/birthday"
         android:textColor="#343434"
         android:textSize="12dip" />
 
-    <TextView
+    <DatePicker
         android:id="@+id/bday"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
