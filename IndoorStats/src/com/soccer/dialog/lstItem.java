@@ -1,6 +1,9 @@
 package com.soccer.dialog;
 
-public class lstItem {
+import java.io.Serializable;
+
+public class lstItem implements Serializable{
+	private static final long serialVersionUID = 6983509531169847290L;
 	public String mText;
 	public String mId;
 	public boolean mChecked;
