@@ -16,10 +16,12 @@
 
 package com.soccer.db.local;
 
-import android.content.ContentValues;
+import java.io.ByteArrayOutputStream;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteStatement;
 
 public class StateDbAdapter extends DbAdapterBase {
 
@@ -37,16 +39,18 @@ public class StateDbAdapter extends DbAdapterBase {
 		mDbHelper.close();
 	}
 
-	public long createState(String s) {
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(KEY_GAME_STATE, s);
+	public long createState(ByteArrayOutputStream bos) {
+		SQLiteStatement p = mDb.compileStatement("insert into " + DATABASE_STATE_TABLE + "(" + KEY_ID + "," + 
+				KEY_GAME_STATE + ") values(0, ?)");
 
-		return mDb.insert(DATABASE_STATE_TABLE, null, initialValues);
+		p.bindBlob(1, bos.toByteArray());
+		long retVal =p.executeInsert(); 
+		return retVal;
 	}
 
-	public boolean deleteState() {
+	public boolean deleteAllStates() {
 
-		return mDb.delete(DATABASE_STATE_TABLE, KEY_ID + "=" + 0, null) > 0;
+		return mDb.delete(DATABASE_STATE_TABLE, null, null) > 0;
 	}
 
 	public Cursor fetchState() throws SQLException {
@@ -54,7 +58,7 @@ public class StateDbAdapter extends DbAdapterBase {
 		Cursor mCursor =
 
 		mDb.query(true, DATABASE_STATE_TABLE, new String[] { "_id", KEY_ID,
-				KEY_GAME_STATE }, KEY_ID + "=" + 0, null, null, null, null,
+				KEY_GAME_STATE }, KEY_ID + "=0", null, null, null, null,
 				null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
@@ -63,11 +67,12 @@ public class StateDbAdapter extends DbAdapterBase {
 
 	}
 
-	public boolean updateState(String s) {
-		ContentValues args = new ContentValues();
+	public boolean insertOrUpdateState(ByteArrayOutputStream bos) {
+		SQLiteStatement p = mDb.compileStatement("insert or replace into " + DATABASE_STATE_TABLE + " (_id, " + KEY_ID + "," + 
+				KEY_GAME_STATE + ") values(0, 0, ?)");
 
-		args.put(KEY_GAME_STATE, s);
-
-		return mDb.update(DATABASE_STATE_TABLE, args, KEY_ID + "=" + 0, null) > 0;
+		p.bindBlob(1, bos.toByteArray());
+		long retVal =p.executeInsert(); 
+		return (retVal != -1);
 	}
 }

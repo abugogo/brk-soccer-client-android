@@ -199,22 +199,24 @@ public class GameActivity extends Activity implements OnClickListener {
 	}
 
 	private void restoreState() {
-		String state = "";
+		byte[] state;
 
 		getStatesDbAdapter().open();
 		Cursor cP = getStatesDbAdapter().fetchState();
 		startManagingCursor(cP);
 		if (cP.getCount() > 0) {
-			state = (cP.getString(cP
+			state = (cP.getBlob(cP
 					.getColumnIndexOrThrow(StateDbAdapter.KEY_GAME_STATE)));
 			if (state != null && !state.equals("")) {
 				ObjectInputStream objectIn;
 				Object obj;
 				try {
 					objectIn = new ObjectInputStream(new ByteArrayInputStream(
-							state.getBytes()));
+							state));
 					obj = objectIn.readObject();
 					_gState = (GameState) obj;
+					if(btnStart!=null)
+						btnStart.setText((_gState==null || !_gState.isStarted())?"Start":"Stop");
 				} catch (StreamCorruptedException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -225,7 +227,7 @@ public class GameActivity extends Activity implements OnClickListener {
 			}
 		}
 
-		if(_gState == null)
+		if (_gState == null)
 			initState();
 		getStatesDbAdapter().close();
 	}
@@ -252,7 +254,8 @@ public class GameActivity extends Activity implements OnClickListener {
 			_gState.get_pList().put(pArr.get(i).getId(), pArr.get(i));
 		}
 	}
-	//http://www.easywayserver.com/blog/how-to-serializable-object-in-java-2/
+
+	// http://www.easywayserver.com/blog/how-to-serializable-object-in-java-2/
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -262,7 +265,7 @@ public class GameActivity extends Activity implements OnClickListener {
 			out.flush();
 			out.close();
 			getStatesDbAdapter().open();
-			getStatesDbAdapter().updateState(bos.toString());
+			getStatesDbAdapter().insertOrUpdateState(bos);
 			getStatesDbAdapter().close();
 		} catch (IOException e) {
 			e.printStackTrace();
