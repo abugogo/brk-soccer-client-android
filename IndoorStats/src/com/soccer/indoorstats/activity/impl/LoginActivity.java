@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.soccer.db.local.PlayersDbAdapter;
+import com.soccer.db.local.StateDbAdapter;
 import com.soccer.db.remote.RemoteDBAdapter;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.IDAOPlayer;
@@ -130,6 +131,10 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 
 		EditText et = (EditText) findViewById(R.id.editIdNumber);
 		String id = et.getText().toString();
+		StateDbAdapter sdba = new StateDbAdapter(this);
+		sdba.open();
+		sdba.deleteAllStates();
+		sdba.close();
 		loadApp(id);
 	}
 
