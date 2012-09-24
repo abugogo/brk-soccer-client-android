@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -34,6 +35,7 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.db.local.PlayersDbAdapter;
+import com.soccer.db.local.StateDbAdapter;
 import com.soccer.dialog.CheckedListAdapter;
 import com.soccer.dialog.MultiSelectListDialog;
 import com.soccer.dialog.lstItem;
@@ -60,6 +62,13 @@ public class GameActivity extends Activity implements OnClickListener {
 	CheckedListAdapter adapter;
 	CheckedListAdapter adapter2;
 	private PlayersDbAdapter mDbHelper = null;
+	private StateDbAdapter mStatesDbHelper = null;
+
+	private StateDbAdapter getStatesDbAdapter() {
+		if (mStatesDbHelper == null)
+			mStatesDbHelper = new StateDbAdapter(this);
+		return mStatesDbHelper;
+	}
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
@@ -91,10 +100,8 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		if ((GameState) getLastNonConfigurationInstance() != null)
 			_gState = (GameState) getLastNonConfigurationInstance();
-		else if (savedInstanceState == null)
-			initState();
 		else
-			restoreState(savedInstanceState);
+			restoreState();
 
 		ListView lstView = (ListView) findViewById(R.id.listView1);
 		adapter = new CheckedListAdapter(this, _gState.get_team1List());
@@ -188,17 +195,24 @@ public class GameActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		restoreState(savedInstanceState);
+		restoreState();
 	}
 
-	private void restoreState(Bundle savedInstanceState) {
-		if (savedInstanceState != null) {
-			if (savedInstanceState.containsKey("state")) {
+	private void restoreState() {
+		String state = "";
+
+		getStatesDbAdapter().open();
+		Cursor cP = getStatesDbAdapter().fetchState();
+		startManagingCursor(cP);
+		if (cP.getCount() > 0) {
+			state = (cP.getString(cP
+					.getColumnIndexOrThrow(StateDbAdapter.KEY_GAME_STATE)));
+			if (state != null && !state.equals("")) {
 				ObjectInputStream objectIn;
 				Object obj;
 				try {
 					objectIn = new ObjectInputStream(new ByteArrayInputStream(
-							savedInstanceState.getByteArray("state")));
+							state.getBytes()));
 					obj = objectIn.readObject();
 					_gState = (GameState) obj;
 				} catch (StreamCorruptedException e) {
@@ -208,10 +222,12 @@ public class GameActivity extends Activity implements OnClickListener {
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
-			} else
-				initState();
-		} else
+			}
+		}
+
+		if(_gState == null)
 			initState();
+		getStatesDbAdapter().close();
 	}
 
 	private void initState() {
@@ -236,7 +252,7 @@ public class GameActivity extends Activity implements OnClickListener {
 			_gState.get_pList().put(pArr.get(i).getId(), pArr.get(i));
 		}
 	}
-
+	//http://www.easywayserver.com/blog/how-to-serializable-object-in-java-2/
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -245,7 +261,9 @@ public class GameActivity extends Activity implements OnClickListener {
 			out.writeObject(_gState);
 			out.flush();
 			out.close();
-			outState.putByteArray("state", bos.toByteArray());
+			getStatesDbAdapter().open();
+			getStatesDbAdapter().updateState(bos.toString());
+			getStatesDbAdapter().close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
