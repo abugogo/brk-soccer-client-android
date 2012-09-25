@@ -81,7 +81,8 @@
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
         android:textColor="#343434"
-        android:textSize="12dip" />
+        android:textSize="12dip"
+        android:inputType="phone" />
 
     <TextView
         android:id="@+id/emailCaption"
@@ -101,6 +102,7 @@
         android:layout_alignTop="@id/emailCaption"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
+        android:inputType="textEmailAddress"
         android:textColor="#343434"
         android:textSize="12dip" />
 
