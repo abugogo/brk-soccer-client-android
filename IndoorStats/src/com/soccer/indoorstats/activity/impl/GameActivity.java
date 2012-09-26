@@ -14,6 +14,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -46,18 +47,11 @@ import com.soccer.indoorstats.utils.StopWatch;
 
 public class GameActivity extends Activity implements OnClickListener {
 
-	private static final int MSG_START_TIMER = 0;
-	private static final int MSG_STOP_TIMER = 1;
-	private static final int MSG_UPDATE_TIMER = 2;
-	private static final int MSG_RESET_TIMER = 3;
-
-	private static StopWatch timer = new StopWatch();
-	private static final int REFRESH_RATE = 1000;
-
-	private static GameState _gState = null;
-	// private MenuExtender slidingMenu;
-	private static TextView tvTextView;
-	private static Button btnStart;
+	private StopWatch _timer = new StopWatch();
+	private GameState _gState = null;
+	private StopWatchHandler mHandler = new StopWatchHandler(this);
+	private TextView tvTextView;
+	private Button btnStart;
 	Button btnReset;
 	CheckedListAdapter adapter;
 	CheckedListAdapter adapter2;
@@ -118,17 +112,47 @@ public class GameActivity extends Activity implements OnClickListener {
 		super.onDestroy();
 	}
 
+	public void startTimer() {
+		_timer.start(!_gState.isStarted());
+		_gState.setStarted(true);
+	}
+
+	public void updateTimer() {
+		int elapsed = (int) _timer.getElapsedTimeSecs();
+		if (_gState.isBackwards())
+			elapsed = _gState.getFullTime() - elapsed;
+		int mins = (int) (elapsed / 60);
+		int secs = (int) (elapsed % 60);
+		if (tvTextView != null) {
+			tvTextView.setText(((mins < 10) ? "0" : "") + mins + ":"
+					+ ((secs < 10) ? "0" : "") + secs);
+		}
+	}
+
+	public void stopTimer() {
+		_timer.stop();
+	}
+
+	public void resetTimer() {
+		_timer.stop();
+		_gState.setStarted(false);
+		if (btnStart != null && tvTextView != null) {
+			btnStart.setText("Start");
+			tvTextView.setText("00:00");
+		}
+	}
+
 	public void onClick(View v) {
 		if (btnStart == v) {
 			if (btnStart.getText().equals("Start")) {
-				mHandler.sendEmptyMessage(MSG_START_TIMER);
+				mHandler.sendEmptyMessage(StopWatchHandler.MSG_START_TIMER);
 				btnStart.setText("Stop");
 			} else {
-				mHandler.sendEmptyMessage(MSG_STOP_TIMER);
+				mHandler.sendEmptyMessage(StopWatchHandler.MSG_STOP_TIMER);
 				btnStart.setText("Start");
 			}
 		} else if (btnReset == v) {
-			mHandler.sendEmptyMessage(MSG_RESET_TIMER);
+			mHandler.sendEmptyMessage(StopWatchHandler.MSG_RESET_TIMER);
 		}
 
 	}
@@ -198,6 +222,12 @@ public class GameActivity extends Activity implements OnClickListener {
 		restoreState();
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		restoreState();
+	}
+
 	private void restoreState() {
 		byte[] state;
 
@@ -215,8 +245,9 @@ public class GameActivity extends Activity implements OnClickListener {
 							state));
 					obj = objectIn.readObject();
 					_gState = (GameState) obj;
-					if(btnStart!=null)
-						btnStart.setText((_gState==null || !_gState.isStarted())?"Start":"Stop");
+					if (btnStart != null)
+						btnStart.setText((_gState == null || !_gState
+								.isStarted()) ? "Start" : "Stop");
 				} catch (StreamCorruptedException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -258,6 +289,16 @@ public class GameActivity extends Activity implements OnClickListener {
 	// http://www.easywayserver.com/blog/how-to-serializable-object-in-java-2/
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
+		saveState();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		saveState();
+	}
+
+	private void saveState() {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
 			ObjectOutput out = new ObjectOutputStream(bos);
@@ -277,42 +318,44 @@ public class GameActivity extends Activity implements OnClickListener {
 		_gState.setBackwards(!_gState.isBackwards());
 	}
 
-	public static Handler mHandler = new Handler() {
+	static class StopWatchHandler extends Handler {
+		public static final int MSG_START_TIMER = 0;
+		public static final int MSG_STOP_TIMER = 1;
+		public static final int MSG_UPDATE_TIMER = 2;
+		public static final int MSG_RESET_TIMER = 3;
+		public static final int REFRESH_RATE = 1000;
+
+		private final WeakReference<GameActivity> mGAct;
+
+		StopWatchHandler(GameActivity act) {
+			mGAct = new WeakReference<GameActivity>(act);
+		}
 
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
+			GameActivity act = mGAct.get();
 			switch (msg.what) {
 			case MSG_START_TIMER:
-				timer.start(!_gState.isStarted());
-				_gState.setStarted(true);
-				mHandler.sendEmptyMessage(MSG_UPDATE_TIMER);
+				act.startTimer();
+				sendEmptyMessage(MSG_UPDATE_TIMER);
 				break;
 			case MSG_UPDATE_TIMER:
-				int elapsed = (int) timer.getElapsedTimeSecs();
-				if (_gState.isBackwards())
-					elapsed = _gState.getFullTime() - elapsed;
-				int mins = (int) (elapsed / 60);
-				int secs = (int) (elapsed % 60);
-				tvTextView.setText(((mins < 10) ? "0" : "") + mins + ":"
-						+ ((secs < 10) ? "0" : "") + secs);
-				mHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIMER, REFRESH_RATE);
+				act.updateTimer();
+				sendEmptyMessageDelayed(MSG_UPDATE_TIMER, REFRESH_RATE);
 				break;
 			case MSG_STOP_TIMER:
-				mHandler.removeMessages(MSG_UPDATE_TIMER);
-				timer.stop();
+				removeMessages(MSG_UPDATE_TIMER);
+				act.stopTimer();
 				break;
 			case MSG_RESET_TIMER:
-				mHandler.removeMessages(MSG_UPDATE_TIMER);
-				timer.stop();
-				_gState.setStarted(false);
-				btnStart.setText("Start");
-				tvTextView.setText("00:00");
+				removeMessages(MSG_UPDATE_TIMER);
+				act.resetTimer();
 				break;
 
 			default:
 				break;
 			}
 		}
-	};
+	}
 }
