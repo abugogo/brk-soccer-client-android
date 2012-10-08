@@ -7,6 +7,7 @@ import java.util.HashMap;
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.dialog.lstItem;
 import com.soccer.entities.impl.DAOPlayer;
+import com.soccer.preferences.Prefs;
 
 public class GameState implements Serializable{
 
@@ -15,9 +16,35 @@ public class GameState implements Serializable{
 	final private ArrayList<lstItem> _team2List = new ArrayList<lstItem>();
 	private PlayersDbAdapter _mDbHelper = null;
 	final private HashMap<String, DAOPlayer> _pList = new HashMap<String, DAOPlayer>();
-	final private int FULL_TIME = 7 * 60;
-	private boolean backwards = false;
-	private boolean started = false;
+	private boolean _backwards = false;
+	private boolean _started = false;
+	private long _startTime = 0;
+	private long _stopTime = 0;
+	private boolean _running = false;
+	
+	public long get_startTime() {
+		return _startTime;
+	}
+
+	public void set_startTime(long _startTime) {
+		this._startTime = _startTime;
+	}
+
+	public long get_stopTime() {
+		return _stopTime;
+	}
+
+	public void set_stopTime(long _stopTime) {
+		this._stopTime = _stopTime;
+	}
+
+	public boolean is_running() {
+		return _running;
+	}
+
+	public void set_running(boolean _running) {
+		this._running = _running;
+	}
 
 	public PlayersDbAdapter get_mDbHelper() {
 		return _mDbHelper;
@@ -28,19 +55,19 @@ public class GameState implements Serializable{
 	}
 
 	public boolean isBackwards() {
-		return backwards;
+		return _backwards;
 	}
 
 	public void setBackwards(boolean back) {
-		backwards = back;
+		_backwards = back;
 	}
 
 	public boolean isStarted() {
-		return started;
+		return _started;
 	}
 
 	public void setStarted(boolean start) {
-		started = start;
+		_started = start;
 	}
 
 	public ArrayList<lstItem> get_team1List() {
@@ -49,10 +76,6 @@ public class GameState implements Serializable{
 
 	public ArrayList<lstItem> get_team2List() {
 		return _team2List;
-	}
-
-	public int getFullTime() {
-		return FULL_TIME;
 	}
 
 	public HashMap<String, DAOPlayer> get_pList() {
