@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pplayertaglayout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/list_selector"
+    android:clickable="true"
+    android:onClick="OnPlayerEvent"
     android:orientation="horizontal"
     android:padding="5dip" >
 
@@ -26,8 +29,6 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/player_in_game_thumbnail"
         android:layout_toRightOf="@+id/player_in_game_thumbnail"
-        android:clickable="true"
-        android:onClick="OnPlayerEvent"
         android:textColor="#040404"
         android:textSize="15dip"
         android:textStyle="bold"

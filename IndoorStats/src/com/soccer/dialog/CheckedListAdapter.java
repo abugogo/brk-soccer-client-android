@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.soccer.indoorstats.R;
@@ -51,7 +53,8 @@ public class CheckedListAdapter extends BaseAdapter {
             vi = inflater.inflate(R.layout.player_row_in_game, null);
 
         TextView txtFirst = (TextView)vi.findViewById(R.id.pfname);
-        txtFirst.setTag(data.get(position).mId);
+        RelativeLayout rlToTag = (RelativeLayout)vi.findViewById(R.id.pplayertaglayout);
+        rlToTag.setTag(data.get(position).mId);
         if(data.get(position).mChecked) {
         	txtFirst.setText(data.get(position).mText);
         }
