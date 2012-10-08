@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -44,6 +45,7 @@ import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.states.GameState;
 import com.soccer.indoorstats.utils.StopWatch;
+import com.soccer.preferences.Prefs;
 
 public class GameActivity extends Activity implements OnClickListener {
 
@@ -57,6 +59,7 @@ public class GameActivity extends Activity implements OnClickListener {
 	CheckedListAdapter adapter2;
 	private PlayersDbAdapter mDbHelper = null;
 	private StateDbAdapter mStatesDbHelper = null;
+	Prefs sharedPrefs;
 
 	private StateDbAdapter getStatesDbAdapter() {
 		if (mStatesDbHelper == null)
@@ -94,17 +97,7 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		if ((GameState) getLastNonConfigurationInstance() != null)
 			_gState = (GameState) getLastNonConfigurationInstance();
-		else
-			restoreState();
-
-		ListView lstView = (ListView) findViewById(R.id.listView1);
-		adapter = new CheckedListAdapter(this, _gState.get_team1List());
-		lstView.setAdapter(adapter);
-
-		ListView lstView2 = (ListView) findViewById(R.id.listView2);
-		adapter2 = new CheckedListAdapter(this, _gState.get_team2List());
-		lstView2.setAdapter(adapter2);
-
+		sharedPrefs = new Prefs(this);
 	}
 
 	@Override
@@ -112,21 +105,40 @@ public class GameActivity extends Activity implements OnClickListener {
 		super.onDestroy();
 	}
 
-	public void startTimer() {
-		_timer.start(!_gState.isStarted());
-		_gState.setStarted(true);
+	private int getGameFullTime(int defLength) {
+		String ret = sharedPrefs.getPreference("game_length_id",
+				String.valueOf(defLength));
+		return Integer.parseInt(ret) * 60;
 	}
 
 	public void updateTimer() {
 		int elapsed = (int) _timer.getElapsedTimeSecs();
-		if (_gState.isBackwards())
-			elapsed = _gState.getFullTime() - elapsed;
+		boolean passed = false;
+		if (_gState.isBackwards()) {
+			elapsed = getGameFullTime(7 * 60) - elapsed;
+			if (elapsed < 0) {
+				passed = true;
+				elapsed = Math.abs(elapsed);
+			}
+		} else {
+			if (elapsed > getGameFullTime(7 * 60))
+				passed = true;
+		}
 		int mins = (int) (elapsed / 60);
 		int secs = (int) (elapsed % 60);
 		if (tvTextView != null) {
 			tvTextView.setText(((mins < 10) ? "0" : "") + mins + ":"
 					+ ((secs < 10) ? "0" : "") + secs);
+			if (passed)
+				tvTextView.setTextColor(Color.RED);
+			else
+				tvTextView.setTextColor(Color.BLACK);
 		}
+	}
+
+	public void startTimer() {
+		_timer.start(!_gState.isStarted());
+		_gState.setStarted(true);
 	}
 
 	public void stopTimer() {
@@ -134,11 +146,12 @@ public class GameActivity extends Activity implements OnClickListener {
 	}
 
 	public void resetTimer() {
-		_timer.stop();
+		stopTimer();
 		_gState.setStarted(false);
 		if (btnStart != null && tvTextView != null) {
 			btnStart.setText("Start");
 			tvTextView.setText("00:00");
+			tvTextView.setTextColor(Color.BLACK);
 		}
 	}
 
@@ -233,7 +246,7 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		getStatesDbAdapter().open();
 		Cursor cP = getStatesDbAdapter().fetchState();
-		startManagingCursor(cP);
+		// startManagingCursor(cP);
 		if (cP.getCount() > 0) {
 			state = (cP.getBlob(cP
 					.getColumnIndexOrThrow(StateDbAdapter.KEY_GAME_STATE)));
@@ -246,8 +259,18 @@ public class GameActivity extends Activity implements OnClickListener {
 					obj = objectIn.readObject();
 					_gState = (GameState) obj;
 					if (btnStart != null)
-						btnStart.setText((_gState == null || !_gState
-								.isStarted()) ? "Start" : "Stop");
+						btnStart.setText((_gState != null && _gState
+								.isStarted() && _gState.is_running()) ? "Stop" : "Start");
+					_timer.setStartTime(_gState.get_startTime());
+					_timer.setStopTime(_gState.get_stopTime());
+					_timer.setRunning(_gState.is_running());
+					if (_gState.isStarted() && _gState.is_running()) {
+						mHandler.sendEmptyMessageDelayed(
+								StopWatchHandler.MSG_UPDATE_TIMER,
+								StopWatchHandler.REFRESH_RATE);
+					} else {
+						updateTimer();
+					}
 				} catch (StreamCorruptedException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -260,6 +283,14 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		if (_gState == null)
 			initState();
+		ListView lstView = (ListView) findViewById(R.id.listView1);
+		adapter = new CheckedListAdapter(this, _gState.get_team1List());
+		lstView.setAdapter(adapter);
+
+		ListView lstView2 = (ListView) findViewById(R.id.listView2);
+		adapter2 = new CheckedListAdapter(this, _gState.get_team2List());
+		lstView2.setAdapter(adapter2);
+
 		getStatesDbAdapter().close();
 	}
 
@@ -302,6 +333,11 @@ public class GameActivity extends Activity implements OnClickListener {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
 			ObjectOutput out = new ObjectOutputStream(bos);
+			// save timer state 
+			_gState.set_running(_timer.isRunning());
+			_gState.set_startTime(_timer.getStartTime());
+			_gState.set_stopTime(_timer.getStopTime());
+			
 			out.writeObject(_gState);
 			out.flush();
 			out.close();
@@ -337,20 +373,24 @@ public class GameActivity extends Activity implements OnClickListener {
 			GameActivity act = mGAct.get();
 			switch (msg.what) {
 			case MSG_START_TIMER:
-				act.startTimer();
+				if(act != null)
+					act.startTimer();
 				sendEmptyMessage(MSG_UPDATE_TIMER);
 				break;
 			case MSG_UPDATE_TIMER:
-				act.updateTimer();
+				if(act != null)
+					act.updateTimer();
 				sendEmptyMessageDelayed(MSG_UPDATE_TIMER, REFRESH_RATE);
 				break;
 			case MSG_STOP_TIMER:
 				removeMessages(MSG_UPDATE_TIMER);
-				act.stopTimer();
+				if(act != null)
+					act.stopTimer();
 				break;
 			case MSG_RESET_TIMER:
 				removeMessages(MSG_UPDATE_TIMER);
-				act.resetTimer();
+				if(act != null)
+					act.resetTimer();
 				break;
 
 			default:
