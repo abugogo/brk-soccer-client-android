@@ -42,6 +42,7 @@
 	<string name="bdayTtl">Update Birth Date</string>
 	<string name="updatePlayer">Update Player Info</string>
 	<string name="player">Player</string>
+	<string name="stats">Statistics</string>
 	<string name="group">Group</string>
 	<string name="game">Game</string>
 	<string name="exit">Exit</string>

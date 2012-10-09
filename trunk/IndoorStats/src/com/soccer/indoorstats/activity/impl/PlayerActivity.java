@@ -30,11 +30,12 @@ import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.ImageLoader;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
+import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
 
-public class PlayerActivity extends Activity implements IAsyncTaskAct {
+public class PlayerActivity extends Activity {
 
 	private PlayersDbAdapter mDbHelper;
 	private DAOPlayer mPlayer = null;
@@ -50,6 +51,9 @@ public class PlayerActivity extends Activity implements IAsyncTaskAct {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle(R.string.player);
 
+		final Action StatsAction = new IntentAction(this, new Intent(this,
+				StatsTabActivity.class), R.drawable.heart);
+		actionBar.addAction(StatsAction);
 		final Action EditAction = new IntentAction(this, new Intent(this,
 				PlayerUpdateActivity.class), R.drawable.edit);
 		actionBar.addAction(EditAction);
@@ -162,18 +166,6 @@ public class PlayerActivity extends Activity implements IAsyncTaskAct {
 		super.onResume();
 		mPID = mPrefs.getPreference(PlayersDbAdapter.KEY_ID, mPID);
 		populateFields();
-		String sUrl = mPrefs.getPreference("server_port", "NULL");
-		if (sUrl.equals("NULL")) {
-			sUrl = R_DB_CONSTS.SERVER_DEFAULT;
-		}
-
-		try {
-			RemoteDBAdapter.getPlayerStats(this, sUrl, mPID, "Downloading player stats");
-		} catch (Exception e) {
-			e.printStackTrace();
-			showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
-		}
-
 	}
 
 	@Override
@@ -193,27 +185,7 @@ public class PlayerActivity extends Activity implements IAsyncTaskAct {
 		mDbHelper.close();
 	}
 
-	@Override
-	public void onSuccess(String result) {
-		try {
-			ArrayList<IWinLoseStrip> pArr = EntityManager.readPlayerStats(result);
-		} catch (SoccerException e) {
-			e.printStackTrace();
-		}
-		
-	}
-
-	@Override
-	public void onFailure(int responseCode, String result) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onProgress() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
