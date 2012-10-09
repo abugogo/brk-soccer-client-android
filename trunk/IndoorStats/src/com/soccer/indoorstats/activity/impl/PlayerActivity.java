@@ -3,6 +3,7 @@ package com.soccer.indoorstats.activity.impl;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -20,13 +21,20 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.db.local.PlayersDbAdapter;
+import com.soccer.db.remote.R_DB_CONSTS;
+import com.soccer.db.remote.RemoteDBAdapter;
+import com.soccer.entities.EntityManager;
+import com.soccer.entities.IDAOPlayer;
+import com.soccer.entities.IWinLoseStrip;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.ImageLoader;
 import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.indoorstats.utils.DlgUtils;
+import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
 
-public class PlayerActivity extends Activity {
+public class PlayerActivity extends Activity implements IAsyncTaskAct {
 
 	private PlayersDbAdapter mDbHelper;
 	private DAOPlayer mPlayer = null;
@@ -62,7 +70,6 @@ public class PlayerActivity extends Activity {
 
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		imageLoader = new ImageLoader(this.getApplicationContext());
-
 	}
 
 	private void populateFields() {
@@ -155,6 +162,18 @@ public class PlayerActivity extends Activity {
 		super.onResume();
 		mPID = mPrefs.getPreference(PlayersDbAdapter.KEY_ID, mPID);
 		populateFields();
+		String sUrl = mPrefs.getPreference("server_port", "NULL");
+		if (sUrl.equals("NULL")) {
+			sUrl = R_DB_CONSTS.SERVER_DEFAULT;
+		}
+
+		try {
+			RemoteDBAdapter.getPlayerStats(this, sUrl, mPID, "Downloading player stats");
+		} catch (Exception e) {
+			e.printStackTrace();
+			showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
+		}
+
 	}
 
 	@Override
@@ -172,6 +191,28 @@ public class PlayerActivity extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 		mDbHelper.close();
+	}
+
+	@Override
+	public void onSuccess(String result) {
+		try {
+			ArrayList<IWinLoseStrip> pArr = EntityManager.readPlayerStats(result);
+		} catch (SoccerException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public void onFailure(int responseCode, String result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onProgress() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/*@Override

@@ -3,9 +3,9 @@ package com.soccer.rest.asynctask;
 import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.rest.RestClient;
 
-public class AsyncRestCallPlayers extends AsyncRestCall {
+public class AsyncRestCallBasic extends AsyncRestCall {
 
-	public AsyncRestCallPlayers(IAsyncTaskAct act, String status) {
+	public AsyncRestCallBasic(IAsyncTaskAct act, String status) {
 		super(act, status);
 	}
 

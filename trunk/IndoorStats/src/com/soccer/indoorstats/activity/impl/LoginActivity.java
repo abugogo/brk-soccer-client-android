@@ -14,6 +14,7 @@ import android.widget.EditText;
 
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.db.local.StateDbAdapter;
+import com.soccer.db.remote.R_DB_CONSTS;
 import com.soccer.db.remote.RemoteDBAdapter;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.IDAOPlayer;
@@ -26,7 +27,6 @@ import com.soccer.preferences.Prefs;
 import com.soccer.preferences.SoccerPrefsActivity;
 
 public class LoginActivity extends Activity implements IAsyncTaskAct {
-	private static final String SERVER_DEFAULT = "http://ellgad.com/";
 	private PlayersDbAdapter mDbHelper;
 	Prefs sharedPrefs;
 
@@ -66,7 +66,7 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 			if (!loggedInId.equals(id)) {
 				String sUrl = sharedPrefs.getPreference("server_port", "NULL");
 				if (sUrl.equals("NULL")) {
-					sUrl = LoginActivity.SERVER_DEFAULT;
+					sUrl = R_DB_CONSTS.SERVER_DEFAULT;
 				}
 
 				try {

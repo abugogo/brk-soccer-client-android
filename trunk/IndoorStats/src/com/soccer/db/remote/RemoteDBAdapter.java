@@ -9,8 +9,8 @@ import com.soccer.entities.EntityManager;
 import com.soccer.entities.IDAOPlayer;
 import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.rest.RestClient.RequestMethod;
+import com.soccer.rest.asynctask.AsyncRestCallBasic;
 import com.soccer.rest.asynctask.AsyncRestCallParams;
-import com.soccer.rest.asynctask.AsyncRestCallPlayers;
 
 public class RemoteDBAdapter {
 	/*
@@ -28,7 +28,7 @@ public class RemoteDBAdapter {
 
 	public static void getPlayers(IAsyncTaskAct caller, String sUrl,
 			String status) throws Exception {
-		AsyncRestCallPlayers asyncCall = new AsyncRestCallPlayers(caller,
+		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller,
 				status);
 		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
 		nva.add(new BasicNameValuePair("Accept", "application/json"));
@@ -41,7 +41,7 @@ public class RemoteDBAdapter {
 
 	public static void updatePlayer(IAsyncTaskAct caller, String sUrl,
 			String status, IDAOPlayer p) throws Exception {
-		AsyncRestCallPlayers asyncCall = new AsyncRestCallPlayers(caller,
+		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller,
 				status);
 		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
 		nva.add(new BasicNameValuePair("Accept", "application/json"));
@@ -55,4 +55,17 @@ public class RemoteDBAdapter {
 
 	}
 
+	public static void getPlayerStats(IAsyncTaskAct caller, String sUrl, String pId,
+			String status) throws Exception {
+		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller,
+				status);
+		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
+		nva.add(new BasicNameValuePair("Accept", "application/json"));
+		nva.add(new BasicNameValuePair("Content-type", "application/json"));
+
+		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
+				+ "/SoccerServer/rest/players/" + pId + "/stats", RequestMethod.GET, nva, "");
+		asyncCall.execute(params);
+	}
+	
 }
