@@ -3,7 +3,6 @@ package com.soccer.indoorstats.activity.impl;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -21,18 +20,10 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.db.local.PlayersDbAdapter;
-import com.soccer.db.remote.R_DB_CONSTS;
-import com.soccer.db.remote.RemoteDBAdapter;
-import com.soccer.entities.EntityManager;
-import com.soccer.entities.IDAOPlayer;
-import com.soccer.entities.IWinLoseStrip;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.ImageLoader;
 import com.soccer.indoorstats.R;
-import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
-import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
 import com.soccer.indoorstats.utils.DlgUtils;
-import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
 
 public class PlayerActivity extends Activity {
@@ -51,19 +42,23 @@ public class PlayerActivity extends Activity {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle(R.string.player);
 
-		final Action StatsAction = new IntentAction(this, new Intent(this,
+		/*final Action StatsAction = new IntentAction(this, new Intent(this,
 				StatsTabActivity.class), R.drawable.heart);
-		actionBar.addAction(StatsAction);
+		actionBar.addAction(StatsAction);*/
 		final Action EditAction = new IntentAction(this, new Intent(this,
 				PlayerUpdateActivity.class), R.drawable.edit);
 		actionBar.addAction(EditAction);
-		final Action GroupAction = new IntentAction(this, new Intent(this,
+		/*final Action GroupAction = new IntentAction(this, new Intent(this,
 				GroupActivity.class), R.drawable.players_icon);
 		actionBar.addAction(GroupAction);
 		final Action GameAction = new IntentAction(this, new Intent(this,
 				GameActivity.class), R.drawable.game_icon);
-		actionBar.addAction(GameAction);
+		actionBar.addAction(GameAction);*/
 
+		final Action HomeAction = new IntentAction(this, new Intent(this,
+				HomeActivity.class), R.drawable.home_icon);
+		actionBar.addAction(HomeAction);
+		
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
 		Intent i = getIntent();

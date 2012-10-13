@@ -114,7 +114,7 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 	private void loadApp(String id) {
 		sharedPrefs.setPreference(PlayersDbAdapter.KEY_ID, id);
 		if (id != "") {
-			Intent appIntent = new Intent(this, PlayerActivity.class);
+			Intent appIntent = new Intent(this, HomeActivity.class);
 			startActivity(appIntent);
 		} else {
 			showDialog(0, DlgUtils.prepareDlgBundle("Failed login"));

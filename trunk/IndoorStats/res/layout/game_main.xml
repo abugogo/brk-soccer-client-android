@@ -2,18 +2,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/list_selector"
+    android:background="@drawable/pitch1"
     android:orientation="horizontal" >
 
     <com.markupartist.android.widget.ActionBar
         android:id="@+id/actionbar"
-        style="@style/ActionBar" />
+        style="@style/ActionBar"/>
 
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
         android:layout_height="200dp"
-        android:layout_alignLeft="@layout/activity_main"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/actionbar"
         android:orientation="vertical" >
@@ -39,7 +38,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:height="50dp"
-                android:text="Start"
+                android:text="@string/start"
+                style="@style/button_style"
                 android:width="100dp" />
 
             <Button
@@ -47,7 +47,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:height="50dp"
-                android:text="Reset"
+                android:layout_marginLeft="10dp"
+                android:text="@string/reset"
+                style="@style/button_style"
                 android:width="100dp" />
         </LinearLayout>
     </LinearLayout>
@@ -58,7 +60,7 @@
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/linearLayout1" >
+        android:layout_below="@+id/linearLayout1" android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -74,6 +76,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="0"
                 android:onClick="onAddItem"
+                style="@style/button_style"
                 android:text="@string/team_1" />
 
             <ListView
@@ -96,14 +99,15 @@
                 android:id="@+id/button3"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
-                android:layout_weight="0"
+                
                 android:onClick="onAddItem"
+                style="@style/button_style"
                 android:text="@string/team_2" />
 
             <ListView
                 android:id="@+id/listView2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dip"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_weight="1" >
             </ListView>

@@ -2,17 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/list_selector"
+    android:background="@drawable/pitch1"
     android:orientation="horizontal" >
 
     <com.markupartist.android.widget.ActionBar
         android:id="@+id/actionbar"
-        style="@style/ActionBar" />
+        style="@style/ActionBar"/>
 
     <TabHost
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@android:id/tabhost"
-        style="@style/ActionBar"
+        android:background="@drawable/pitch1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/actionbar" >
