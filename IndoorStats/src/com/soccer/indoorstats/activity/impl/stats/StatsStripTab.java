@@ -2,7 +2,6 @@ package com.soccer.indoorstats.activity.impl.stats;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Iterator;
 
 import android.app.Activity;

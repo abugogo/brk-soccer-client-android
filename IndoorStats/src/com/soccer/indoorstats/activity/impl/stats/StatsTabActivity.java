@@ -1,29 +1,28 @@
 package com.soccer.indoorstats.activity.impl.stats;
 
-import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
-import com.markupartist.android.widget.ActionBar.IntentAction;
-import com.soccer.indoorstats.R;
-import com.soccer.indoorstats.activity.impl.GameActivity;
-import com.soccer.indoorstats.activity.impl.GroupActivity;
-import com.soccer.indoorstats.activity.impl.PlayerUpdateActivity;
-
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
+import com.markupartist.android.widget.ActionBar.IntentAction;
+import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.activity.impl.HomeActivity;
+
 public class StatsTabActivity extends TabActivity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tab);
+        setContentView(R.layout.stats_tab);
         
         final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle(R.string.stats);
 
+		/*
 		final Action StatsAction = new IntentAction(this, new Intent(this,
 				StatsTabActivity.class), R.drawable.heart);
 		actionBar.addAction(StatsAction);
@@ -36,6 +35,10 @@ public class StatsTabActivity extends TabActivity {
 		final Action GameAction = new IntentAction(this, new Intent(this,
 				GameActivity.class), R.drawable.game_icon);
 		actionBar.addAction(GameAction);
+		*/
+		final Action HomeAction = new IntentAction(this, new Intent(this,
+				HomeActivity.class), R.drawable.home_icon);
+		actionBar.addAction(HomeAction);
         /* TabHost will have Tabs */
         TabHost tabHost = (TabHost)findViewById(android.R.id.tabhost);
         

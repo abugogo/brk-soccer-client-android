@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/list_selector"
-    android:orientation="horizontal" >
+    android:background="@drawable/pitch1"
+    android:orientation="horizontal" xmlns:app="http://schemas.android.com/apk/res/com.soccer.indoorstats">
 
     <com.markupartist.android.widget.ActionBar
         android:id="@+id/actionbar"
@@ -36,7 +36,6 @@
         android:layout_alignTop="@+id/thumbnail"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
-        android:textColor="#040404"
         android:textSize="15dip"
         android:textStyle="bold"
         android:typeface="sans" />
@@ -51,7 +50,7 @@
         android:layout_marginTop="1dip"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
-        android:textColor="#343434"
+        android:textColor="#000000"
         android:textSize="15dip" />
 
     <View
@@ -69,7 +68,7 @@
         android:layout_below="@id/sepa1"
         android:layout_marginTop="12dip"
         android:text="@string/phone"
-        android:textColor="#343434"
+        android:textColor="#000000"
         android:textSize="12dip" />
 
     <TextView
@@ -79,7 +78,7 @@
         android:layout_alignTop="@id/ptel1Caption"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
-        android:textColor="#343434"
+        android:textColor="#000000"
         android:textSize="12dip" />
 
     <TextView
@@ -89,7 +88,7 @@
         android:layout_alignLeft="@id/thumbnail"
         android:layout_below="@id/ptel1Caption"
         android:text="@string/email"
-        android:textColor="#343434"
+        android:textColor="#000000"
         android:textSize="12dip" />
 
     <TextView
@@ -99,7 +98,7 @@
         android:layout_alignTop="@id/emailCaption"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
-        android:textColor="#343434"
+        android:textColor="#000000"
         android:textSize="12dip" />
 
     <TextView
@@ -109,7 +108,7 @@
         android:layout_alignLeft="@id/thumbnail"
         android:layout_below="@id/emailCaption"
         android:text="@string/birthday"
-        android:textColor="#343434"
+        android:textColor="#000000"
         android:textSize="12dip" />
 
     <TextView
@@ -119,7 +118,7 @@
         android:layout_alignTop="@id/bdayCaption"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
-        android:textColor="#343434"
+        android:textColor="#000000"
         android:textSize="12dip" />
     <!-- Tel1 of player -->
 

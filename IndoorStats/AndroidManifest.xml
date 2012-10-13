@@ -19,7 +19,7 @@
         <activity
             android:name=".activity.impl.GroupActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme" />
+            android:theme="@android:style/Theme.NoTitleBar" />
         <activity android:name="com.soccer.preferences.ShowSettingsActivity" >
         </activity>
         <activity android:name="com.soccer.preferences.SoccerPrefsActivity" >
@@ -27,11 +27,12 @@
         <activity
             android:name=".activity.impl.GameActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme" >
+            android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
             android:name=".activity.impl.LoginActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,27 +42,32 @@
         <activity
             android:name=".activity.impl.PlayerActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme" >
+            android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
             android:name=".activity.impl.PlayerUpdateActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme" >
+            android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
-        <activity 
-            android:name=".activity.impl.stats.StatsTabActivity" 
+        <activity
+            android:name=".activity.impl.stats.StatsTabActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme" >
+            android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
-        <activity 
-            android:name=".activity.impl.stats.StatsStripTab" 
+        <activity
+            android:name=".activity.impl.stats.StatsStripTab"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme" >
+            android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
-        <activity 
-            android:name=".activity.impl.stats.StatsTableTab" 
+        <activity
+            android:name=".activity.impl.stats.StatsTableTab"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme" >
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".activity.impl.HomeActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
     </application>
 

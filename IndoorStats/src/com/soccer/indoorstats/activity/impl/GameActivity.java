@@ -81,13 +81,18 @@ public class GameActivity extends Activity implements OnClickListener {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle(R.string.game);
 
+		/*
 		final Action PlayerAction = new IntentAction(this, new Intent(this,
 				PlayerActivity.class), R.drawable.player_icon);
 		actionBar.addAction(PlayerAction);
 		final Action GroupAction = new IntentAction(this, new Intent(this,
 				GroupActivity.class), R.drawable.players_icon);
 		actionBar.addAction(GroupAction);
-
+*/
+		final Action HomeAction = new IntentAction(this, new Intent(this,
+				HomeActivity.class), R.drawable.home_icon);
+		actionBar.addAction(HomeAction);
+		
 		tvTextView = (TextView) findViewById(R.id.textViewTimer);
 
 		btnStart = (Button) findViewById(R.id.buttonStart);

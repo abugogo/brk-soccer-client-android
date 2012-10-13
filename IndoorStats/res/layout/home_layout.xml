@@ -1,0 +1,116 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/pitch1" >
+
+    <RelativeLayout
+        android:id="@+id/rl1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp" >
+
+        <Button
+            android:id="@+id/homeButton1"
+            style="@style/menu_button_style"
+            android:layout_centerVertical="true"
+            android:onClick="homeClick"
+            android:text="Player Info" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/homeButton1"
+            android:layout_centerVertical="true"
+            android:contentDescription=""
+            android:src="@drawable/arrow" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl1" >
+
+        <Button
+            android:id="@+id/homeButton2"
+            style="@style/menu_button_style"
+            android:layout_centerVertical="true"
+            android:onClick="homeClick"
+            android:text="Group Info" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/homeButton2"
+            android:layout_centerVertical="true"
+            android:src="@drawable/arrow" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl2" >
+
+        <Button
+            android:id="@+id/homeButton3"
+            style="@style/menu_button_style"
+            android:layout_centerVertical="true"
+            android:onClick="homeClick"
+            android:text="Game" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="false"
+            android:layout_alignRight="@+id/homeButton3"
+            android:layout_centerVertical="true"
+            android:src="@drawable/arrow" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl3" >
+
+        <Button
+            android:id="@+id/homeButton4"
+            style="@style/menu_button_style"
+            android:layout_centerVertical="true"
+            android:onClick="homeClick"
+            android:text="Statistics" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="false"
+            android:layout_alignRight="@+id/homeButton4"
+            android:layout_centerVertical="true"
+            android:src="@drawable/arrow" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl4" >
+
+        <Button
+            android:id="@+id/homeButton5"
+            style="@style/menu_button_style"
+            android:layout_centerVertical="true"
+            android:onClick="homeClick"
+            android:text="About" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="false"
+            android:layout_alignRight="@+id/homeButton5"
+            android:layout_centerVertical="true"
+            android:src="@drawable/arrow" />
+    </RelativeLayout>
+
+</RelativeLayout>

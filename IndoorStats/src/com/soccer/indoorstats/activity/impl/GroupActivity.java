@@ -36,13 +36,17 @@ public class GroupActivity extends ListActivity {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle(R.string.group);
 
-		final Action PlayerAction = new IntentAction(this, new Intent(this,
+		/*final Action PlayerAction = new IntentAction(this, new Intent(this,
 				PlayerActivity.class), R.drawable.player_icon);
 		actionBar.addAction(PlayerAction);
 		final Action GameAction = new IntentAction(this, new Intent(this,
 				GameActivity.class), R.drawable.game_icon);
 		actionBar.addAction(GameAction);
-
+*/
+		final Action HomeAction = new IntentAction(this, new Intent(this,
+				HomeActivity.class), R.drawable.home_icon);
+		actionBar.addAction(HomeAction);
+		
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
