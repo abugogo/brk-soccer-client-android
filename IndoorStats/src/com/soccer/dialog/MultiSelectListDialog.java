@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 /**
  * helper for Prompt-Dialog creation
@@ -15,20 +16,20 @@ public abstract class MultiSelectListDialog extends AlertDialog.Builder
 		implements OnClickListener {
 
 	private ArrayList<lstItem> mList = null;
-
+	private final String RIVAL = "* "; 
 	public MultiSelectListDialog(Context context, int title, int message,
-			ArrayList<lstItem> lst) {
+			ArrayList<lstItem> lst, ArrayList<String> lstRivalIds) {
 		super(context);
 		// setTitle(title);
 
 		mList = lst;
 		int numItems = lst.size();
 		CharSequence[] data = new CharSequence[numItems];
-		boolean[] chk = new boolean[numItems];
+		final boolean[] chk = new boolean[numItems];
 
 		for (int i = 0; i < numItems; i++) {
 			lstItem nv = (lstItem) lst.get(i);
-			data[i] = nv.mText;
+			data[i] = (lstRivalIds.contains(nv.mId))? RIVAL + nv.mText:nv.mText;
 			chk[i] = nv.mChecked;
 		}
 
@@ -36,7 +37,14 @@ public abstract class MultiSelectListDialog extends AlertDialog.Builder
 				new DialogInterface.OnMultiChoiceClickListener() {
 					public void onClick(DialogInterface dialog,
 							int whichButton, boolean isChecked) {
-
+						if (((AlertDialog) dialog).getListView().getItemAtPosition(whichButton).toString().contains(RIVAL)) {
+							chk[whichButton] = false;
+							((AlertDialog) dialog).getListView().setItemChecked(whichButton, false);
+							Toast.makeText(
+									((AlertDialog) dialog).getContext(),
+									"Player plays for the rival team and cannot be selected",
+									Toast.LENGTH_SHORT).show();
+						}
 					}
 				});
 

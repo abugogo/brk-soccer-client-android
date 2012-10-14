@@ -34,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.db.local.PlayersDbAdapter;
@@ -82,13 +83,19 @@ public class GameActivity extends Activity implements OnClickListener {
 		actionBar.setTitle(R.string.game);
 
 		/*
-		final Action PlayerAction = new IntentAction(this, new Intent(this,
-				PlayerActivity.class), R.drawable.player_icon);
-		actionBar.addAction(PlayerAction);
-		final Action GroupAction = new IntentAction(this, new Intent(this,
-				GroupActivity.class), R.drawable.players_icon);
-		actionBar.addAction(GroupAction);
-*/
+		 * final Action PlayerAction = new IntentAction(this, new Intent(this,
+		 * PlayerActivity.class), R.drawable.player_icon);
+		 * actionBar.addAction(PlayerAction); final Action GroupAction = new
+		 * IntentAction(this, new Intent(this, GroupActivity.class),
+		 * R.drawable.players_icon); actionBar.addAction(GroupAction);
+		 */
+		
+		final Action SaveAction = new SaveGameAction();
+		actionBar.addAction(SaveAction);
+
+		final Action ResetAction = new ResetGameAction();
+		actionBar.addAction(ResetAction);
+		
 		final Action HomeAction = new IntentAction(this, new Intent(this,
 				HomeActivity.class), R.drawable.home_icon);
 		actionBar.addAction(HomeAction);
@@ -103,6 +110,38 @@ public class GameActivity extends Activity implements OnClickListener {
 		if ((GameState) getLastNonConfigurationInstance() != null)
 			_gState = (GameState) getLastNonConfigurationInstance();
 		sharedPrefs = new Prefs(this);
+	}
+	
+	private class SaveGameAction extends AbstractAction {
+
+		public SaveGameAction() {
+			super(R.drawable.save);
+		}
+
+		@Override
+		public void performAction(View view) {
+			Toast.makeText(
+					getApplicationContext(),
+					"Save game",
+					Toast.LENGTH_SHORT).show();
+		}
+
+	}
+	
+	private class ResetGameAction extends AbstractAction {
+
+		public ResetGameAction() {
+			super(R.drawable.new_file);
+		}
+
+		@Override
+		public void performAction(View view) {
+			Toast.makeText(
+					getApplicationContext(),
+					"Reset game",
+					Toast.LENGTH_SHORT).show();
+		}
+
 	}
 
 	@Override
@@ -177,9 +216,14 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	public void onAddItem(View v) {
 		MultiSelectListDialog dlg;
-
+		ArrayList<String> rivalLstIds = new ArrayList<String>();
 		if (v == (Button) findViewById(R.id.button2)) {
-			dlg = new MultiSelectListDialog(this, 0, 0, _gState.get_team1List()) {
+			for (lstItem lI : _gState.get_team2List()) {
+				if (lI.mChecked)
+					rivalLstIds.add(lI.mId);
+			}
+			dlg = new MultiSelectListDialog(this, 0, 0,
+					_gState.get_team1List(), rivalLstIds) {
 
 				public void onClick(DialogInterface dialog, int which) {
 					ListView list = ((AlertDialog) dialog).getListView();
@@ -194,7 +238,12 @@ public class GameActivity extends Activity implements OnClickListener {
 				}
 			};
 		} else {
-			dlg = new MultiSelectListDialog(this, 0, 0, _gState.get_team2List()) {
+			for (lstItem lI : _gState.get_team1List()) {
+				if (lI.mChecked)
+					rivalLstIds.add(lI.mId);
+			}
+			dlg = new MultiSelectListDialog(this, 0, 0,
+					_gState.get_team2List(), rivalLstIds) {
 
 				public void onClick(DialogInterface dialog, int which) {
 					ListView list = ((AlertDialog) dialog).getListView();
@@ -264,8 +313,9 @@ public class GameActivity extends Activity implements OnClickListener {
 					obj = objectIn.readObject();
 					_gState = (GameState) obj;
 					if (btnStart != null)
-						btnStart.setText((_gState != null && _gState
-								.isStarted() && _gState.is_running()) ? "Stop" : "Start");
+						btnStart.setText((_gState != null
+								&& _gState.isStarted() && _gState.is_running()) ? "Stop"
+								: "Start");
 					_timer.setStartTime(_gState.get_startTime());
 					_timer.setStopTime(_gState.get_stopTime());
 					_timer.setRunning(_gState.is_running());
@@ -273,6 +323,8 @@ public class GameActivity extends Activity implements OnClickListener {
 						mHandler.sendEmptyMessageDelayed(
 								StopWatchHandler.MSG_UPDATE_TIMER,
 								StopWatchHandler.REFRESH_RATE);
+					} else if (!_gState.isStarted() && !_gState.is_running()) {
+						resetTimer();
 					} else {
 						updateTimer();
 					}
@@ -338,11 +390,11 @@ public class GameActivity extends Activity implements OnClickListener {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
 			ObjectOutput out = new ObjectOutputStream(bos);
-			// save timer state 
+			// save timer state
 			_gState.set_running(_timer.isRunning());
 			_gState.set_startTime(_timer.getStartTime());
 			_gState.set_stopTime(_timer.getStopTime());
-			
+
 			out.writeObject(_gState);
 			out.flush();
 			out.close();
@@ -378,23 +430,23 @@ public class GameActivity extends Activity implements OnClickListener {
 			GameActivity act = mGAct.get();
 			switch (msg.what) {
 			case MSG_START_TIMER:
-				if(act != null)
+				if (act != null)
 					act.startTimer();
 				sendEmptyMessage(MSG_UPDATE_TIMER);
 				break;
 			case MSG_UPDATE_TIMER:
-				if(act != null)
+				if (act != null)
 					act.updateTimer();
 				sendEmptyMessageDelayed(MSG_UPDATE_TIMER, REFRESH_RATE);
 				break;
 			case MSG_STOP_TIMER:
 				removeMessages(MSG_UPDATE_TIMER);
-				if(act != null)
+				if (act != null)
 					act.stopTimer();
 				break;
 			case MSG_RESET_TIMER:
 				removeMessages(MSG_UPDATE_TIMER);
-				if(act != null)
+				if (act != null)
 					act.resetTimer();
 				break;
 
