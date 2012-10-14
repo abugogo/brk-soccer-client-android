@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -57,15 +58,17 @@ public class StatsStripTab extends Activity implements IAsyncTaskAct {
 		try {
 			ArrayList<IWinLoseStrip> pArr = EntityManager
 					.readPlayerStats(result);
-			LinearLayout layout = (LinearLayout)findViewById(R.id.linear_stats_strip);   
-			for (Iterator<IWinLoseStrip> iter = pArr.iterator(); iter.hasNext(); ) {
-				WinLoseStrip wls = (WinLoseStrip) iter.next();
-				TextView textView = new TextView(this);
-				String winlose = wls.getType().equals("WIN")?"Wins: ": "Loses: ";
-				textView.setText(winlose + wls.getNumber() + ". " + SimpleDateFormat.getDateInstance().format(wls.getStartDate()) + "-" + SimpleDateFormat.getDateInstance().format(wls.getEndDate()));
-				layout.addView(textView);
+			LinearLayout layout = (LinearLayout)findViewById(R.id.linear_stats_strip);
+			if(pArr != null) {
+				for (Iterator<IWinLoseStrip> iter = pArr.iterator(); iter.hasNext(); ) {
+					WinLoseStrip wls = (WinLoseStrip) iter.next();
+					TextView textView = new TextView(this);
+					String winlose = wls.getType().equals("WIN")?"Wins: ": "Loses: ";
+					textView.setText(winlose + wls.getNumber() + ". " + SimpleDateFormat.getDateInstance().format(wls.getStartDate()) + "-" + SimpleDateFormat.getDateInstance().format(wls.getEndDate()));
+					textView.setTextColor(Color.BLACK);
+					layout.addView(textView);
+				}
 			}
-
 		} catch (SoccerException e) {
 			e.printStackTrace();
 		}
