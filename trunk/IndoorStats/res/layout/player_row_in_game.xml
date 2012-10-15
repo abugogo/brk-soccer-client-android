@@ -5,7 +5,6 @@
     android:layout_height="wrap_content"
     android:background="@drawable/list_selector"
     android:clickable="true"
-    android:onClick="OnPlayerEvent"
     android:orientation="horizontal"
     android:padding="5dip" >
 
