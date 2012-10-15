@@ -7,7 +7,7 @@ import java.util.HashMap;
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.dialog.lstItem;
 import com.soccer.entities.impl.DAOPlayer;
-import com.soccer.preferences.Prefs;
+
 
 public class GameState implements Serializable{
 

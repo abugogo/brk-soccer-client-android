@@ -263,26 +263,6 @@ public class GameActivity extends Activity implements OnClickListener {
 		dlg.show();
 	}
 
-	public void OnPlayerEvent(final View view) {
-
-		final CharSequence[] items = { "Goal", "Cook", "Yellow card",
-				"Red card" };
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Event");
-		builder.setItems(items, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int item) {
-				Toast.makeText(
-						getApplicationContext(),
-						_gState.get_pList().get(view.getTag()).getFname()
-								+ " received " + items[item],
-						Toast.LENGTH_SHORT).show();
-			}
-		});
-		AlertDialog alert = builder.create();
-		alert.show();
-	}
-
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
