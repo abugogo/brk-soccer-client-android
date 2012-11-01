@@ -52,7 +52,8 @@
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
         android:textColor="#000000"
-        android:textSize="15dip" />
+        android:textSize="15dip"
+        android:typeface="sans" />
 
     <View
         android:id="@+id/sepa1"

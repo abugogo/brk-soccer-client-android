@@ -112,7 +112,7 @@ public class CheckedListAdapter extends BaseAdapter {
 		});
 
 		if (data.get(position).mChecked) {
-			String text = new String(data.get(position).mText);
+			//String text = new String(data.get(position).mText);
 			txtFirst.setText(new String(data.get(position).toStringEvents()));
 		} else
 			vi.setVisibility(View.INVISIBLE);

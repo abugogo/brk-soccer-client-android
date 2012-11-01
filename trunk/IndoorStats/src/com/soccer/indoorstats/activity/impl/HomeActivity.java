@@ -55,6 +55,11 @@ public class HomeActivity extends Activity {
 				break;
 			case R.id.homeButton5:
 				break;
+			case R.id.homeButton6:
+				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				break;
 			}
 			if(appIntent != null)
 				startActivity(appIntent);
