@@ -112,5 +112,27 @@
             android:layout_centerVertical="true"
             android:src="@drawable/arrow" />
     </RelativeLayout>
+    
+    <RelativeLayout
+        android:id="@+id/rl6"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl5" >
+
+        <Button
+            android:id="@+id/homeButton6"
+            style="@style/menu_button_style"
+            android:layout_centerVertical="true"
+            android:onClick="homeClick"
+            android:text="Exit" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="false"
+            android:layout_alignRight="@+id/homeButton6"
+            android:layout_centerVertical="true"
+            android:src="@drawable/arrow" />
+    </RelativeLayout>
 
 </RelativeLayout>

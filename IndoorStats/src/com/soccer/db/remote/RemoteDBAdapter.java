@@ -68,4 +68,16 @@ public class RemoteDBAdapter {
 		asyncCall.execute(params);
 	}
 	
+	public static void getCurrentTable(IAsyncTaskAct caller, String sUrl, String status) throws Exception {
+		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller,
+				status);
+		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
+		nva.add(new BasicNameValuePair("Accept", "application/json"));
+		nva.add(new BasicNameValuePair("Content-type", "application/json"));
+
+		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
+				+ "/SoccerServer/rest/table", RequestMethod.GET, nva, "");
+		asyncCall.execute(params);
+	}
+	
 }

@@ -24,7 +24,7 @@
             android:summary="Enable or disable data updates"
             android:title="Enable updates" 
             android:defaultValue="true"
-        /
+        /
         -->
 
         <com.soccer.preferences.CustSummaryPref
@@ -41,6 +41,17 @@
             android:summary="Number of players per team"
             android:title="Team number of players"
             app:summary_template="%s players per team" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="stats_prefs_category"
+        android:title="Stats preferences" >
+        <com.soccer.preferences.CustSummaryPref
+            android:defaultValue="6"
+            android:inputType="number"
+            android:key="stats_strip_min_id"
+            android:summary="Showing a minimum of %s strips"
+            android:title="Minimum Strips"
+            app:summary_template="%s strips" />
     </PreferenceCategory>
 
 </PreferenceScreen>
