@@ -22,10 +22,10 @@ import com.soccer.indoorstats.ingame.IGameEvent;
 public class CheckedListAdapter extends BaseAdapter {
 
 	private Activity activity;
-	private ArrayList<lstItem> data = new ArrayList<lstItem>();
+	private ArrayList<PLineupItems> data = new ArrayList<PLineupItems>();
 	private static LayoutInflater inflater = null;
 
-	public CheckedListAdapter(Activity a, ArrayList<lstItem> d) {
+	public CheckedListAdapter(Activity a, ArrayList<PLineupItems> d) {
 		activity = a;
 		setData(d);
 		inflater = (LayoutInflater) activity
@@ -44,11 +44,13 @@ public class CheckedListAdapter extends BaseAdapter {
 		return position;
 	}
 
-	public void setData(ArrayList<lstItem> arr) {
+	public void setData(ArrayList<PLineupItems> arr) {
 		data.clear();
-		for (int i = 0; i < arr.size(); i++) {
-			if (arr.get(i).mChecked)
-				data.add(arr.get(i));
+		if(arr != null) {
+			for (int i = 0; i < arr.size(); i++) {
+				if (arr.get(i).mChecked)
+					data.add(arr.get(i));
+			}
 		}
 		notifyDataSetChanged();
 	}

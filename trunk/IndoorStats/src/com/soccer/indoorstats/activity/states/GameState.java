@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.soccer.db.local.PlayersDbAdapter;
-import com.soccer.dialog.lstItem;
+import com.soccer.dialog.PLineupItems;
 import com.soccer.entities.impl.DAOPlayer;
 
 
 public class GameState implements Serializable{
 
 	private static final long serialVersionUID = -8375922051362602160L;
-	final private ArrayList<lstItem> _team1List = new ArrayList<lstItem>();
-	final private ArrayList<lstItem> _team2List = new ArrayList<lstItem>();
+	final private ArrayList<PLineupItems> _team1List = new ArrayList<PLineupItems>();
+	final private ArrayList<PLineupItems> _team2List = new ArrayList<PLineupItems>();
 	private PlayersDbAdapter _mDbHelper = null;
 	final private HashMap<String, DAOPlayer> _pList = new HashMap<String, DAOPlayer>();
 	private boolean _backwards = false;
@@ -70,11 +70,11 @@ public class GameState implements Serializable{
 		_started = start;
 	}
 
-	public ArrayList<lstItem> get_team1List() {
+	public ArrayList<PLineupItems> get_team1List() {
 		return _team1List;
 	}
 
-	public ArrayList<lstItem> get_team2List() {
+	public ArrayList<PLineupItems> get_team2List() {
 		return _team2List;
 	}
 

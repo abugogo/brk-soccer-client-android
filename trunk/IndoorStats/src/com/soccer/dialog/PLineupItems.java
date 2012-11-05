@@ -5,14 +5,14 @@ import java.util.ArrayList;
 
 import com.soccer.indoorstats.ingame.IGameEvent;
 
-public class lstItem implements Serializable {
+public class PLineupItems implements Serializable {
 	private static final long serialVersionUID = 6983509531169847290L;
 	public String mText;
 	public String mId;
 	public boolean mChecked;
 	public ArrayList<IGameEvent> mEvents = new ArrayList<IGameEvent>();
 
-	public lstItem(String text, String id, boolean checked) {
+	public PLineupItems(String text, String id, boolean checked) {
 		mText = text;
 		mId = id;
 		mChecked = checked;
@@ -57,5 +57,14 @@ public class lstItem implements Serializable {
 				+ (((g + og + r + y + c) > 0) ? "(" + g + "," + og + "," + r
 						+ "," + y + "," + c + ")" : "");
 		return evts;
+	}
+
+	public int getSumEvents(IGameEvent.EventType et) {
+		int g = 0;
+		for (IGameEvent ge : mEvents) {
+			if (ge.getEventType() == et)
+				g++;
+		}
+		return g;
 	}
 }
