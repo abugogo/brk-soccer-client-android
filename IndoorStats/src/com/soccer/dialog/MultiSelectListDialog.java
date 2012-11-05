@@ -15,10 +15,10 @@ import android.widget.Toast;
 public abstract class MultiSelectListDialog extends AlertDialog.Builder
 		implements OnClickListener {
 
-	private ArrayList<lstItem> mList = null;
+	private ArrayList<PLineupItems> mList = null;
 	private final String RIVAL = "* "; 
 	public MultiSelectListDialog(Context context, int title, int message,
-			ArrayList<lstItem> lst, ArrayList<String> lstRivalIds) {
+			ArrayList<PLineupItems> lst, ArrayList<String> lstRivalIds) {
 		super(context);
 		// setTitle(title);
 
@@ -28,7 +28,7 @@ public abstract class MultiSelectListDialog extends AlertDialog.Builder
 		final boolean[] chk = new boolean[numItems];
 
 		for (int i = 0; i < numItems; i++) {
-			lstItem nv = (lstItem) lst.get(i);
+			PLineupItems nv = (PLineupItems) lst.get(i);
 			data[i] = (lstRivalIds.contains(nv.mId))? RIVAL + nv.mText:nv.mText;
 			chk[i] = nv.mChecked;
 		}

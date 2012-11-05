@@ -14,6 +14,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
@@ -100,7 +101,6 @@ public class RestClient {
 		}
 		case POST: {
 			HttpPost request = new HttpPost(url);
-
 			// add headers
 			for (NameValuePair h : headers) {
 				request.addHeader(h.getName(), h.getValue());
@@ -111,20 +111,32 @@ public class RestClient {
 			else
 				jo = new JSONObject();
 			if (!params.isEmpty()) {
-
 				for (int i = 0; i < params.size(); i++) {
 					jo.put(params.get(i).getName(), params.get(i).getValue());
-
 				}
-
-				// request.setEntity(new UrlEncodedFormEntity(params,
-				// HTTP.UTF_8));
 			}
 			StringEntity se = new StringEntity(jo.toString());
-			//se.setContentType("text/xml");
-			//se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,
-			//		"application/json"));
-
+			request.setEntity(se);
+			executeRequest(request, url);
+			break;
+		}
+		case PUT: {
+			HttpPut request = new HttpPut(url);
+			// add headers
+			for (NameValuePair h : headers) {
+				request.addHeader(h.getName(), h.getValue());
+			}
+			JSONObject jo;
+			if (jsonBody != "")
+				jo = new JSONObject(jsonBody);
+			else
+				jo = new JSONObject();
+			if (!params.isEmpty()) {
+				for (int i = 0; i < params.size(); i++) {
+					jo.put(params.get(i).getName(), params.get(i).getValue());
+				}
+			}
+			StringEntity se = new StringEntity(jo.toString());
 			request.setEntity(se);
 			executeRequest(request, url);
 			break;

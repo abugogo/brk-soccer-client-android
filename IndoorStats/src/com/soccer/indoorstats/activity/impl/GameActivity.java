@@ -16,6 +16,8 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -39,16 +41,25 @@ import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.db.local.StateDbAdapter;
+import com.soccer.db.remote.R_DB_CONSTS;
+import com.soccer.db.remote.RemoteDBAdapter;
 import com.soccer.dialog.CheckedListAdapter;
 import com.soccer.dialog.MultiSelectListDialog;
-import com.soccer.dialog.lstItem;
+import com.soccer.dialog.PLineupItems;
+import com.soccer.entities.IDAOGame;
+import com.soccer.entities.impl.DAOGame;
+import com.soccer.entities.impl.DAOLineup;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.indoorstats.activity.states.GameState;
+import com.soccer.indoorstats.ingame.IGameEvent.EventType;
+import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.StopWatch;
 import com.soccer.preferences.Prefs;
 
-public class GameActivity extends Activity implements OnClickListener {
+public class GameActivity extends Activity implements OnClickListener,
+		IAsyncTaskAct {
 
 	private StopWatch _timer = new StopWatch();
 	private GameState _gState = null;
@@ -89,17 +100,17 @@ public class GameActivity extends Activity implements OnClickListener {
 		 * IntentAction(this, new Intent(this, GroupActivity.class),
 		 * R.drawable.players_icon); actionBar.addAction(GroupAction);
 		 */
-		
+
 		final Action SaveAction = new SaveGameAction();
 		actionBar.addAction(SaveAction);
 
 		final Action ResetAction = new ResetGameAction();
 		actionBar.addAction(ResetAction);
-		
+
 		final Action HomeAction = new IntentAction(this, new Intent(this,
 				HomeActivity.class), R.drawable.home_icon);
 		actionBar.addAction(HomeAction);
-		
+
 		tvTextView = (TextView) findViewById(R.id.textViewTimer);
 
 		btnStart = (Button) findViewById(R.id.buttonStart);
@@ -111,7 +122,47 @@ public class GameActivity extends Activity implements OnClickListener {
 			_gState = (GameState) getLastNonConfigurationInstance();
 		sharedPrefs = new Prefs(this);
 	}
-	
+
+	public void createGame() {
+		List<DAOLineup> lpList = new ArrayList<DAOLineup>();
+		for (PLineupItems pt1 : _gState.get_team1List()) {
+			DAOLineup d = new DAOLineup();
+			d.setColor('b');
+			d.setGoal(pt1.getSumEvents(EventType.Goal));
+			d.setOGoal(pt1.getSumEvents(EventType.O_Goal));
+			d.setPlayerId(pt1.mId);
+			lpList.add(d);
+		}
+		for (PLineupItems pt2 : _gState.get_team2List()) {
+			DAOLineup d = new DAOLineup();
+			d.setColor('w');
+			d.setGoal(pt2.getSumEvents(EventType.Goal));
+			d.setOGoal(pt2.getSumEvents(EventType.O_Goal));
+			d.setPlayerId(pt2.mId);
+			lpList.add(d);
+		}
+
+		IDAOGame daoGame = new DAOGame();
+		daoGame.setLineup(lpList);
+		daoGame.setBgoals(1);
+		daoGame.setGameDate(new Date());
+		daoGame.setWgoals(1);
+		daoGame.setWinner('b');
+
+		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
+		if (sUrl.equals("NULL")) {
+			sUrl = R_DB_CONSTS.SERVER_DEFAULT;
+		}
+
+		try {
+			RemoteDBAdapter.createGame(this, sUrl, "Updating game", daoGame);
+		} catch (Exception e) {
+			e.printStackTrace();
+			showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
+		}
+
+	}
+
 	private class SaveGameAction extends AbstractAction {
 
 		public SaveGameAction() {
@@ -120,14 +171,11 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		@Override
 		public void performAction(View view) {
-			Toast.makeText(
-					getApplicationContext(),
-					"Save game",
-					Toast.LENGTH_SHORT).show();
+			createGame();
 		}
 
 	}
-	
+
 	private class ResetGameAction extends AbstractAction {
 
 		public ResetGameAction() {
@@ -136,12 +184,15 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		@Override
 		public void performAction(View view) {
-			Toast.makeText(
-					getApplicationContext(),
-					"Reset game",
-					Toast.LENGTH_SHORT).show();
+			resetGame();
 		}
 
+	}
+	
+	public void resetGame() {
+		resetTimer();
+		adapter.setData(null);
+		adapter2.setData(null);
 	}
 
 	@Override
@@ -218,7 +269,7 @@ public class GameActivity extends Activity implements OnClickListener {
 		MultiSelectListDialog dlg;
 		ArrayList<String> rivalLstIds = new ArrayList<String>();
 		if (v == (Button) findViewById(R.id.button2)) {
-			for (lstItem lI : _gState.get_team2List()) {
+			for (PLineupItems lI : _gState.get_team2List()) {
 				if (lI.mChecked)
 					rivalLstIds.add(lI.mId);
 			}
@@ -238,7 +289,7 @@ public class GameActivity extends Activity implements OnClickListener {
 				}
 			};
 		} else {
-			for (lstItem lI : _gState.get_team1List()) {
+			for (PLineupItems lI : _gState.get_team1List()) {
 				if (lI.mChecked)
 					rivalLstIds.add(lI.mId);
 			}
@@ -343,11 +394,11 @@ public class GameActivity extends Activity implements OnClickListener {
 		int s = pArr.size();
 		for (int i = 0; i < s; i++) {
 			_gState.get_team1List().add(
-					new lstItem(pArr.get(i).getFname() + " "
+					new PLineupItems(pArr.get(i).getFname() + " "
 							+ pArr.get(i).getLname(), pArr.get(i).getId(),
 							false));
 			_gState.get_team2List().add(
-					new lstItem(pArr.get(i).getFname() + " "
+					new PLineupItems(pArr.get(i).getFname() + " "
 							+ pArr.get(i).getLname(), pArr.get(i).getId(),
 							false));
 			_gState.get_pList().put(pArr.get(i).getId(), pArr.get(i));
@@ -434,5 +485,25 @@ public class GameActivity extends Activity implements OnClickListener {
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void onSuccess(String result) {
+		Toast toast = Toast.makeText(this.getApplicationContext(),
+				"Game updated successfully", Toast.LENGTH_SHORT);
+		toast.show();
+		resetGame();
+	}
+
+	@Override
+	public void onFailure(int responseCode, String result) {
+		showDialog(0, DlgUtils.prepareDlgBundle("Failed updating game info: " + result));
+
+	}
+
+	@Override
+	public void onProgress() {
+		// TODO Auto-generated method stub
+
 	}
 }
