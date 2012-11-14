@@ -1,6 +1,8 @@
 package com.soccer.indoorstats.activity.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -29,6 +31,7 @@ public class GroupActivity extends ListActivity {
 	ListView list;
 	LazyAdapter adapter;
 	private ArrayList<DAOPlayer> mPList;
+	private int sign = 1;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,17 +39,10 @@ public class GroupActivity extends ListActivity {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle(R.string.group);
 
-		/*final Action PlayerAction = new IntentAction(this, new Intent(this,
-				PlayerActivity.class), R.drawable.player_icon);
-		actionBar.addAction(PlayerAction);
-		final Action GameAction = new IntentAction(this, new Intent(this,
-				GameActivity.class), R.drawable.game_icon);
-		actionBar.addAction(GameAction);
-*/
 		final Action HomeAction = new IntentAction(this, new Intent(this,
 				HomeActivity.class), R.drawable.home_icon);
 		actionBar.addAction(HomeAction);
-		
+
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
@@ -95,10 +91,23 @@ public class GroupActivity extends ListActivity {
 
 	}
 
+	public void onSort(View v) {
+		Comparator<DAOPlayer> comp = new SortByName();
+		Collections.sort(mPList, comp);
+		adapter.notifyDataSetChanged();
+		sign *= -1;
+	}
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putSerializable("State", 3);
+	}
+
+	private final class SortByName implements Comparator<DAOPlayer> {
+		public int compare(DAOPlayer i1, DAOPlayer i2) {
+			return i1.getFname().compareTo(i2.getFname()) * sign;
+		}
 	}
 
 }

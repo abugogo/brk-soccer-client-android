@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -58,27 +62,51 @@ public class StatsTableTab extends Activity implements IAsyncTaskAct {
 			m_pArr = (ArrayList<ITableRow>) EntityManager.readTable(result);
 			TableLayout tblLayout = (TableLayout) findViewById(R.id.strip_table);
 			int i = 1;
+			View titles = createTableRow("", "Player", "W", "D", "L", "Points");
+			addTableRow(tblLayout, titles);
 			if (m_pArr != null) {
+
 				for (Iterator<ITableRow> iter = m_pArr.iterator(); iter
 						.hasNext(); i++) {
 					com.soccer.entities.impl.TableRow tr = (com.soccer.entities.impl.TableRow) iter
 							.next();
-					TextView textView = new TextView(this);
-					String entry = i + ")" + tr.getFname() + " "
-							+ tr.getLname() + ": " + tr.getWins() + "-"
-							+ (tr.getGames() - tr.getWins() - tr.getLosses())
-							+ "-" + tr.getLosses() + " " + tr.getPoints();
-					textView.setText(entry);
-					textView.setTextColor(Color.BLACK);
-					TableRow tRow = new TableRow(this);
-					tRow.addView(textView);
-					tblLayout.addView(tRow);
+					View vi = createTableRow(tr, i);
+					addTableRow(tblLayout, vi);
 				}
 			}
 		} catch (SoccerException e) {
 			e.printStackTrace();
 		}
 
+	}
+
+	private void addTableRow(TableLayout tblLayout, View vi) {
+		TableRow tRow = new TableRow(this);
+		tRow.addView(vi);
+		tblLayout.addView(tRow);
+	}
+	
+	private View createTableRow(String pos, String name, String wins, String draws, String loses, String points) {
+		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+		View vi = inflater.inflate(R.layout.player_row_in_table, null);
+		TextView v = (TextView) vi.findViewById(R.id.tbl_pos);
+		v.setText(pos);
+		v = (TextView) vi.findViewById(R.id.tbl_pfname);
+		v.setText(name);
+		v = (TextView) vi.findViewById(R.id.tbl_wins);
+		v.setText(wins);
+		v = (TextView) vi.findViewById(R.id.tbl_draws);
+		v.setText(draws);
+		v = (TextView) vi.findViewById(R.id.tbl_loses);
+		v.setText(loses);
+		v = (TextView) vi.findViewById(R.id.tbl_pnts);
+		v.setText(points);
+		return vi;
+	}
+	
+	private View createTableRow(com.soccer.entities.impl.TableRow tr, int pos) {
+		return createTableRow(String.valueOf(pos), tr.getFname() + " " + tr.getLname(), String.valueOf(tr.getWins()), String.valueOf(tr.getGames() - tr.getWins() - tr.getLosses()), String.valueOf(tr.getLosses()), String.valueOf(tr.getPoints()));
 	}
 
 	@Override
