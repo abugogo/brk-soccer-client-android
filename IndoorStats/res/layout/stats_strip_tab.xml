@@ -6,14 +6,14 @@
 
     <ScrollView
         android:id="@+id/scrollView1"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="match_parent" >
 
         <TableLayout
             android:id="@+id/strip_table"
             style="@style/AppTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:background="@drawable/pitch1"
             android:scrollbars="vertical" >
         </TableLayout>
