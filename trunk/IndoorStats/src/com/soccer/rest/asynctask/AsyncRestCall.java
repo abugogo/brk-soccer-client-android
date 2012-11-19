@@ -29,7 +29,7 @@ public class AsyncRestCall extends AsyncTask<AsyncRestCallParams, Void, RestClie
 
 	@Override
 	protected RestClient doInBackground(AsyncRestCallParams... params) {
-		RestClient c = new RestClient(params[0].getmUrl());
+		RestClient c = new RestClient(params[0].getmUrl(), params[0].getContext());
 		if (params.length == 1) {
 			if(params[0].getmHeaders() != null){
 				for(NameValuePair nv:params[0].getmHeaders())

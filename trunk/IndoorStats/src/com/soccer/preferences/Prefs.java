@@ -64,4 +64,14 @@ public class Prefs {
 
 		return val;
 	}
+
+	public boolean getBoolPreference(String key, boolean def) {
+		boolean val = def;
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(myContext);
+		val = prefs.getBoolean(key, def);
+
+		return val;
+	}
+
 }

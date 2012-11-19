@@ -8,6 +8,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -16,16 +17,21 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
+import com.soccer.preferences.Prefs;
+
+import android.content.Context;
+
 public class RestClient {
-	
+
 	public enum RequestMethod {
 		GET, POST, PUT
 	}
-	
+
 	protected void onPostExecute(String result) {
 	}
 
@@ -34,7 +40,9 @@ public class RestClient {
 	private ArrayList<NameValuePair> headers;
 
 	private String url;
-
+	private boolean mProxyEnabled;
+	private String mProxyServer;
+	private int mProxyPort;
 	private int responseCode;
 	private String message;
 
@@ -52,11 +60,16 @@ public class RestClient {
 		return responseCode;
 	}
 
-	public RestClient(String url) {
+	public RestClient(String url, Context ctxt) {
 		this.url = url;
 		params = new ArrayList<NameValuePair>();
 		jsonBody = new String("");
 		headers = new ArrayList<NameValuePair>();
+		Prefs prefs = new Prefs(ctxt);
+		mProxyEnabled = prefs.getBoolPreference("use_proxy", false);
+		mProxyServer = prefs.getPreference("proxy_server", "");
+		mProxyPort = Integer.parseInt(prefs.getPreference("proxy_port", "0"));
+		
 	}
 
 	public void AddParam(String name, String value) {
@@ -147,7 +160,14 @@ public class RestClient {
 	private void executeRequest(HttpUriRequest request, String url) {
 		// HttpClient client = new DefaultHttpClient();
 		HttpClient client = HttpClientFactory.getThreadSafeClient();
-
+		boolean useproxy = (mProxyEnabled && mProxyServer != null && !mProxyServer.equals("") && mProxyPort > 0);
+		if (useproxy) {
+			HttpHost proxy = new HttpHost(mProxyServer, mProxyPort);
+			client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
+					proxy);
+			System.setProperty("http.proxyHost", mProxyServer);
+			System.setProperty("http.proxyPort", Integer.toString(mProxyPort));
+		}
 		HttpResponse httpResponse;
 
 		try {

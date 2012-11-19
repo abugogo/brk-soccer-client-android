@@ -21,6 +21,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -188,7 +189,7 @@ public class GameActivity extends Activity implements OnClickListener,
 		}
 
 	}
-	
+
 	public void resetGame() {
 		resetTimer();
 		adapter.setData(null);
@@ -497,7 +498,10 @@ public class GameActivity extends Activity implements OnClickListener,
 
 	@Override
 	public void onFailure(int responseCode, String result) {
-		showDialog(0, DlgUtils.prepareDlgBundle("Failed updating game info: " + result));
+		showDialog(
+				0,
+				DlgUtils.prepareDlgBundle("Failed updating game info: "
+						+ result));
 
 	}
 
@@ -505,5 +509,10 @@ public class GameActivity extends Activity implements OnClickListener,
 	public void onProgress() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public Context getAppContext() {
+		return getApplicationContext();
 	}
 }

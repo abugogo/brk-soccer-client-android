@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TableLayout;
@@ -101,5 +102,10 @@ public class StatsStripTab extends Activity implements IAsyncTaskAct {
 	public void onProgress() {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public Context getAppContext() {
+		return getApplicationContext();
 	}
 }

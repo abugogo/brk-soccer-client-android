@@ -1,7 +1,6 @@
 package com.soccer.db.remote;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -9,7 +8,6 @@ import org.apache.http.message.BasicNameValuePair;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.IDAOGame;
 import com.soccer.entities.IDAOPlayer;
-import com.soccer.entities.impl.DAOLineup;
 import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.rest.RestClient.RequestMethod;
 import com.soccer.rest.asynctask.AsyncRestCallBasic;
@@ -31,21 +29,19 @@ public class RemoteDBAdapter {
 
 	public static void getPlayers(IAsyncTaskAct caller, String sUrl,
 			String status) throws Exception {
-		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller,
-				status);
+		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller, status);
 		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
 		nva.add(new BasicNameValuePair("Accept", "application/json"));
 		nva.add(new BasicNameValuePair("Content-type", "application/json"));
 
 		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
-				+ "/SoccerServer/rest/players", RequestMethod.GET, nva, "");
+				+ "/SoccerServer/rest/players", RequestMethod.GET, nva, "", caller.getAppContext());
 		asyncCall.execute(params);
 	}
 
 	public static void updatePlayer(IAsyncTaskAct caller, String sUrl,
 			String status, IDAOPlayer p) throws Exception {
-		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller,
-				status);
+		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller, status);
 		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
 		nva.add(new BasicNameValuePair("Accept", "application/json"));
 		nva.add(new BasicNameValuePair("Content-type",
@@ -53,48 +49,48 @@ public class RemoteDBAdapter {
 
 		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
 				+ "/SoccerServer/rest/players/" + p.getId(),
-				RequestMethod.POST, nva, EntityManager.writePlayer(p));
+				RequestMethod.POST, nva, EntityManager.writePlayer(p), caller.getAppContext());
 		asyncCall.execute(params);
 
 	}
 
-	public static void getPlayerStats(IAsyncTaskAct caller, String sUrl, String pId,
+	public static void getPlayerStats(IAsyncTaskAct caller, String sUrl,
+			String pId, String status) throws Exception {
+		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller, status);
+		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
+		nva.add(new BasicNameValuePair("Accept", "application/json"));
+		nva.add(new BasicNameValuePair("Content-type", "application/json"));
+
+		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
+				+ "/SoccerServer/rest/players/" + pId + "/stats",
+				RequestMethod.GET, nva, "", caller.getAppContext());
+		asyncCall.execute(params);
+	}
+
+	public static void getCurrentTable(IAsyncTaskAct caller, String sUrl,
 			String status) throws Exception {
-		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller,
-				status);
+		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller, status);
 		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
 		nva.add(new BasicNameValuePair("Accept", "application/json"));
 		nva.add(new BasicNameValuePair("Content-type", "application/json"));
 
 		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
-				+ "/SoccerServer/rest/players/" + pId + "/stats", RequestMethod.GET, nva, "");
+				+ "/SoccerServer/rest/table", RequestMethod.GET, nva, "", caller.getAppContext());
 		asyncCall.execute(params);
 	}
-	
-	public static void getCurrentTable(IAsyncTaskAct caller, String sUrl, String status) throws Exception {
-		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller,
-				status);
-		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
-		nva.add(new BasicNameValuePair("Accept", "application/json"));
-		nva.add(new BasicNameValuePair("Content-type", "application/json"));
 
-		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
-				+ "/SoccerServer/rest/table", RequestMethod.GET, nva, "");
-		asyncCall.execute(params);
-	}
-	
 	public static void createGame(IAsyncTaskAct caller, String sUrl,
-			String status, IDAOGame game) throws Exception {
-		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller,
-				status);
+			String status, IDAOGame game)
+			throws Exception {
+		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller, status);
 		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
 		nva.add(new BasicNameValuePair("Accept", "application/json"));
 		nva.add(new BasicNameValuePair("Content-type",
 				"application/x-www-form-urlencoded"));
 
 		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
-				+ "/SoccerServer/rest/games",
-				RequestMethod.PUT, nva, EntityManager.writeGame(game));
+				+ "/SoccerServer/rest/games", RequestMethod.PUT, nva,
+				EntityManager.writeGame(game), caller.getAppContext());
 		asyncCall.execute(params);
 
 	}
