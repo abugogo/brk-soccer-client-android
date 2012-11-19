@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
@@ -247,5 +248,10 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		return DlgUtils.createAlertMessage(this, args);
+	}
+	
+	@Override
+	public Context getAppContext() {
+		return getApplicationContext();
 	}
 }

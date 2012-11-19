@@ -168,4 +168,9 @@ public class StatsTableTab extends Activity implements IAsyncTaskAct {
 		// TODO Auto-generated method stub
 
 	}
+	
+	@Override
+	public Context getAppContext() {
+		return getApplicationContext();
+	}
 }

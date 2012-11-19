@@ -13,20 +13,35 @@
             android:summary="Define the server and port"
             android:title="Connection Settings"
             app:summary_template="Server: %s" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_proxy"
+            android:summary="Enable or disable proxy settings"
+            android:title="Enable proxy" />
+
+        <com.soccer.preferences.CustSummaryPref
+            android:defaultValue="proxy"
+            android:dependency="use_proxy"
+            android:dialogMessage="Proxy server details"
+            android:inputType="text"
+            android:key="proxy_server"
+            android:summary="Define the proxy server"
+            android:title="Proxy Server Settings"
+            app:summary_template="Proxy: %s" />
+        <com.soccer.preferences.CustSummaryPref
+            android:defaultValue="8080"
+            android:dependency="use_proxy"
+            android:dialogMessage="Proxy port details"
+            android:inputType="number"
+            android:key="proxy_port"
+            android:summary="Define the proxy port"
+            android:title="Proxy Port Settings"
+            app:summary_template="Port: %s" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="game_prefs_category"
         android:title="Game preferences" >
-
-        <!--
-        CheckBoxPreference 
-            android:key="perform_updates"
-            android:summary="Enable or disable data updates"
-            android:title="Enable updates" 
-            android:defaultValue="true"
-        /
-        -->
-
         <com.soccer.preferences.CustSummaryPref
             android:defaultValue="7"
             android:inputType="number"
