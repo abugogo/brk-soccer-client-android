@@ -7,10 +7,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils.TruncateAt;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.TableLayout;
+import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -61,23 +63,69 @@ public class StatsTableTab extends Activity implements IAsyncTaskAct {
 		try {
 			m_pArr = (ArrayList<ITableRow>) EntityManager.readTable(result);
 			TableLayout tblLayout = (TableLayout) findViewById(R.id.strip_table);
+			tblLayout.setColumnStretchable(5, true);
 			int i = 1;
-			View titles = createTableRow("", "Player", "W", "D", "L", "Points");
-			addTableRow(tblLayout, titles);
+			TableRow tRow = null; 
+			tRow = createTableRow("", "Player", "W", "D", "L", "Points");
+			tblLayout.addView(tRow, new TableLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 			if (m_pArr != null) {
 
 				for (Iterator<ITableRow> iter = m_pArr.iterator(); iter
 						.hasNext(); i++) {
 					com.soccer.entities.impl.TableRow tr = (com.soccer.entities.impl.TableRow) iter
 							.next();
-					View vi = createTableRow(tr, i);
-					addTableRow(tblLayout, vi);
+					tRow = createTableRow(tr, i);
+					tblLayout.addView(tRow, new TableLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 				}
 			}
 		} catch (SoccerException e) {
 			e.printStackTrace();
 		}
 
+	}
+	
+	private TableRow createTableRow(String pos, String name, String wins, String draws, String loses, String points) {
+		TableRow tRow = new TableRow(this);
+		tRow.setBackgroundResource(R.drawable.list_selector);
+		
+		TextView v = new TextView(this);
+		v.setText(pos);
+		v.setTextColor(Color.BLACK);
+		tRow.addView(v);
+		v = new TextView(this);
+		v.setWidth(145);
+		v.setEllipsize(TruncateAt.MARQUEE);
+		v.setText(name);
+		v.setTextColor(Color.BLACK);
+		tRow.addView(v);
+		v = new TextView(this);
+		v.setWidth(30);
+		v.setText(wins);
+		v.setTextColor(Color.BLACK);
+		tRow.addView(v);
+		v = new TextView(this);
+		v.setWidth(30);
+		v.setText(draws);
+		v.setTextColor(Color.BLACK);
+		tRow.addView(v);
+		v = new TextView(this);
+		v.setWidth(30);
+		v.setText(loses);
+		v.setTextColor(Color.BLACK);
+		tRow.addView(v);
+		v = new TextView(this);
+		v.setPadding(0, 0, 20, 0);
+		v.setWidth(65);
+		v.setText(points);
+		v.setTextColor(Color.BLACK);
+		v.setGravity(Gravity.RIGHT);
+		tRow.addView(v);
+
+		return tRow;
+	}
+	
+	private TableRow createTableRow(com.soccer.entities.impl.TableRow tr, int pos) {
+		return createTableRow(String.valueOf(pos), tr.getFname() + " " + tr.getLname(), String.valueOf(tr.getWins()), String.valueOf(tr.getGames() - tr.getWins() - tr.getLosses()), String.valueOf(tr.getLosses()), String.valueOf(tr.getPoints()));
 	}
 
 	private void addTableRow(TableLayout tblLayout, View vi) {
@@ -86,7 +134,7 @@ public class StatsTableTab extends Activity implements IAsyncTaskAct {
 		tblLayout.addView(tRow);
 	}
 	
-	private View createTableRow(String pos, String name, String wins, String draws, String loses, String points) {
+	private View createView(String pos, String name, String wins, String draws, String loses, String points) {
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		View vi = inflater.inflate(R.layout.player_row_in_table, null);
@@ -105,8 +153,8 @@ public class StatsTableTab extends Activity implements IAsyncTaskAct {
 		return vi;
 	}
 	
-	private View createTableRow(com.soccer.entities.impl.TableRow tr, int pos) {
-		return createTableRow(String.valueOf(pos), tr.getFname() + " " + tr.getLname(), String.valueOf(tr.getWins()), String.valueOf(tr.getGames() - tr.getWins() - tr.getLosses()), String.valueOf(tr.getLosses()), String.valueOf(tr.getPoints()));
+	private View createView(com.soccer.entities.impl.TableRow tr, int pos) {
+		return createView(String.valueOf(pos), tr.getFname() + " " + tr.getLname(), String.valueOf(tr.getWins()), String.valueOf(tr.getGames() - tr.getWins() - tr.getLosses()), String.valueOf(tr.getLosses()), String.valueOf(tr.getPoints()));
 	}
 
 	@Override
