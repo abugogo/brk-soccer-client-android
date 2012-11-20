@@ -23,6 +23,7 @@ import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.indoorstats.utils.DlgUtils;
+import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
 import com.soccer.preferences.SoccerPrefsActivity;
@@ -73,7 +74,7 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 				try {
 					RemoteDBAdapter.getPlayers(this, sUrl, "Downloading data");
 				} catch (Exception e) {
-					e.printStackTrace();
+					Logger.e("login failed due get players failure", e);
 					showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
 				}
 			} else {
@@ -96,7 +97,7 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.e("login activity failed due players creation failure", e);
 		}
 	}
 
@@ -127,7 +128,7 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 			ArrayList<IDAOPlayer> pArr = EntityManager.readPlayers(result);
 			LoadPlayers(pArr);
 		} catch (SoccerException e) {
-			e.printStackTrace();
+			Logger.e("login activity onSuccess failed", e);
 		}
 
 		EditText et = (EditText) findViewById(R.id.editIdNumber);

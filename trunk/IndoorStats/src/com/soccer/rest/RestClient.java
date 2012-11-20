@@ -22,6 +22,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
+import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.preferences.Prefs;
 
 import android.content.Context;
@@ -165,8 +166,8 @@ public class RestClient {
 			HttpHost proxy = new HttpHost(mProxyServer, mProxyPort);
 			client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
 					proxy);
-			System.setProperty("http.proxyHost", mProxyServer);
-			System.setProperty("http.proxyPort", Integer.toString(mProxyPort));
+			//System.setProperty("http.proxyHost", mProxyServer);
+			//System.setProperty("http.proxyPort", Integer.toString(mProxyPort));
 		}
 		HttpResponse httpResponse;
 
@@ -188,10 +189,10 @@ public class RestClient {
 
 		} catch (ClientProtocolException e) {
 			client.getConnectionManager().shutdown();
-			e.printStackTrace();
+			Logger.e("restclient failed ClientProtocolException ", e);
 		} catch (IOException e) {
 			client.getConnectionManager().shutdown();
-			e.printStackTrace();
+			Logger.e("restclient failed IOException", e);
 		}
 	}
 
@@ -206,12 +207,12 @@ public class RestClient {
 				sb.append(line + "\n");
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logger.e("restclient failed convertStreamToString due to ioexception", e);
 		} finally {
 			try {
 				is.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Logger.e("restclient failed convertStreamToString due to ioexception in close", e);
 			}
 		}
 		return sb.toString();

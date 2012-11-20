@@ -1,10 +1,11 @@
 package com.soccer.db.local;
 
+import com.soccer.indoorstats.utils.log.Logger;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class DbAdapterBase {
 	protected static final String DATABASE_PLAYERS_TABLE = "players";
@@ -70,7 +71,7 @@ public class DbAdapterBase {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.w(TAG_PLAYERS, "Upgrading database from version " + oldVersion + " to "
+			Logger.w("Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS " + DATABASE_PLAYERS_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + DATABASE_STATE_TABLE);

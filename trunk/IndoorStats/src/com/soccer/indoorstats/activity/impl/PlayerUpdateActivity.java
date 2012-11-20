@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageView;
@@ -31,6 +30,7 @@ import com.soccer.imageListUtils.ImageLoader;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.indoorstats.utils.DlgUtils;
+import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.preferences.Prefs;
 
 public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
@@ -43,7 +43,7 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.i("LifeCycle", "PlayerUpdateActivity onCreate");
+		Logger.i("PlayerUpdateActivity onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.player_update_layout);
 
@@ -69,7 +69,7 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 	}
 
 	private void populateFields() {
-		Log.i("Info", "PlayerUpdateActivity populateFields");
+		Logger.i("PlayerUpdateActivity populateFields");
 		if (mPID != null && !mPID.equals("")) {
 			LoadPlayerFromDB(mPID);
 
@@ -141,7 +141,7 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 							0,
 							DlgUtils.prepareDlgBundle("Failed to update player:"
 									+ e.getMessage()));
-					e.printStackTrace();
+					Logger.e("update player failed", e);
 				}
 			} else {
 				Toast toast = Toast.makeText(this.getApplicationContext(),
@@ -177,9 +177,9 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 							.parse(sBDate);
 
 			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
+				Logger.e("player update activity loadplayersfromdb failed due to illegal state", e);
 			} catch (ParseException e) {
-				e.printStackTrace();
+				Logger.e("player update activity loadplayersfromdb failed due to parse exception", e);
 			}
 			if (d != null)
 				p.setBday(d);
@@ -194,14 +194,14 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 
 	@Override
 	protected void onPause() {
-		Log.i("LifeCycle", "PlayerUpdateActivity onPause");
+		Logger.i("PlayerUpdateActivity onPause");
 		super.onPause();
 		saveState();
 	}
 
 	@Override
 	protected void onResume() {
-		Log.i("LifeCycle", "PlayerUpdateActivity onResume");
+		Logger.i("PlayerUpdateActivity onResume");
 		super.onResume();
 		mPID = mPrefs.getPreference(PlayersDbAdapter.KEY_ID, mPID);
 		populateFields();
@@ -209,7 +209,7 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		Log.i("LifeCycle", "PlayerUpdateActivity onSaveInstanceState");
+		Logger.i("PlayerUpdateActivity onSaveInstanceState");
 		super.onSaveInstanceState(outState);
 		saveState();
 	}

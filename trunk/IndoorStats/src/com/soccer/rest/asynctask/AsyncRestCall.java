@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
+import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.rest.RestClient;
 
 public class AsyncRestCall extends AsyncTask<AsyncRestCallParams, Void, RestClient> {
@@ -40,7 +41,7 @@ public class AsyncRestCall extends AsyncTask<AsyncRestCallParams, Void, RestClie
 				c.ExecuteCall(params[0].getmMethod());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.e("Asyncrestcall failed", e);
 			}
 			
 			

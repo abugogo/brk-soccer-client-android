@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,6 +23,7 @@ import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.ImageLoader;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.utils.DlgUtils;
+import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.preferences.Prefs;
 
 public class PlayerActivity extends Activity {
@@ -35,7 +35,7 @@ public class PlayerActivity extends Activity {
 	private Prefs mPrefs;
 
 	public void onCreate(Bundle savedInstanceState) {
-		Log.i("LifeCycle", "PlayerActivity onCreate");
+		Logger.i("PlayerActivity onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.player_layout);
 
@@ -72,7 +72,7 @@ public class PlayerActivity extends Activity {
 	}
 
 	private void populateFields() {
-		Log.i("Info", "PlayerActivity populateFields");
+		Logger.i("PlayerActivity populateFields");
 		if (mPID != null && !mPID.equals("")) {
 			LoadPlayerFromDB(mPID);
 
@@ -133,9 +133,9 @@ public class PlayerActivity extends Activity {
 							.parse(sBDate);
 
 			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
+				Logger.e("player activity loadplayersfromdb failed due to illegal state", e);
 			} catch (ParseException e) {
-				e.printStackTrace();
+				Logger.e("player activity loadplayersfromdb failed due to parser exception", e);
 			}
 			if (d != null)
 				p.setBday(d);
@@ -150,14 +150,14 @@ public class PlayerActivity extends Activity {
 
 	@Override
 	protected void onPause() {
-		Log.i("LifeCycle", "PlayerActivity onPause");
+		Logger.i("PlayerActivity onPause");
 		super.onPause();
 		saveState();
 	}
 
 	@Override
 	protected void onResume() {
-		Log.i("LifeCycle", "PlayerActivity onResume");
+		Logger.i("PlayerActivity onResume");
 		super.onResume();
 		mPID = mPrefs.getPreference(PlayersDbAdapter.KEY_ID, mPID);
 		populateFields();
@@ -165,7 +165,7 @@ public class PlayerActivity extends Activity {
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		Log.i("LifeCycle", "PlayerActivity onSaveInstanceState");
+		Logger.i("PlayerActivity onSaveInstanceState");
 		super.onSaveInstanceState(outState);
 		saveState();
 	}

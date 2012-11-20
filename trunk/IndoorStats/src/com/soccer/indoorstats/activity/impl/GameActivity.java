@@ -57,6 +57,7 @@ import com.soccer.indoorstats.activity.states.GameState;
 import com.soccer.indoorstats.ingame.IGameEvent.EventType;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.StopWatch;
+import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.preferences.Prefs;
 
 public class GameActivity extends Activity implements OnClickListener,
@@ -158,7 +159,7 @@ public class GameActivity extends Activity implements OnClickListener,
 		try {
 			RemoteDBAdapter.createGame(this, sUrl, "Updating game", daoGame);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.e("create game failed", e);
 			showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
 		}
 
@@ -361,11 +362,11 @@ public class GameActivity extends Activity implements OnClickListener,
 						updateTimer();
 					}
 				} catch (StreamCorruptedException e) {
-					e.printStackTrace();
+					Logger.e("game activity restore state failed due to corrupted stream", e);
 				} catch (IOException e) {
-					e.printStackTrace();
+					Logger.e("game activity restore state failed due to io issue", e);
 				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+					Logger.e("game activity restore state failed due to class not found", e);
 				}
 			}
 		}
@@ -434,7 +435,7 @@ public class GameActivity extends Activity implements OnClickListener,
 			getStatesDbAdapter().insertOrUpdateState(bos);
 			getStatesDbAdapter().close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logger.e("game activity save state failed due to io", e);
 		}
 
 	}

@@ -23,6 +23,7 @@ import com.soccer.entities.ITableRow;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.indoorstats.utils.DlgUtils;
+import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
 
@@ -52,7 +53,7 @@ public class StatsTableTab extends Activity implements IAsyncTaskAct {
 				RemoteDBAdapter.getCurrentTable(this, sUrl,
 						"Downloading table data");
 			} catch (Exception e) {
-				e.printStackTrace();
+				Logger.e("get current table failed", e);
 				showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
 			}
 		}
@@ -79,7 +80,7 @@ public class StatsTableTab extends Activity implements IAsyncTaskAct {
 				}
 			}
 		} catch (SoccerException e) {
-			e.printStackTrace();
+			Logger.e("onSuccess of stats table tab failed", e);
 		}
 
 	}
