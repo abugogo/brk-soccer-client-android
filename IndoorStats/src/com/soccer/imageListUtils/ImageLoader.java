@@ -21,6 +21,7 @@ import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
 import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.utils.log.Logger;
 
 public class ImageLoader {
 
@@ -77,7 +78,7 @@ public class ImageLoader {
 			bitmap = decodeFile(f);
 			return bitmap;
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			Logger.e("getting bitmap failed", ex);
 			return null;
 		}
 	}

@@ -21,6 +21,7 @@ import com.soccer.entities.impl.WinLoseStrip;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.indoorstats.utils.DlgUtils;
+import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
 
@@ -53,7 +54,7 @@ public class StatsStripTab extends Activity implements IAsyncTaskAct {
 				RemoteDBAdapter.getPlayerStats(this, sUrl, mPID,
 						"Downloading player stats");
 			} catch (Exception e) {
-				e.printStackTrace();
+				Logger.e("get player stats failed", e);
 				showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
 			}
 		}
@@ -81,7 +82,7 @@ public class StatsStripTab extends Activity implements IAsyncTaskAct {
 				}
 			}
 		} catch (SoccerException e) {
-			e.printStackTrace();
+			Logger.e("onSuccess of stats strip tab failed", e);
 		}
 
 	}
