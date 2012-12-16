@@ -1,10 +1,18 @@
 package com.soccer.indoorstats.activity.impl;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,24 +21,30 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.db.local.StateDbAdapter;
 import com.soccer.db.remote.R_DB_CONSTS;
-import com.soccer.db.remote.RemoteDBAdapter;
-import com.soccer.entities.EntityManager;
+import com.soccer.dialog.ListDialog;
 import com.soccer.entities.IDAOPlayer;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
-import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
+import com.soccer.indoorstats.activity.i.StrListDialogAct;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.log.Logger;
-import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
 import com.soccer.preferences.SoccerPrefsActivity;
+import com.soccer.rest.LoopjRestClient;
 
-public class LoginActivity extends Activity implements IAsyncTaskAct {
+public class LoginActivity extends Activity implements StrListDialogAct {
 	private PlayersDbAdapter mDbHelper;
 	Prefs sharedPrefs;
+	private ProgressDialog mProgDialog;
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +53,7 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
 		sharedPrefs = new Prefs(this);
+		this.mProgDialog = new ProgressDialog(this);
 	}
 
 	@Override
@@ -61,6 +76,8 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 
 		EditText et = (EditText) findViewById(R.id.editIdNumber);
 		String id = et.getText().toString();
+		et = (EditText) findViewById(R.id.editPassword);
+		String password = et.getText().toString();
 
 		if (id != null && !id.equals("")) {
 			String loggedInId = sharedPrefs.getPreference(
@@ -72,9 +89,35 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 				}
 
 				try {
-					RemoteDBAdapter.getPlayers(this, sUrl, "Downloading data");
+					RequestParams params = new RequestParams();
+					params.put("u", id);
+					params.put("p", password);
+					this.mProgDialog.setMessage("Logging in...");
+					this.mProgDialog.show();
+					LoopjRestClient.get(sUrl.concat("/SoccerServer/login"),
+							params, new JsonHttpResponseHandler() {
+								@Override
+								public void onSuccess(JSONObject res) {
+									onLoginSuccess(res);
+								}
+
+								@Override
+								public void onFailure(Throwable tr, String res) {
+									onLoginFailure(0, tr.getMessage());
+								}
+
+								@Override
+								public void onFinish() {
+									if (mProgDialog.isShowing())
+										mProgDialog.dismiss();
+									Logger.i("login finished");
+								}
+							});
+
+					// RemoteDBAdapter.loginPlayer(this, sUrl, id, password,
+					// "Loggin In");
 				} catch (Exception e) {
-					Logger.e("login failed due get players failure", e);
+					Logger.e("login failed", e);
 					showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
 				}
 			} else {
@@ -84,6 +127,23 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 			showDialog(0,
 					DlgUtils.prepareDlgBundle("Please provide a valid ID"));
 		}
+
+		// old code starts
+		/*
+		 * if (id != null && !id.equals("")) { String loggedInId =
+		 * sharedPrefs.getPreference( PlayersDbAdapter.KEY_ID, ""); if
+		 * (!loggedInId.equals(id)) { String sUrl =
+		 * sharedPrefs.getPreference("server_port", "NULL"); if
+		 * (sUrl.equals("NULL")) { sUrl = R_DB_CONSTS.SERVER_DEFAULT; }
+		 * 
+		 * try { RemoteDBAdapter.getPlayers(this, sUrl, "Downloading data"); }
+		 * catch (Exception e) {
+		 * Logger.e("login failed due get players failure", e); showDialog(0,
+		 * DlgUtils.prepareDlgBundle(e.getMessage())); } } else { loadApp(id); }
+		 * } else { showDialog(0,
+		 * DlgUtils.prepareDlgBundle("Please provide a valid ID")); }
+		 */
+		// end old code
 	}
 
 	private void LoadPlayers(ArrayList<IDAOPlayer> pArr) {
@@ -123,13 +183,100 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 		}
 	}
 
-	public void onSuccess(String result) {
+	public void onLoginSuccess(JSONObject result) {
 		try {
-			ArrayList<IDAOPlayer> pArr = EntityManager.readPlayers(result);
-			LoadPlayers(pArr);
-		} catch (SoccerException e) {
-			Logger.e("login activity onSuccess failed", e);
+			JSONArray acc_arr = result.getJSONArray("accounts");
+			Set<CharSequence> ss = new HashSet<CharSequence>();
+			int s = acc_arr.length();
+			// check for multiple accounts
+			if (s > 1) {
+				for (int i = 0; i < s; i++) {
+					ss.add(acc_arr.getString(i));
+				}
+				ListDialog ldlg = new ListDialog(this, "Select Account", ss);
+				ldlg.show();
+			} else if (s == 1) {
+				// only one account - common case
+				LoginToAccount(acc_arr.getString(0));
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+	}
+
+	public void onLoginFailure(int responseCode, String result) {
+		showDialog(0, DlgUtils.prepareDlgBundle("Failed login: " + result));
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id, Bundle args) {
+		return DlgUtils.createAlertMessage(this, args);
+	}
+
+	@Override
+	public void StringSelected(CharSequence selection) {
+		// account selected
+		LoginToAccount(selection);
+	}
+
+	private void LoginToAccount(CharSequence accountName) {
+		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
+		if (sUrl.equals("NULL")) {
+			sUrl = R_DB_CONSTS.SERVER_DEFAULT;
+		}
+
+		try {
+			this.mProgDialog.setMessage("Downloading account info...");
+			this.mProgDialog.show();
+			LoopjRestClient.get(
+					sUrl.concat("/SoccerServer/rest/")
+							.concat((String) accountName).concat("/players"),
+					null, new JsonHttpResponseHandler() {
+						@Override
+						public void onSuccess(JSONArray res) {
+							onAccountLoginSuccess(res);
+						}
+
+						@Override
+						public void onFailure(Throwable tr, String res) {
+							onLoginFailure(0, tr.getMessage());
+						}
+
+						@Override
+						public void onFinish() {
+							if (mProgDialog.isShowing())
+								mProgDialog.dismiss();
+							Logger.i("account login finished");
+						}
+					});
+
+			// RemoteDBAdapter.loginPlayer(this, sUrl, id, password,
+			// "Loggin In");
+		} catch (Exception e) {
+			Logger.e("account login failed", e);
+			showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
+		}
+
+		/*
+		 * try { ArrayList<IDAOPlayer> pArr = EntityManager.readPlayers(result);
+		 * LoadPlayers(pArr); } catch (SoccerException e) {
+		 * Logger.e("login activity onSuccess failed", e); }
+		 * 
+		 * EditText et = (EditText) findViewById(R.id.editIdNumber); String id =
+		 * et.getText().toString(); StateDbAdapter sdba = new
+		 * StateDbAdapter(this); sdba.open(); sdba.deleteAllStates();
+		 * sdba.close(); loadApp(id);
+		 */
+	}
+
+	protected void onAccountLoginSuccess(JSONArray res) {
+		Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+		Type collectionType = new TypeToken<ArrayList<DAOPlayer>>() {
+		}.getType();
+		ArrayList<IDAOPlayer> pArr = gson.fromJson(res.toString(),
+				collectionType);
+		LoadPlayers(pArr);
 
 		EditText et = (EditText) findViewById(R.id.editIdNumber);
 		String id = et.getText().toString();
@@ -140,22 +287,4 @@ public class LoginActivity extends Activity implements IAsyncTaskAct {
 		loadApp(id);
 	}
 
-	public void onFailure(int responseCode, String result) {
-		showDialog(0, DlgUtils.prepareDlgBundle("Failed login: " + result));
-	}
-
-	public void onProgress() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected Dialog onCreateDialog(int id, Bundle args) {
-		return DlgUtils.createAlertMessage(this, args);
-	}
-
-	@Override
-	public Context getAppContext() {
-		return getApplicationContext();
-	}
 }

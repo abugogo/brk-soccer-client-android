@@ -26,6 +26,19 @@ public class RemoteDBAdapter {
 	 * 
 	 * }
 	 */
+	public static void loginPlayer(IAsyncTaskAct caller, String sUrl,
+			String user, String password, String status) throws Exception {
+		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller, status);
+		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
+		nva.add(new BasicNameValuePair("Accept", "application/json"));
+		nva.add(new BasicNameValuePair("Content-type", "application/json"));
+
+		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
+				.concat("/SoccerServer/login?u=").concat(user).concat("&p=")
+				.concat(password), RequestMethod.GET, nva, "",
+				caller.getAppContext());
+		asyncCall.execute(params);
+	}
 
 	public static void getPlayers(IAsyncTaskAct caller, String sUrl,
 			String status) throws Exception {
@@ -35,7 +48,8 @@ public class RemoteDBAdapter {
 		nva.add(new BasicNameValuePair("Content-type", "application/json"));
 
 		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
-				+ "/SoccerServer/rest/players", RequestMethod.GET, nva, "", caller.getAppContext());
+				+ "/SoccerServer/rest/players", RequestMethod.GET, nva, "",
+				caller.getAppContext());
 		asyncCall.execute(params);
 	}
 
@@ -49,7 +63,8 @@ public class RemoteDBAdapter {
 
 		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
 				+ "/SoccerServer/rest/players/" + p.getId(),
-				RequestMethod.POST, nva, EntityManager.writePlayer(p), caller.getAppContext());
+				RequestMethod.POST, nva, EntityManager.writePlayer(p),
+				caller.getAppContext());
 		asyncCall.execute(params);
 
 	}
@@ -75,13 +90,13 @@ public class RemoteDBAdapter {
 		nva.add(new BasicNameValuePair("Content-type", "application/json"));
 
 		AsyncRestCallParams params = new AsyncRestCallParams(sUrl
-				+ "/SoccerServer/rest/table", RequestMethod.GET, nva, "", caller.getAppContext());
+				+ "/SoccerServer/rest/table", RequestMethod.GET, nva, "",
+				caller.getAppContext());
 		asyncCall.execute(params);
 	}
 
 	public static void createGame(IAsyncTaskAct caller, String sUrl,
-			String status, IDAOGame game)
-			throws Exception {
+			String status, IDAOGame game) throws Exception {
 		AsyncRestCallBasic asyncCall = new AsyncRestCallBasic(caller, status);
 		ArrayList<NameValuePair> nva = new ArrayList<NameValuePair>();
 		nva.add(new BasicNameValuePair("Accept", "application/json"));
