@@ -7,9 +7,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
@@ -20,26 +22,29 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.soccer.db.local.PlayersDbAdapter;
-import com.soccer.db.remote.RemoteDBAdapter;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.ImageLoader;
 import com.soccer.indoorstats.R;
-import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.preferences.Prefs;
+import com.soccer.rest.LoopjRestClient;
 
-public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
+public class PlayerUpdateActivity extends Activity {
 
 	private PlayersDbAdapter mDbHelper;
 	private DAOPlayer mPlayer = null;
 	private String mPID = null;
 	private ImageLoader imageLoader;
 	private Prefs mPrefs;
+	private ProgressDialog mProgDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +67,12 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
 		imageLoader = new ImageLoader(this.getApplicationContext());
-		
+
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
 		LoadPlayerFromDB(mPID);
+
+		this.mProgDialog = new ProgressDialog(this);
 	}
 
 	private void populateFields() {
@@ -87,7 +94,9 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 				if (bDay != null) {
 					Calendar c = Calendar.getInstance();
 					c.setTime(bDay);
-					((DatePicker) findViewById(R.id.bday)).init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), null);
+					((DatePicker) findViewById(R.id.bday)).init(
+							c.get(Calendar.YEAR), c.get(Calendar.MONTH),
+							c.get(Calendar.DAY_OF_MONTH), null);
 				}
 				ImageView thumb_image = (ImageView) findViewById(R.id.pimage); // thumb
 																				// image
@@ -103,6 +112,7 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 		}
 
 	}
+
 	private class SavePAction extends AbstractAction {
 
 		public SavePAction() {
@@ -123,26 +133,51 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 			String newPhone = ((TextView) findViewById(R.id.ptel1)).getText()
 					.toString();
 			DatePicker datePicker = ((DatePicker) findViewById(R.id.bday));
-			Date d = new Date(datePicker.getYear() - 1900, datePicker.getMonth(), datePicker.getDayOfMonth());
-			
-			boolean dirty = (!mPlayer.getEmail().equals(newEmail) || !mPlayer
-					.getTel1().equals(newPhone) || mPlayer.getBday() == null || !mPlayer.getBday().equals(d));
+			Date d = new Date(datePicker.getYear() - 1900,
+					datePicker.getMonth(), datePicker.getDayOfMonth());
+
+			boolean dirty = (!mPlayer.getEmail().equals(newEmail)
+					|| !mPlayer.getTel1().equals(newPhone)
+					|| mPlayer.getBday() == null || !mPlayer.getBday()
+					.equals(d));
 			if (dirty) {
 				mPlayer.setBday(d);
 				mPlayer.setEmail(newEmail);
 				mPlayer.setTel1(newPhone);
 				String sUrl = mPrefs.getPreference("server_port", "NULL");
-				try {
-					RemoteDBAdapter.updatePlayer(this, sUrl,
-							"Updating player info", mPlayer);
 
-				} catch (Exception e) {
-					showDialog(
-							0,
-							DlgUtils.prepareDlgBundle("Failed to update player:"
-									+ e.getMessage()));
-					Logger.e("update player failed", e);
-				}
+				RequestParams params;
+				Gson gson = new Gson();
+				params = new RequestParams();
+				params.put("JSON", gson.toJson(mPlayer));
+
+				mProgDialog.setMessage("Updating...");
+				mProgDialog.show();
+
+				LoopjRestClient.post(
+						sUrl.concat("/SoccerServer/rest/")
+								.concat(mPrefs
+										.getPreference("account_name", ""))
+								.concat("/players/").concat(mPlayer.getId()),
+						params, new JsonHttpResponseHandler() {
+
+							@Override
+							public void onSuccess(JSONObject res) {
+								onUpdateSuccess(res);
+							}
+
+							@Override
+							public void onFailure(Throwable tr, String res) {
+								onUpdateFailure(0, tr.getMessage());
+							}
+
+							@Override
+							public void onFinish() {
+								if (mProgDialog.isShowing())
+									mProgDialog.dismiss();
+								Logger.i("Update finished");
+							}
+						});
 			} else {
 				Toast toast = Toast.makeText(this.getApplicationContext(),
 						"No changes detected", Toast.LENGTH_SHORT);
@@ -177,9 +212,13 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 							.parse(sBDate);
 
 			} catch (IllegalArgumentException e) {
-				Logger.e("player update activity loadplayersfromdb failed due to illegal state", e);
+				Logger.e(
+						"player update activity loadplayersfromdb failed due to illegal state",
+						e);
 			} catch (ParseException e) {
-				Logger.e("player update activity loadplayersfromdb failed due to parse exception", e);
+				Logger.e(
+						"player update activity loadplayersfromdb failed due to parse exception",
+						e);
 			}
 			if (d != null)
 				p.setBday(d);
@@ -224,34 +263,26 @@ public class PlayerUpdateActivity extends Activity implements IAsyncTaskAct {
 		mDbHelper.close();
 	}
 
-	@Override
-	public void onSuccess(String result) {
+	public void onUpdateSuccess(JSONObject result) {
 		mDbHelper.updatePlayer(mPlayer);
 		Toast toast = Toast.makeText(this.getApplicationContext(),
 				"Updated successfully", Toast.LENGTH_SHORT);
 		toast.show();
+
 		this.finish();
 	}
 
-	@Override
-	public void onFailure(int responseCode, String result) {
-		showDialog(0, DlgUtils.prepareDlgBundle("Failed updating player info: " + result));
+	public void onUpdateFailure(int responseCode, String result) {
+		showDialog(
+				0,
+				DlgUtils.prepareDlgBundle("Failed updating player info: "
+						+ result));
 		populateFields();
 	}
 
 	@Override
-	public void onProgress() {
-		// TODO Auto-generated method stub
-
-	}
-	
-	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		return DlgUtils.createAlertMessage(this, args);
 	}
-	
-	@Override
-	public Context getAppContext() {
-		return getApplicationContext();
-	}
+
 }

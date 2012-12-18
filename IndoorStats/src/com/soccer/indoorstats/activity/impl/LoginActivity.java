@@ -44,7 +44,6 @@ public class LoginActivity extends Activity implements StrListDialogAct {
 	private PlayersDbAdapter mDbHelper;
 	Prefs sharedPrefs;
 	private ProgressDialog mProgDialog;
-	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -221,6 +220,8 @@ public class LoginActivity extends Activity implements StrListDialogAct {
 	}
 
 	private void LoginToAccount(CharSequence accountName) {
+
+		sharedPrefs.setPreference("account_name", (String) accountName);
 		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
 		if (sUrl.equals("NULL")) {
 			sUrl = R_DB_CONSTS.SERVER_DEFAULT;
