@@ -46,6 +46,7 @@
 	<string name="exit">Exit</string>
 	<string name="birthday">Birthday:</string>
 	<string name="email">Email:</string>
+	<string name="description">description:</string>
 	<string name="phone">Phone:</string>
 	<string name="emptyString"></string>
 	<string name="team_1">Team 1</string>

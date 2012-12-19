@@ -17,6 +17,8 @@ public class DbAdapterBase {
 	public static final String KEY_LNAME = "lname";
 	public static final String KEY_TEL1 = "tel1";
 	public static final String KEY_IMG = "P_img";
+	public static final String KEY_DESC = "description";
+	
 	public static final String KEY_GAME_STATE = "gstate";
 
 	protected static final String TAG_PLAYERS = "PlayersDbAdapter";
@@ -46,6 +48,8 @@ public class DbAdapterBase {
 			+ KEY_TEL1
 			+ " text, "
 			+ KEY_IMG
+			+ " text, "
+			+ KEY_DESC
 			+ " text, "
 			+ KEY_BDAY + " text);";
 
