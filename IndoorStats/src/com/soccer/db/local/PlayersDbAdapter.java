@@ -51,6 +51,7 @@ public class PlayersDbAdapter extends DbAdapterBase {
 		initialValues.put(KEY_LNAME, p.getLname());
 		initialValues.put(KEY_TEL1, p.getTel1());
 		initialValues.put(KEY_IMG, p.getP_img());
+		initialValues.put(KEY_DESC, p.getDescription());
 
 		return mDb.insert(DATABASE_PLAYERS_TABLE, null, initialValues);
 	}
@@ -68,7 +69,7 @@ public class PlayersDbAdapter extends DbAdapterBase {
 	public Cursor fetchAllPlayers() {
 
 		return mDb.query(DATABASE_PLAYERS_TABLE, new String[] { "_id", KEY_ID,
-				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1, KEY_IMG },
+				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1, KEY_IMG, KEY_DESC },
 				null, null, null, null, null);
 	}
 
@@ -85,6 +86,7 @@ public class PlayersDbAdapter extends DbAdapterBase {
 				p.setLname(PlayersCursor.getString(5));
 				p.setTel1(PlayersCursor.getString(6));
 				p.setP_img(PlayersCursor.getString(7));
+				p.setDescription(PlayersCursor.getString(8));
 				pList.add(p);
 			} while (PlayersCursor.moveToNext());
 		}
@@ -100,7 +102,7 @@ public class PlayersDbAdapter extends DbAdapterBase {
 		Cursor mCursor =
 
 		mDb.query(true, DATABASE_PLAYERS_TABLE, new String[] { "_id", KEY_ID,
-				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1, KEY_IMG },
+				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1, KEY_IMG, KEY_DESC },
 				KEY_ID + "=" + id, null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
@@ -119,6 +121,7 @@ public class PlayersDbAdapter extends DbAdapterBase {
 		args.put(KEY_LNAME, p.getLname());
 		args.put(KEY_TEL1, p.getTel1());
 		args.put(KEY_IMG, p.getP_img());
+		args.put(KEY_DESC, p.getDescription());
 
 		return mDb.update(DATABASE_PLAYERS_TABLE, args,
 				KEY_ID + "=" + p.getId(), null) > 0;

@@ -121,6 +121,27 @@
         android:text=""
         android:textColor="#000000"
         android:textSize="12dip" />
+
+    <TextView
+        android:id="@+id/descCaption"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/thumbnail"
+        android:layout_below="@id/bday"
+        android:text="@string/description"
+        android:textColor="#000000"
+        android:textSize="12dip" />
+
+    <TextView
+        android:id="@+id/desc"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/descCaption"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:text=""
+        android:textColor="#000000"
+        android:textSize="12dip" />
+
     <!-- Tel1 of player -->
 
 </RelativeLayout>

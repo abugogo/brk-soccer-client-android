@@ -1,6 +1,5 @@
 package com.soccer.indoorstats.activity.impl;
 
-import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -193,7 +192,6 @@ public class PlayerUpdateActivity extends Activity {
 		Cursor cP = mDbHelper.fetchPlayer(Long.parseLong(id));
 		startManagingCursor(cP);
 		if (cP.getCount() > 0) {
-			p.setIdNum(BigInteger.valueOf(1));
 			p.setFname(cP.getString(cP
 					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_FNAME)));
 			p.setLname(cP.getString(cP
@@ -202,6 +200,8 @@ public class PlayerUpdateActivity extends Activity {
 					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_EMAIL)));
 			p.setP_img(cP.getString(cP
 					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_IMG)));
+			p.setDescription(cP.getString(cP
+					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_DESC)));
 			Date d = null;
 			try {
 				String sBDate = cP.getString(cP

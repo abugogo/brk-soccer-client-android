@@ -1,6 +1,5 @@
 package com.soccer.indoorstats.activity.impl;
 
-import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,23 +41,26 @@ public class PlayerActivity extends Activity {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle(R.string.player);
 
-		/*final Action StatsAction = new IntentAction(this, new Intent(this,
-				StatsTabActivity.class), R.drawable.heart);
-		actionBar.addAction(StatsAction);*/
+		/*
+		 * final Action StatsAction = new IntentAction(this, new Intent(this,
+		 * StatsTabActivity.class), R.drawable.heart);
+		 * actionBar.addAction(StatsAction);
+		 */
 		final Action EditAction = new IntentAction(this, new Intent(this,
 				PlayerUpdateActivity.class), R.drawable.edit);
 		actionBar.addAction(EditAction);
-		/*final Action GroupAction = new IntentAction(this, new Intent(this,
-				GroupActivity.class), R.drawable.players_icon);
-		actionBar.addAction(GroupAction);
-		final Action GameAction = new IntentAction(this, new Intent(this,
-				GameActivity.class), R.drawable.game_icon);
-		actionBar.addAction(GameAction);*/
+		/*
+		 * final Action GroupAction = new IntentAction(this, new Intent(this,
+		 * GroupActivity.class), R.drawable.players_icon);
+		 * actionBar.addAction(GroupAction); final Action GameAction = new
+		 * IntentAction(this, new Intent(this, GameActivity.class),
+		 * R.drawable.game_icon); actionBar.addAction(GameAction);
+		 */
 
 		final Action HomeAction = new IntentAction(this, new Intent(this,
 				HomeActivity.class), R.drawable.home_icon);
 		actionBar.addAction(HomeAction);
-		
+
 		mDbHelper = new PlayersDbAdapter(this);
 		mDbHelper.open();
 		Intent i = getIntent();
@@ -86,6 +88,9 @@ public class PlayerActivity extends Activity {
 						.getEmail());
 				((TextView) findViewById(R.id.ptel1))
 						.setText(mPlayer.getTel1());
+				((TextView) findViewById(R.id.desc))
+						.setText(mPlayer.getDescription());
+
 				String bDay = mPlayer.getBdayAsString(null);
 				if (bDay != null)
 					((TextView) findViewById(R.id.bday)).setText(bDay);
@@ -114,7 +119,6 @@ public class PlayerActivity extends Activity {
 		Cursor cP = mDbHelper.fetchPlayer(Long.parseLong(id));
 		startManagingCursor(cP);
 		if (cP.getCount() > 0) {
-			p.setIdNum(BigInteger.valueOf(1));
 			p.setFname(cP.getString(cP
 					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_FNAME)));
 			p.setLname(cP.getString(cP
@@ -123,6 +127,9 @@ public class PlayerActivity extends Activity {
 					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_EMAIL)));
 			p.setP_img(cP.getString(cP
 					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_IMG)));
+			p.setDescription(cP.getString(cP
+					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_DESC)));
+			
 			Date d = null;
 			try {
 				String sBDate = cP.getString(cP
@@ -133,9 +140,13 @@ public class PlayerActivity extends Activity {
 							.parse(sBDate);
 
 			} catch (IllegalArgumentException e) {
-				Logger.e("player activity loadplayersfromdb failed due to illegal state", e);
+				Logger.e(
+						"player activity loadplayersfromdb failed due to illegal state",
+						e);
 			} catch (ParseException e) {
-				Logger.e("player activity loadplayersfromdb failed due to parser exception", e);
+				Logger.e(
+						"player activity loadplayersfromdb failed due to parser exception",
+						e);
 			}
 			if (d != null)
 				p.setBday(d);
@@ -180,22 +191,14 @@ public class PlayerActivity extends Activity {
 		mDbHelper.close();
 	}
 
-	
-
-	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(Menu.NONE, 0, 0, "Save");
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case 0:
-			updatePlayer();
-			return true;
-		}
-		return false;
-	}*/
+	/*
+	 * @Override public boolean onCreateOptionsMenu(Menu menu) {
+	 * menu.add(Menu.NONE, 0, 0, "Save"); return
+	 * super.onCreateOptionsMenu(menu); }
+	 * 
+	 * @Override public boolean onOptionsItemSelected(MenuItem item) { switch
+	 * (item.getItemId()) { case 0: updatePlayer(); return true; } return false;
+	 * }
+	 */
 
 }
