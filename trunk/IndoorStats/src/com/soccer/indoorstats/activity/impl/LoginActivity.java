@@ -88,7 +88,7 @@ public class LoginActivity extends Activity implements StrListDialogAct {
 					params.put("p", password);
 					this.mProgDialog.setMessage("Logging in...");
 					this.mProgDialog.show();
-					LoopjRestClient.get(sUrl.concat("/SoccerServer/login"),
+					LoopjRestClient.get(this,sUrl.concat("/SoccerServer/login"),
 							params, new JsonHttpResponseHandler() {
 								@Override
 								public void onSuccess(JSONObject res) {
@@ -225,7 +225,7 @@ public class LoginActivity extends Activity implements StrListDialogAct {
 		try {
 			this.mProgDialog.setMessage("Downloading account info...");
 			this.mProgDialog.show();
-			LoopjRestClient.get(
+			LoopjRestClient.get(this,
 					sUrl.concat("/SoccerServer/rest/")
 							.concat((String) accountName).concat("/players"),
 					null, new JsonHttpResponseHandler() {
