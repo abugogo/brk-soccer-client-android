@@ -134,11 +134,12 @@ public class PlayerUpdateActivity extends Activity {
 			DatePicker datePicker = ((DatePicker) findViewById(R.id.bday));
 			Date d = new Date(datePicker.getYear() - 1900,
 					datePicker.getMonth(), datePicker.getDayOfMonth());
-
-			boolean dirty = (!mPlayer.getEmail().equals(newEmail)
-					|| !mPlayer.getTel1().equals(newPhone)
-					|| mPlayer.getBday() == null || !mPlayer.getBday()
-					.equals(d));
+			
+			
+			boolean dirty = !newEmail.equals(mPlayer.getEmail())
+					|| !newPhone.equals(mPlayer.getTel1())
+					|| mPlayer.getBday() == null || !d.equals(mPlayer.getBday());
+			
 			if (dirty) {
 				mPlayer.setBday(d);
 				mPlayer.setEmail(newEmail);
