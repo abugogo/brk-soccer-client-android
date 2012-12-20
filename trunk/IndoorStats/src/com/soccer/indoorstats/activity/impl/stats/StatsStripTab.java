@@ -4,7 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,6 +16,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.db.remote.R_DB_CONSTS;
 import com.soccer.db.remote.RemoteDBAdapter;
@@ -24,17 +30,20 @@ import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
+import com.soccer.rest.LoopjRestClient;
 
-public class StatsStripTab extends Activity implements IAsyncTaskAct {
+public class StatsStripTab extends Activity {
 
 	private Prefs mPrefs;
 	private ArrayList<IWinLoseStrip> m_pArr = null;
+	private ProgressDialog mProgDialog;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.stats_strip_tab);
+		this.mProgDialog = new ProgressDialog(this);
 	}
 
 	@Override
@@ -49,19 +58,39 @@ public class StatsStripTab extends Activity implements IAsyncTaskAct {
 			if (sUrl.equals("NULL")) {
 				sUrl = R_DB_CONSTS.SERVER_DEFAULT;
 			}
-	
+
 			try {
-				RemoteDBAdapter.getPlayerStats(this, sUrl, mPID,
-						"Downloading player stats");
+				this.mProgDialog.setMessage("Getting Player stats...");
+				this.mProgDialog.show();
+				LoopjRestClient.get(sUrl.concat("/SoccerServer/rest/").concat(mPrefs.getPreference("account_name", "")).concat("/players/").concat(mPID).concat("/stats"),
+						null, new JsonHttpResponseHandler() {
+							@Override
+							public void onSuccess(JSONArray res) {
+								String sStats = res.toString();
+								onGetStatsSuccess(sStats);
+							}
+
+							@Override
+							public void onFailure(Throwable tr, String res) {
+								onGetStatsFailure(0, tr.getMessage());
+							}
+
+							@Override
+							public void onFinish() {
+								if (mProgDialog.isShowing())
+									mProgDialog.dismiss();
+								Logger.i("Get Player Stats finished");
+							}
+						});
+
 			} catch (Exception e) {
-				Logger.e("get player stats failed", e);
+				Logger.e("get stats failed", e);
 				showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
 			}
 		}
 	}
 
-	@Override
-	public void onSuccess(String result) {
+	public void onGetStatsSuccess(String result) {
 		try {
 			m_pArr = (ArrayList<IWinLoseStrip>)EntityManager
 					.readPlayerStats(result);
@@ -93,20 +122,10 @@ public class StatsStripTab extends Activity implements IAsyncTaskAct {
 		return Integer.parseInt(ret);
 	}
 	
-	@Override
-	public void onFailure(int responseCode, String result) {
+	public void onGetStatsFailure(int responseCode, String result) {
 		// TODO Auto-generated method stub
+		Logger.w("failed to load stats: " + result + " " + responseCode);
 
 	}
 
-	@Override
-	public void onProgress() {
-		// TODO Auto-generated method stub
-
-	}
-	
-	@Override
-	public Context getAppContext() {
-		return getApplicationContext();
-	}
 }
