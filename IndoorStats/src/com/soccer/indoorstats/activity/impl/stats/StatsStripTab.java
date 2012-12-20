@@ -66,8 +66,7 @@ public class StatsStripTab extends Activity {
 						null, new JsonHttpResponseHandler() {
 							@Override
 							public void onSuccess(JSONArray res) {
-								String sStats = res.toString();
-								onGetStatsSuccess(sStats);
+								onGetStatsSuccess(res.toString());
 							}
 
 							@Override
