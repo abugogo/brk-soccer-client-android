@@ -3,7 +3,10 @@ package com.soccer.indoorstats.activity.impl.stats;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.json.JSONArray;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,6 +19,7 @@ import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.soccer.db.remote.R_DB_CONSTS;
 import com.soccer.db.remote.RemoteDBAdapter;
 import com.soccer.entities.EntityManager;
@@ -26,15 +30,18 @@ import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
+import com.soccer.rest.LoopjRestClient;
 
-public class StatsTableTab extends Activity implements IAsyncTaskAct {
+public class StatsTableTab extends Activity{
 	private ArrayList<ITableRow> m_pArr = null;
 	private Prefs mPrefs;
+	private ProgressDialog mProgDialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.stats_strip_tab);
+		this.mProgDialog = new ProgressDialog(this);
 
 	}
 
@@ -50,8 +57,28 @@ public class StatsTableTab extends Activity implements IAsyncTaskAct {
 			}
 
 			try {
-				RemoteDBAdapter.getCurrentTable(this, sUrl,
-						"Downloading table data");
+				this.mProgDialog.setMessage("Getting Tables ...");
+				this.mProgDialog.show();
+				LoopjRestClient.get(sUrl.concat("/SoccerServer/rest/").concat(mPrefs.getPreference("account_name", "")).concat("/table/"),
+						null, new JsonHttpResponseHandler() {
+							@Override
+							public void onSuccess(JSONArray res) {
+								onGetTableSuccess(res.toString());
+							}
+
+							@Override
+							public void onFailure(Throwable tr, String res) {
+								onGetTableFailure(0, tr.getMessage());
+							}
+
+							@Override
+							public void onFinish() {
+								if (mProgDialog.isShowing())
+									mProgDialog.dismiss();
+								Logger.i("Get Tables finished");
+							}
+						});
+				
 			} catch (Exception e) {
 				Logger.e("get current table failed", e);
 				showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
@@ -59,8 +86,7 @@ public class StatsTableTab extends Activity implements IAsyncTaskAct {
 		}
 	}
 
-	@Override
-	public void onSuccess(String result) {
+	public void onGetTableSuccess(String result) {
 		try {
 			m_pArr = (ArrayList<ITableRow>) EntityManager.readTable(result);
 			TableLayout tblLayout = (TableLayout) findViewById(R.id.strip_table);
@@ -158,20 +184,10 @@ public class StatsTableTab extends Activity implements IAsyncTaskAct {
 		return createView(String.valueOf(pos), tr.getFname() + " " + tr.getLname(), String.valueOf(tr.getWins()), String.valueOf(tr.getGames() - tr.getWins() - tr.getLosses()), String.valueOf(tr.getLosses()), String.valueOf(tr.getPoints()));
 	}
 
-	@Override
-	public void onFailure(int responseCode, String result) {
+	public void onGetTableFailure(int responseCode, String result) {
 		// TODO Auto-generated method stub
+		Logger.w("failed to load tables: " + result + " " + responseCode);
 
 	}
 
-	@Override
-	public void onProgress() {
-		// TODO Auto-generated method stub
-
-	}
-	
-	@Override
-	public Context getAppContext() {
-		return getApplicationContext();
-	}
 }
