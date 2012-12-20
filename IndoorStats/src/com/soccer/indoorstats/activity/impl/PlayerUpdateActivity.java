@@ -154,7 +154,7 @@ public class PlayerUpdateActivity extends Activity {
 				mProgDialog.setMessage("Updating...");
 				mProgDialog.show();
 
-				LoopjRestClient.post(
+				LoopjRestClient.post(this,
 						sUrl.concat("/SoccerServer/rest/")
 								.concat(mPrefs
 										.getPreference("account_name", ""))

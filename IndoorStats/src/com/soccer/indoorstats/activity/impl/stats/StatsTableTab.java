@@ -59,7 +59,7 @@ public class StatsTableTab extends Activity{
 			try {
 				this.mProgDialog.setMessage("Getting Tables ...");
 				this.mProgDialog.show();
-				LoopjRestClient.get(sUrl.concat("/SoccerServer/rest/").concat(mPrefs.getPreference("account_name", "")).concat("/table/"),
+				LoopjRestClient.get(this,sUrl.concat("/SoccerServer/rest/").concat(mPrefs.getPreference("account_name", "")).concat("/table/"),
 						null, new JsonHttpResponseHandler() {
 							@Override
 							public void onSuccess(JSONArray res) {

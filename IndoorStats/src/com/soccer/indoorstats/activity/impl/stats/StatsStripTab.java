@@ -49,11 +49,11 @@ public class StatsStripTab extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if(m_pArr == null) {
-			
+		if (m_pArr == null) {
+
 			mPrefs = new Prefs(this);
-			String mPID = (String) mPrefs
-					.getPreference(PlayersDbAdapter.KEY_ID, "");
+			String mPID = (String) mPrefs.getPreference(
+					PlayersDbAdapter.KEY_ID, "");
 			String sUrl = mPrefs.getPreference("server_port", "NULL");
 			if (sUrl.equals("NULL")) {
 				sUrl = R_DB_CONSTS.SERVER_DEFAULT;
@@ -62,8 +62,13 @@ public class StatsStripTab extends Activity {
 			try {
 				this.mProgDialog.setMessage("Getting Player stats...");
 				this.mProgDialog.show();
-				LoopjRestClient.get(sUrl.concat("/SoccerServer/rest/").concat(mPrefs.getPreference("account_name", "")).concat("/players/").concat(mPID).concat("/stats"),
-						null, new JsonHttpResponseHandler() {
+				LoopjRestClient.get(this,
+						sUrl.concat("/SoccerServer/rest/")
+								.concat(mPrefs
+										.getPreference("account_name", ""))
+								.concat("/players/").concat(mPID)
+								.concat("/stats"), null,
+						new JsonHttpResponseHandler() {
 							@Override
 							public void onSuccess(JSONArray res) {
 								onGetStatsSuccess(res.toString());
@@ -90,29 +95,33 @@ public class StatsStripTab extends Activity {
 	}
 
 	public void onGetStatsSuccess(String result) {
-		try {
-			m_pArr = (ArrayList<IWinLoseStrip>)EntityManager
-					.readPlayerStats(result);
-			TableLayout tblLayout = (TableLayout)findViewById(R.id.strip_table);
-			if(m_pArr != null) {
-				for (Iterator<IWinLoseStrip> iter = m_pArr.iterator(); iter.hasNext(); ) {
-					WinLoseStrip wls = (WinLoseStrip) iter.next();
-					int minStrips = getMinStrip(6);
-					if( minStrips <= wls.getNumber()) {
-						TextView textView = new TextView(this);
-						String winlose = wls.getType().equals("WIN")?"Wins: ": "Loses: ";
-						textView.setText(winlose + wls.getNumber() + ". " + SimpleDateFormat.getDateInstance().format(wls.getStartDate()) + "-" + SimpleDateFormat.getDateInstance().format(wls.getEndDate()));
-						textView.setTextColor(Color.BLACK);
-						TableRow tRow = new TableRow(this);
-						tRow.addView(textView);
-						tblLayout.addView(tRow);
-					}
+		m_pArr = (ArrayList<IWinLoseStrip>) EntityManager
+				.readPlayerStats(result);
+		TableLayout tblLayout = (TableLayout) findViewById(R.id.strip_table);
+		if (m_pArr != null) {
+			for (Iterator<IWinLoseStrip> iter = m_pArr.iterator(); iter
+					.hasNext();) {
+				WinLoseStrip wls = (WinLoseStrip) iter.next();
+				int minStrips = getMinStrip(6);
+				if (minStrips <= wls.getNumber()) {
+					TextView textView = new TextView(this);
+					String winlose = wls.getType().equals("WIN") ? "Wins: "
+							: "Loses: ";
+					textView.setText(winlose
+							+ wls.getNumber()
+							+ ". "
+							+ SimpleDateFormat.getDateInstance().format(
+									wls.getStartDate())
+							+ "-"
+							+ SimpleDateFormat.getDateInstance().format(
+									wls.getEndDate()));
+					textView.setTextColor(Color.BLACK);
+					TableRow tRow = new TableRow(this);
+					tRow.addView(textView);
+					tblLayout.addView(tRow);
 				}
 			}
-		} catch (SoccerException e) {
-			Logger.e("onSuccess of stats strip tab failed", e);
 		}
-
 	}
 
 	private int getMinStrip(int defMin) {
@@ -120,7 +129,7 @@ public class StatsStripTab extends Activity {
 				String.valueOf(defMin));
 		return Integer.parseInt(ret);
 	}
-	
+
 	public void onGetStatsFailure(int responseCode, String result) {
 		// TODO Auto-generated method stub
 		Logger.w("failed to load stats: " + result + " " + responseCode);
