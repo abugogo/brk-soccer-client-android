@@ -1,6 +1,5 @@
 package com.soccer.indoorstats.activity.impl;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,16 +19,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.db.local.StateDbAdapter;
 import com.soccer.db.remote.R_DB_CONSTS;
 import com.soccer.dialog.ListDialog;
-import com.soccer.entities.IDAOPlayer;
+import com.soccer.entities.EntityManager;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.i.StrListDialogAct;
@@ -144,13 +140,13 @@ public class LoginActivity extends Activity implements StrListDialogAct {
 		// end old code
 	}
 
-	private void LoadPlayers(ArrayList<IDAOPlayer> pArr) {
+	private void LoadPlayers(ArrayList<DAOPlayer> pArr) {
 		try {
 			if (pArr != null) {
 				mDbHelper.deletePlayers();
-				Iterator<IDAOPlayer> itr = pArr.iterator();
+				Iterator<DAOPlayer> itr = pArr.iterator();
 				while (itr.hasNext()) {
-					DAOPlayer p = (DAOPlayer) itr.next();
+					DAOPlayer p = itr.next();
 					mDbHelper.createPlayer(p);
 				}
 			}
@@ -271,11 +267,13 @@ public class LoginActivity extends Activity implements StrListDialogAct {
 	}
 
 	protected void onAccountLoginSuccess(JSONArray res) {
-		Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+		/*Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
 		Type collectionType = new TypeToken<ArrayList<DAOPlayer>>() {
 		}.getType();
 		ArrayList<IDAOPlayer> pArr = gson.fromJson(res.toString(),
-				collectionType);
+				collectionType);*/
+		ArrayList<DAOPlayer> pArr = EntityManager.readPlayers(res.toString());
+		
 		LoadPlayers(pArr);
 
 		EditText et = (EditText) findViewById(R.id.editIdNumber);
