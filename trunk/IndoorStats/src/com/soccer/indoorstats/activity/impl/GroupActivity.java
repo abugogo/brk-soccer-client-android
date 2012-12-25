@@ -5,17 +5,11 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
@@ -59,36 +53,11 @@ public class GroupActivity extends ListActivity {
 	}
 
 	private void fillData() {
-
 		list = (ListView) findViewById(android.R.id.list);
 
 		// Getting adapter by passing xml data ArrayList
 		adapter = new LazyAdapter(this, mPList);
 		list.setAdapter(adapter);
-
-		// Click event for single list row
-		list.setOnItemLongClickListener(new OnItemLongClickListener() {
-
-			public boolean onItemLongClick(AdapterView<?> arg0, View view,
-					int arg2, long arg3) {
-				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				View vi = view;
-				if (view == null)
-					vi = inflater.inflate(R.layout.player_row, null);
-				TextView tel = (TextView) vi.findViewById(R.id.ptel1);
-				/*
-				 * Intent intent = new Intent(Intent.ACTION_CALL);
-				 * intent.setData(Uri.parse("tel:" + tel.getText()));
-				 */
-
-				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:"
-						+ tel.getText()));
-				startActivity(intent);
-
-				return false;
-			}
-		});
-
 	}
 
 	public void onSort(View v) {
@@ -109,5 +78,4 @@ public class GroupActivity extends ListActivity {
 			return i1.getFname().compareTo(i2.getFname()) * sign;
 		}
 	}
-
 }
