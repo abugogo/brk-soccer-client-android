@@ -134,12 +134,12 @@ public class PlayerUpdateActivity extends Activity {
 			DatePicker datePicker = ((DatePicker) findViewById(R.id.bday));
 			Date d = new Date(datePicker.getYear() - 1900,
 					datePicker.getMonth(), datePicker.getDayOfMonth());
-			
-			
+
 			boolean dirty = !newEmail.equals(mPlayer.getEmail())
 					|| !newPhone.equals(mPlayer.getTel1())
-					|| mPlayer.getBday() == null || !d.equals(mPlayer.getBday());
-			
+					|| mPlayer.getBday() == null
+					|| !d.equals(mPlayer.getBday());
+
 			if (dirty) {
 				mPlayer.setBday(d);
 				mPlayer.setEmail(newEmail);
@@ -153,29 +153,31 @@ public class PlayerUpdateActivity extends Activity {
 
 				mProgDialog.setMessage("Updating...");
 				mProgDialog.show();
-
-				LoopjRestClient.post(this,
-						sUrl.concat("/SoccerServer/rest/")
-								.concat(mPrefs
-										.getPreference("account_name", ""))
-								.concat("/players/").concat(mPlayer.getId()),
-						params, new JsonHttpResponseHandler() {
+				String url = sUrl.concat("/SoccerServer/rest/")
+						.concat(mPrefs.getPreference("account_name", ""))
+						.concat("/players/").concat(mPlayer.getId());
+				Logger.i("PlayerUpdateActivity updating player: url- "
+						.concat(url));
+				LoopjRestClient.post(this, url, params,
+						new JsonHttpResponseHandler() {
 
 							@Override
 							public void onSuccess(JSONObject res) {
+								Logger.i("PlayerUpdateActivity success");
 								onUpdateSuccess(res);
 							}
 
 							@Override
 							public void onFailure(Throwable tr, String res) {
+								Logger.i("PlayerUpdateActivity failure");
 								onUpdateFailure(0, tr.getMessage());
 							}
 
 							@Override
 							public void onFinish() {
+								Logger.i("PlayerUpdateActivity done");
 								if (mProgDialog.isShowing())
 									mProgDialog.dismiss();
-								Logger.i("Update finished");
 							}
 						});
 			} else {
