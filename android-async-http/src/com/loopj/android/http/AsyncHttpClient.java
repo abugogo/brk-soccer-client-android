@@ -197,7 +197,8 @@ public class AsyncHttpClient {
 						}
 					}
 				}
-				return 30 * 1000;
+				// assuming the server default timeoutConnection is 20 secs, setting to a pesimistic value 
+				return 15 * 1000;
 			}
 
 		});
