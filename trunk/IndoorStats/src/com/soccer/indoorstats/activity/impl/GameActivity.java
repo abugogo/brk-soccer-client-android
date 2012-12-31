@@ -19,9 +19,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -36,6 +38,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
@@ -43,25 +48,23 @@ import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.db.local.StateDbAdapter;
 import com.soccer.db.remote.R_DB_CONSTS;
-import com.soccer.db.remote.RemoteDBAdapter;
 import com.soccer.dialog.CheckedListAdapter;
 import com.soccer.dialog.MultiSelectListDialog;
 import com.soccer.dialog.PLineupItems;
-import com.soccer.entities.IDAOGame;
 import com.soccer.entities.impl.DAOGame;
 import com.soccer.entities.impl.DAOLineup;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
-import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.indoorstats.activity.states.GameState;
 import com.soccer.indoorstats.ingame.IGameEvent.EventType;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.StopWatch;
 import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.preferences.Prefs;
+import com.soccer.rest.LoopjRestClient;
 
-public class GameActivity extends Activity implements OnClickListener,
-		IAsyncTaskAct {
+public class GameActivity extends Activity implements OnClickListener
+		{
 
 	private StopWatch _timer = new StopWatch();
 	private GameState _gState = null;
@@ -74,6 +77,7 @@ public class GameActivity extends Activity implements OnClickListener,
 	private PlayersDbAdapter mDbHelper = null;
 	private StateDbAdapter mStatesDbHelper = null;
 	Prefs sharedPrefs;
+	private ProgressDialog mProgDialog;
 
 	private StateDbAdapter getStatesDbAdapter() {
 		if (mStatesDbHelper == null)
@@ -123,6 +127,8 @@ public class GameActivity extends Activity implements OnClickListener,
 		if ((GameState) getLastNonConfigurationInstance() != null)
 			_gState = (GameState) getLastNonConfigurationInstance();
 		sharedPrefs = new Prefs(this);
+
+		this.mProgDialog = new ProgressDialog(this);
 	}
 
 	public void createGame() {
@@ -144,7 +150,7 @@ public class GameActivity extends Activity implements OnClickListener,
 			lpList.add(d);
 		}
 
-		IDAOGame daoGame = new DAOGame();
+		DAOGame daoGame = new DAOGame();
 		daoGame.setLineup(lpList);
 		daoGame.setBgoals(1);
 		daoGame.setGameDate(new Date());
@@ -157,7 +163,38 @@ public class GameActivity extends Activity implements OnClickListener,
 		}
 
 		try {
-			RemoteDBAdapter.createGame(this, sUrl, "Updating game", daoGame);
+			mProgDialog.setMessage("Uploading Game...");
+			mProgDialog.show();
+
+			Gson gson = new Gson();
+			RequestParams params = new RequestParams();
+			params.put("JSON", gson.toJson(daoGame));
+
+			LoopjRestClient.put(this,
+					sUrl.concat("/SoccerServer/rest/")
+							.concat(sharedPrefs
+									.getPreference("account_name", ""))
+							.concat("/games"),
+					params, new JsonHttpResponseHandler() {
+
+						@Override
+						public void onSuccess(JSONObject res) {
+							onCreateGameSuccess(res);
+						}
+
+						@Override
+						public void onFailure(Throwable tr, String res) {
+							onCreateGameFailure(0, tr.getMessage());
+						}
+
+						@Override
+						public void onFinish() {
+							if (mProgDialog.isShowing())
+								mProgDialog.dismiss();
+							Logger.i("Update finished");
+						}
+					});
+			
 		} catch (Exception e) {
 			Logger.e("create game failed", e);
 			showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
@@ -489,16 +526,14 @@ public class GameActivity extends Activity implements OnClickListener,
 		}
 	}
 
-	@Override
-	public void onSuccess(String result) {
+	public void onCreateGameSuccess(JSONObject result) {
 		Toast toast = Toast.makeText(this.getApplicationContext(),
 				"Game updated successfully", Toast.LENGTH_SHORT);
 		toast.show();
 		resetGame();
 	}
 
-	@Override
-	public void onFailure(int responseCode, String result) {
+	public void onCreateGameFailure(int responseCode, String result) {
 		showDialog(
 				0,
 				DlgUtils.prepareDlgBundle("Failed updating game info: "
@@ -506,14 +541,4 @@ public class GameActivity extends Activity implements OnClickListener,
 
 	}
 
-	@Override
-	public void onProgress() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Context getAppContext() {
-		return getApplicationContext();
-	}
 }
