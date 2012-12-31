@@ -15,6 +15,7 @@ public class LoopjRestClient {
 	}
 
 	public static synchronized AsyncHttpClient getAsyncInst(Context ctxt) {
+		// context should be one that is known and used by all subsequent calls otherwise the cookie will not be fetched (it is used as the key)
 		if (client == null) {
 			client = new AsyncHttpClient();
 			PersistentCookieStore myCookieStore = new PersistentCookieStore(ctxt);
@@ -32,6 +33,12 @@ public class LoopjRestClient {
 			AsyncHttpResponseHandler responseHandler) {
 
 		getAsyncInst(ctxt).post(url, params, responseHandler);
+	}
+
+	public static void put(Context ctxt, String url, RequestParams params,
+			AsyncHttpResponseHandler responseHandler) {
+
+		getAsyncInst(ctxt).put(url, params, responseHandler);
 	}
 
 }
