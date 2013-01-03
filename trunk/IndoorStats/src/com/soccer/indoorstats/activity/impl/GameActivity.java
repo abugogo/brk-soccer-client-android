@@ -51,6 +51,7 @@ import com.soccer.db.remote.R_DB_CONSTS;
 import com.soccer.dialog.CheckedListAdapter;
 import com.soccer.dialog.MultiSelectListDialog;
 import com.soccer.dialog.PLineupItems;
+import com.soccer.entities.EntityManager;
 import com.soccer.entities.impl.DAOGame;
 import com.soccer.entities.impl.DAOLineup;
 import com.soccer.entities.impl.DAOPlayer;
@@ -63,8 +64,7 @@ import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.preferences.Prefs;
 import com.soccer.rest.LoopjRestClient;
 
-public class GameActivity extends Activity implements OnClickListener
-		{
+public class GameActivity extends Activity implements OnClickListener {
 
 	private StopWatch _timer = new StopWatch();
 	private GameState _gState = null;
@@ -133,29 +133,48 @@ public class GameActivity extends Activity implements OnClickListener
 
 	public void createGame() {
 		List<DAOLineup> lpList = new ArrayList<DAOLineup>();
+		int bG = 0, wG = 0;
 		for (PLineupItems pt1 : _gState.get_team1List()) {
-			DAOLineup d = new DAOLineup();
-			d.setColor('b');
-			d.setGoal(pt1.getSumEvents(EventType.Goal));
-			d.setOGoal(pt1.getSumEvents(EventType.O_Goal));
-			d.setPlayerId(pt1.mId);
-			lpList.add(d);
+			if (pt1.mChecked) {
+				DAOLineup d = pt1.getEvents();
+				d.setColor('b');
+				bG += d.getGoal();
+				wG += d.getOGoal();
+				lpList.add(d);
+			}
 		}
 		for (PLineupItems pt2 : _gState.get_team2List()) {
-			DAOLineup d = new DAOLineup();
-			d.setColor('w');
-			d.setGoal(pt2.getSumEvents(EventType.Goal));
-			d.setOGoal(pt2.getSumEvents(EventType.O_Goal));
-			d.setPlayerId(pt2.mId);
-			lpList.add(d);
+			if (pt2.mChecked) {
+				DAOLineup d = pt2.getEvents();
+				d.setColor('w');
+				wG += d.getGoal();
+				bG += d.getOGoal();
+				lpList.add(d);
+			}
+		}
+
+		char winner = 'd';
+		if (Math.abs(wG - bG) > 0) {
+			if (wG - bG > 0)
+				winner = 'w';
+			else
+				winner = 'b';
+
+			for (DAOLineup ap : lpList) {
+				ap.setPoints((ap.getColor().equals(winner)) ? (short) 3 : 0);
+			}
+		} else {
+			for (DAOLineup ap : lpList) {
+				ap.setPoints((short) 1);
+			}
 		}
 
 		DAOGame daoGame = new DAOGame();
 		daoGame.setLineup(lpList);
-		daoGame.setBgoals(1);
+		daoGame.setBgoals(bG);
 		daoGame.setGameDate(new Date());
-		daoGame.setWgoals(1);
-		daoGame.setWinner('b');
+		daoGame.setWgoals(wG);
+		daoGame.setWinner(winner);
 
 		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
 		if (sUrl.equals("NULL")) {
@@ -166,35 +185,31 @@ public class GameActivity extends Activity implements OnClickListener
 			mProgDialog.setMessage("Uploading Game...");
 			mProgDialog.show();
 
-			Gson gson = new Gson();
 			RequestParams params = new RequestParams();
-			params.put("JSON", gson.toJson(daoGame));
+			params.put("JSON", EntityManager.writeGame(daoGame));
 
-			LoopjRestClient.put(this,
-					sUrl.concat("/SoccerServer/rest/")
-							.concat(sharedPrefs
-									.getPreference("account_name", ""))
-							.concat("/games"),
-					params, new JsonHttpResponseHandler() {
+			LoopjRestClient.put(this, sUrl.concat("/SoccerServer/rest/")
+					.concat(sharedPrefs.getPreference("account_name", ""))
+					.concat("/games"), params, new JsonHttpResponseHandler() {
 
-						@Override
-						public void onSuccess(JSONObject res) {
-							onCreateGameSuccess(res);
-						}
+				@Override
+				public void onSuccess(JSONObject res) {
+					onCreateGameSuccess(res);
+				}
 
-						@Override
-						public void onFailure(Throwable tr, String res) {
-							onCreateGameFailure(0, tr.getMessage());
-						}
+				@Override
+				public void onFailure(Throwable tr, String res) {
+					onCreateGameFailure(0, tr.getMessage());
+				}
 
-						@Override
-						public void onFinish() {
-							if (mProgDialog.isShowing())
-								mProgDialog.dismiss();
-							Logger.i("Update finished");
-						}
-					});
-			
+				@Override
+				public void onFinish() {
+					if (mProgDialog.isShowing())
+						mProgDialog.dismiss();
+					Logger.i("Update finished");
+				}
+			});
+
 		} catch (Exception e) {
 			Logger.e("create game failed", e);
 			showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
@@ -399,11 +414,17 @@ public class GameActivity extends Activity implements OnClickListener
 						updateTimer();
 					}
 				} catch (StreamCorruptedException e) {
-					Logger.e("game activity restore state failed due to corrupted stream", e);
+					Logger.e(
+							"game activity restore state failed due to corrupted stream",
+							e);
 				} catch (IOException e) {
-					Logger.e("game activity restore state failed due to io issue", e);
+					Logger.e(
+							"game activity restore state failed due to io issue",
+							e);
 				} catch (ClassNotFoundException e) {
-					Logger.e("game activity restore state failed due to class not found", e);
+					Logger.e(
+							"game activity restore state failed due to class not found",
+							e);
 				}
 			}
 		}
