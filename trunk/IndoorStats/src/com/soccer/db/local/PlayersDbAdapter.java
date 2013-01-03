@@ -69,8 +69,8 @@ public class PlayersDbAdapter extends DbAdapterBase {
 	public Cursor fetchAllPlayers() {
 
 		return mDb.query(DATABASE_PLAYERS_TABLE, new String[] { "_id", KEY_ID,
-				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1, KEY_IMG, KEY_DESC },
-				null, null, null, null, null);
+				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1, KEY_IMG,
+				KEY_DESC }, null, null, null, null, null);
 	}
 
 	public ArrayList<DAOPlayer> fetchAllPlayersAsArray() {
@@ -102,8 +102,8 @@ public class PlayersDbAdapter extends DbAdapterBase {
 		Cursor mCursor =
 
 		mDb.query(true, DATABASE_PLAYERS_TABLE, new String[] { "_id", KEY_ID,
-				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1, KEY_IMG, KEY_DESC },
-				KEY_ID + "=" + id, null, null, null, null, null);
+				KEY_BDAY, KEY_EMAIL, KEY_FNAME, KEY_LNAME, KEY_TEL1, KEY_IMG,
+				KEY_DESC }, KEY_ID + "=" + id, null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
@@ -125,5 +125,27 @@ public class PlayersDbAdapter extends DbAdapterBase {
 
 		return mDb.update(DATABASE_PLAYERS_TABLE, args,
 				KEY_ID + "=" + p.getId(), null) > 0;
+	}
+
+	public boolean upsertPlayer(DAOPlayer p) {
+		final String fields = KEY_ID.concat(",").concat(KEY_BDAY).concat(",")
+				.concat(KEY_EMAIL).concat(",").concat(KEY_FNAME).concat(",")
+				.concat(KEY_LNAME).concat(",").concat(KEY_TEL1).concat(",")
+				.concat(KEY_IMG).concat(",").concat(KEY_DESC);
+		final String query = "INSERT OR REPLACE INTO "
+				.concat(DATABASE_PLAYERS_TABLE).concat("  (").concat(fields)
+				.concat(") VALUES (?,?,?,?,?,?,?,?);");
+		try {
+			mDb.execSQL(
+					query,
+					new String[] {
+							p.getId(),
+							(null != p.getBday()) ? p.getBday().toString() : "",
+							p.getEmail(), p.getFname(), p.getLname(),
+							p.getTel1(), p.getP_img(), p.getDescription() });
+		} catch (SQLException se) {
+			return false;
+		}
+		return true;
 	}
 }
