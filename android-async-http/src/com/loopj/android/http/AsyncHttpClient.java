@@ -35,7 +35,6 @@ import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
@@ -68,7 +67,6 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.SyncBasicHttpContext;
@@ -197,7 +195,8 @@ public class AsyncHttpClient {
 						}
 					}
 				}
-				// assuming the server default timeoutConnection is 20 secs, setting to a pesimistic value 
+				// assuming the server default timeoutConnection is 20 secs,
+				// setting to a pesimistic value
 				return 15 * 1000;
 			}
 
@@ -746,9 +745,9 @@ public class AsyncHttpClient {
 			HttpContext httpContext, HttpUriRequest uriRequest,
 			String contentType, AsyncHttpResponseHandler responseHandler,
 			Context context) {
-		if (contentType != null) {
-			uriRequest.addHeader("Content-Type", contentType);
-		}
+		if (contentType == null || contentType.isEmpty())
+			contentType = "application/json; charset=UTF-8";
+		uriRequest.addHeader("Content-Type", contentType);
 
 		Future<?> request = threadPool.submit(new AsyncHttpRequest(client,
 				httpContext, uriRequest, responseHandler));

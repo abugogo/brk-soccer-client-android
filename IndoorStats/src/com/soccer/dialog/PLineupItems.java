@@ -3,6 +3,7 @@ package com.soccer.dialog;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.soccer.entities.impl.DAOLineup;
 import com.soccer.indoorstats.ingame.IGameEvent;
 
 public class PLineupItems implements Serializable {
@@ -66,5 +67,26 @@ public class PLineupItems implements Serializable {
 				g++;
 		}
 		return g;
+	}
+	
+	public DAOLineup getEvents() {
+		DAOLineup lu = new DAOLineup();
+		lu.setPlayerId(mId);
+		
+		for (IGameEvent ge : mEvents) {
+			switch (ge.getEventType()) {
+			case Goal:
+				lu.setGoal(lu.getGoal()+1);
+				break;
+			case O_Goal:
+				lu.setOGoal(lu.getOGoal()+1);
+				break;
+			case Y_Card:
+			case R_Card:
+			case Cook:
+				break;
+			}
+		}
+		return lu;
 	}
 }
