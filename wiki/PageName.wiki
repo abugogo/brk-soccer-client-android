@@ -1,13 +1,5 @@
-#summary One-sentence summary of this page.
-
 = Home page for the soccer project =
 
-Add your content here.
+You may add links/info, whatever
 
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+[https://www.dropbox.com/sh/ar6ax8b3hb7qlqm/P4J3mMNa5H public folder]
