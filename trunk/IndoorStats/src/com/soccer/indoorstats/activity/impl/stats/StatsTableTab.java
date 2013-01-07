@@ -21,18 +21,16 @@ import android.widget.TextView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.soccer.db.remote.R_DB_CONSTS;
-import com.soccer.db.remote.RemoteDBAdapter;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.ITableRow;
 import com.soccer.indoorstats.R;
-import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
 import com.soccer.rest.LoopjRestClient;
 
-public class StatsTableTab extends Activity{
+public class StatsTableTab extends Activity {
 	private ArrayList<ITableRow> m_pArr = null;
 	private Prefs mPrefs;
 	private ProgressDialog mProgDialog;
@@ -59,8 +57,10 @@ public class StatsTableTab extends Activity{
 			try {
 				this.mProgDialog.setMessage("Getting Tables ...");
 				this.mProgDialog.show();
-				LoopjRestClient.get(this,sUrl.concat("/SoccerServer/rest/").concat(mPrefs.getPreference("account_name", "")).concat("/table/"),
-						null, new JsonHttpResponseHandler() {
+				LoopjRestClient.get(this, sUrl.concat("/SoccerServer/rest/")
+						.concat(mPrefs.getPreference("account_name", ""))
+						.concat("/table/"), null,
+						new JsonHttpResponseHandler() {
 							@Override
 							public void onSuccess(JSONArray res) {
 								onGetTableSuccess(res.toString());
@@ -78,7 +78,7 @@ public class StatsTableTab extends Activity{
 								Logger.i("Get Tables finished");
 							}
 						});
-				
+
 			} catch (Exception e) {
 				Logger.e("get current table failed", e);
 				showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
@@ -92,9 +92,10 @@ public class StatsTableTab extends Activity{
 			TableLayout tblLayout = (TableLayout) findViewById(R.id.strip_table);
 			tblLayout.setColumnStretchable(5, true);
 			int i = 1;
-			TableRow tRow = null; 
+			TableRow tRow = null;
 			tRow = createTableRow("", "Player", "W", "D", "L", "Points");
-			tblLayout.addView(tRow, new TableLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+			tblLayout.addView(tRow, new TableLayout.LayoutParams(
+					LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 			if (m_pArr != null) {
 
 				for (Iterator<ITableRow> iter = m_pArr.iterator(); iter
@@ -102,7 +103,10 @@ public class StatsTableTab extends Activity{
 					com.soccer.entities.impl.TableRow tr = (com.soccer.entities.impl.TableRow) iter
 							.next();
 					tRow = createTableRow(tr, i);
-					tblLayout.addView(tRow, new TableLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+					tblLayout
+							.addView(tRow, new TableLayout.LayoutParams(
+									LayoutParams.FILL_PARENT,
+									LayoutParams.FILL_PARENT));
 				}
 			}
 		} catch (SoccerException e) {
@@ -110,11 +114,12 @@ public class StatsTableTab extends Activity{
 		}
 
 	}
-	
-	private TableRow createTableRow(String pos, String name, String wins, String draws, String loses, String points) {
+
+	private TableRow createTableRow(String pos, String name, String wins,
+			String draws, String loses, String points) {
 		TableRow tRow = new TableRow(this);
 		tRow.setBackgroundResource(R.drawable.list_selector);
-		
+
 		TextView v = new TextView(this);
 		v.setText(pos);
 		v.setTextColor(Color.BLACK);
@@ -150,9 +155,14 @@ public class StatsTableTab extends Activity{
 
 		return tRow;
 	}
-	
-	private TableRow createTableRow(com.soccer.entities.impl.TableRow tr, int pos) {
-		return createTableRow(String.valueOf(pos), tr.getFname() + " " + tr.getLname(), String.valueOf(tr.getWins()), String.valueOf(tr.getGames() - tr.getWins() - tr.getLosses()), String.valueOf(tr.getLosses()), String.valueOf(tr.getPoints()));
+
+	private TableRow createTableRow(com.soccer.entities.impl.TableRow tr,
+			int pos) {
+		return createTableRow(String.valueOf(pos),
+				tr.getFname() + " " + tr.getLname(),
+				String.valueOf(tr.getWins()),
+				String.valueOf(tr.getGames() - tr.getWins() - tr.getLosses()),
+				String.valueOf(tr.getLosses()), String.valueOf(tr.getPoints()));
 	}
 
 	private void addTableRow(TableLayout tblLayout, View vi) {
@@ -160,8 +170,9 @@ public class StatsTableTab extends Activity{
 		tRow.addView(vi);
 		tblLayout.addView(tRow);
 	}
-	
-	private View createView(String pos, String name, String wins, String draws, String loses, String points) {
+
+	private View createView(String pos, String name, String wins, String draws,
+			String loses, String points) {
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		View vi = inflater.inflate(R.layout.player_row_in_table, null);
@@ -179,9 +190,13 @@ public class StatsTableTab extends Activity{
 		v.setText(points);
 		return vi;
 	}
-	
+
 	private View createView(com.soccer.entities.impl.TableRow tr, int pos) {
-		return createView(String.valueOf(pos), tr.getFname() + " " + tr.getLname(), String.valueOf(tr.getWins()), String.valueOf(tr.getGames() - tr.getWins() - tr.getLosses()), String.valueOf(tr.getLosses()), String.valueOf(tr.getPoints()));
+		return createView(String.valueOf(pos),
+				tr.getFname() + " " + tr.getLname(),
+				String.valueOf(tr.getWins()),
+				String.valueOf(tr.getGames() - tr.getWins() - tr.getLosses()),
+				String.valueOf(tr.getLosses()), String.valueOf(tr.getPoints()));
 	}
 
 	public void onGetTableFailure(int responseCode, String result) {

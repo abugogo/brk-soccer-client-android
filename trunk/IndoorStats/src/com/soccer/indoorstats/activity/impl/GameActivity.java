@@ -7,29 +7,23 @@ package com.soccer.indoorstats.activity.impl;
  * ShawnBe.com
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.StreamCorruptedException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,31 +32,25 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
-import com.soccer.db.local.PlayersDbAdapter;
-import com.soccer.db.local.StateDbAdapter;
-import com.soccer.db.remote.R_DB_CONSTS;
 import com.soccer.dialog.CheckedListAdapter;
 import com.soccer.dialog.MultiSelectListDialog;
 import com.soccer.dialog.PLineupItems;
-import com.soccer.entities.EntityManager;
 import com.soccer.entities.impl.DAOGame;
 import com.soccer.entities.impl.DAOLineup;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.states.GameState;
-import com.soccer.indoorstats.ingame.IGameEvent.EventType;
+import com.soccer.indoorstats.services.GameService;
+import com.soccer.indoorstats.services.PlayerService;
+import com.soccer.indoorstats.services.handlers.RequestHandler;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.StopWatch;
 import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.preferences.Prefs;
-import com.soccer.rest.LoopjRestClient;
 
 public class GameActivity extends Activity implements OnClickListener {
 
@@ -74,16 +62,11 @@ public class GameActivity extends Activity implements OnClickListener {
 	Button btnReset;
 	CheckedListAdapter adapter;
 	CheckedListAdapter adapter2;
-	private PlayersDbAdapter mDbHelper = null;
-	private StateDbAdapter mStatesDbHelper = null;
 	Prefs sharedPrefs;
 	private ProgressDialog mProgDialog;
-
-	private StateDbAdapter getStatesDbAdapter() {
-		if (mStatesDbHelper == null)
-			mStatesDbHelper = new StateDbAdapter(this);
-		return mStatesDbHelper;
-	}
+	private GameService mBoundGameService;
+	private PlayerService mBoundPlayerService;
+	private boolean mIsBound;
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
@@ -98,14 +81,6 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle(R.string.game);
-
-		/*
-		 * final Action PlayerAction = new IntentAction(this, new Intent(this,
-		 * PlayerActivity.class), R.drawable.player_icon);
-		 * actionBar.addAction(PlayerAction); final Action GroupAction = new
-		 * IntentAction(this, new Intent(this, GroupActivity.class),
-		 * R.drawable.players_icon); actionBar.addAction(GroupAction);
-		 */
 
 		final Action SaveAction = new SaveGameAction();
 		actionBar.addAction(SaveAction);
@@ -176,40 +151,27 @@ public class GameActivity extends Activity implements OnClickListener {
 		daoGame.setWgoals(wG);
 		daoGame.setWinner(winner);
 
-		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
-		if (sUrl.equals("NULL")) {
-			sUrl = R_DB_CONSTS.SERVER_DEFAULT;
-		}
-
 		try {
-			mProgDialog.setMessage("Uploading Game...");
-			mProgDialog.show();
+			if (mIsBound) {
+				this.mProgDialog.setMessage("Uploading Game");
+				this.mProgDialog.show();
+				mBoundGameService.updateGame(daoGame, new RequestHandler() {
 
-			RequestParams params = new RequestParams();
-			params.put("JSON", EntityManager.writeGame(daoGame));
-
-			LoopjRestClient.put(this, sUrl.concat("/SoccerServer/rest/")
-					.concat(sharedPrefs.getPreference("account_name", ""))
-					.concat("/games"), params, new JsonHttpResponseHandler() {
-
-				@Override
-				public void onSuccess(JSONObject res) {
-					onCreateGameSuccess(res);
-				}
-
-				@Override
-				public void onFailure(Throwable tr, String res) {
-					onCreateGameFailure(0, tr.getMessage());
-				}
-
-				@Override
-				public void onFinish() {
-					if (mProgDialog.isShowing())
+					@Override
+					public void onSuccess() {
+						Logger.i("Game created success");
 						mProgDialog.dismiss();
-					Logger.i("Update finished");
-				}
-			});
+						onCreateGameSuccess();
+					}
 
+					@Override
+					public void onFailure(String reason, int errorCode) {
+						Logger.i("Game creation failure");
+						mProgDialog.dismiss();
+						onCreateGameFailure(errorCode, reason);
+					}
+				});
+			}
 		} catch (Exception e) {
 			Logger.e("create game failed", e);
 			showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
@@ -218,7 +180,6 @@ public class GameActivity extends Activity implements OnClickListener {
 	}
 
 	private class SaveGameAction extends AbstractAction {
-
 		public SaveGameAction() {
 			super(R.drawable.save);
 		}
@@ -227,11 +188,9 @@ public class GameActivity extends Activity implements OnClickListener {
 		public void performAction(View view) {
 			createGame();
 		}
-
 	}
 
 	private class ResetGameAction extends AbstractAction {
-
 		public ResetGameAction() {
 			super(R.drawable.new_file);
 		}
@@ -240,7 +199,6 @@ public class GameActivity extends Activity implements OnClickListener {
 		public void performAction(View view) {
 			resetGame();
 		}
-
 	}
 
 	public void resetGame() {
@@ -377,60 +335,30 @@ public class GameActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		restoreState();
+		doBindServices();
 	}
 
 	private void restoreState() {
-		byte[] state;
-
-		getStatesDbAdapter().open();
-		Cursor cP = getStatesDbAdapter().fetchState();
-		// startManagingCursor(cP);
-		if (cP.getCount() > 0) {
-			state = (cP.getBlob(cP
-					.getColumnIndexOrThrow(StateDbAdapter.KEY_GAME_STATE)));
-			if (state != null && !state.equals("")) {
-				ObjectInputStream objectIn;
-				Object obj;
-				try {
-					objectIn = new ObjectInputStream(new ByteArrayInputStream(
-							state));
-					obj = objectIn.readObject();
-					_gState = (GameState) obj;
-					if (btnStart != null)
-						btnStart.setText((_gState != null
-								&& _gState.isStarted() && _gState.is_running()) ? "Stop"
-								: "Start");
-					_timer.setStartTime(_gState.get_startTime());
-					_timer.setStopTime(_gState.get_stopTime());
-					_timer.setRunning(_gState.is_running());
-					if (_gState.isStarted() && _gState.is_running()) {
-						mHandler.sendEmptyMessageDelayed(
-								StopWatchHandler.MSG_UPDATE_TIMER,
-								StopWatchHandler.REFRESH_RATE);
-					} else if (!_gState.isStarted() && !_gState.is_running()) {
-						resetTimer();
-					} else {
-						updateTimer();
-					}
-				} catch (StreamCorruptedException e) {
-					Logger.e(
-							"game activity restore state failed due to corrupted stream",
-							e);
-				} catch (IOException e) {
-					Logger.e(
-							"game activity restore state failed due to io issue",
-							e);
-				} catch (ClassNotFoundException e) {
-					Logger.e(
-							"game activity restore state failed due to class not found",
-							e);
-				}
+		_gState = mBoundGameService.getCurGameState();
+		if (_gState != null) {
+			if (btnStart != null)
+				btnStart.setText((_gState != null && _gState.isStarted() && _gState
+						.is_running()) ? "Stop" : "Start");
+			_timer.setStartTime(_gState.get_startTime());
+			_timer.setStopTime(_gState.get_stopTime());
+			_timer.setRunning(_gState.is_running());
+			if (_gState.isStarted() && _gState.is_running()) {
+				mHandler.sendEmptyMessageDelayed(
+						StopWatchHandler.MSG_UPDATE_TIMER,
+						StopWatchHandler.REFRESH_RATE);
+			} else if (!_gState.isStarted() && !_gState.is_running()) {
+				resetTimer();
+			} else {
+				updateTimer();
 			}
-		}
-
-		if (_gState == null)
+		} else
 			initState();
+
 		ListView lstView = (ListView) findViewById(R.id.listView1);
 		adapter = new CheckedListAdapter(this, _gState.get_team1List());
 		lstView.setAdapter(adapter);
@@ -438,18 +366,14 @@ public class GameActivity extends Activity implements OnClickListener {
 		ListView lstView2 = (ListView) findViewById(R.id.listView2);
 		adapter2 = new CheckedListAdapter(this, _gState.get_team2List());
 		lstView2.setAdapter(adapter2);
-
-		getStatesDbAdapter().close();
 	}
 
 	private void initState() {
 		_gState = new GameState();
-
-		if (mDbHelper == null)
-			mDbHelper = new PlayersDbAdapter(this);
-		mDbHelper.open();
-		ArrayList<DAOPlayer> pArr = mDbHelper.fetchAllPlayersAsArray();
-		mDbHelper.close();
+		ArrayList<DAOPlayer> pArr = new ArrayList<DAOPlayer>();
+		if (mIsBound && mBoundPlayerService != null) {
+			pArr = mBoundPlayerService.getAllPlayers();
+		}
 
 		int s = pArr.size();
 		for (int i = 0; i < s; i++) {
@@ -475,27 +399,13 @@ public class GameActivity extends Activity implements OnClickListener {
 	protected void onPause() {
 		super.onPause();
 		saveState();
+		doUnbindServices();
 	}
 
 	private void saveState() {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		try {
-			ObjectOutput out = new ObjectOutputStream(bos);
-			// save timer state
-			_gState.set_running(_timer.isRunning());
-			_gState.set_startTime(_timer.getStartTime());
-			_gState.set_stopTime(_timer.getStopTime());
-
-			out.writeObject(_gState);
-			out.flush();
-			out.close();
-			getStatesDbAdapter().open();
-			getStatesDbAdapter().insertOrUpdateState(bos);
-			getStatesDbAdapter().close();
-		} catch (IOException e) {
-			Logger.e("game activity save state failed due to io", e);
+		if (mIsBound && mBoundGameService != null) {
+			mBoundGameService.saveGameState(_gState);
 		}
-
 	}
 
 	public void setBackwards(View v) {
@@ -547,7 +457,7 @@ public class GameActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	public void onCreateGameSuccess(JSONObject result) {
+	public void onCreateGameSuccess() {
 		Toast toast = Toast.makeText(this.getApplicationContext(),
 				"Game updated successfully", Toast.LENGTH_SHORT);
 		toast.show();
@@ -560,6 +470,52 @@ public class GameActivity extends Activity implements OnClickListener {
 				DlgUtils.prepareDlgBundle("Failed updating game info: "
 						+ result));
 
+	}
+
+	private ServiceConnection mGameConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			synchronized (GameActivity.class) {
+				mBoundGameService = (GameService) ((GameService.LocalBinder) service)
+						.getService();
+				if (mBoundPlayerService != null)
+					restoreState();
+			}
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			mBoundGameService = null;
+		}
+	};
+
+	private ServiceConnection mPlayerConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			synchronized (GameActivity.class) {
+				mBoundPlayerService = (PlayerService) ((PlayerService.LocalBinder) service)
+						.getService();
+				if (mBoundGameService != null)
+					restoreState();
+			}
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			mBoundPlayerService = null;
+		}
+	};
+
+	private void doBindServices() {
+		bindService(new Intent(GameActivity.this, GameService.class),
+				mGameConnection, Context.BIND_AUTO_CREATE);
+		bindService(new Intent(GameActivity.this, PlayerService.class),
+				mPlayerConnection, Context.BIND_AUTO_CREATE);
+		mIsBound = true;
+	}
+
+	private void doUnbindServices() {
+		if (mIsBound) {
+			unbindService(mGameConnection);
+			unbindService(mPlayerConnection);
+			mIsBound = false;
+		}
 	}
 
 }

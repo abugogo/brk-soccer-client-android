@@ -13,10 +13,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.soccer.db.local.PlayersDbAdapter;
+import com.soccer.db.local.DB_CONSTS;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.services.LoginService;
-import com.soccer.indoorstats.services.handlers.LoginHandler;
+import com.soccer.indoorstats.services.handlers.RequestHandler;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.preferences.Prefs;
 import com.soccer.preferences.SoccerPrefsActivity;
@@ -25,7 +25,7 @@ public class LoginActivity extends Activity {
 	Prefs sharedPrefs;
 	private ProgressDialog mProgDialog;
 	private LoginService mBoundService;
-	boolean mIsBound;
+	private boolean mIsBound;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -33,7 +33,23 @@ public class LoginActivity extends Activity {
 		setContentView(R.layout.activity_login);
 		sharedPrefs = new Prefs(this);
 		this.mProgDialog = new ProgressDialog(this);
+	}
+
+	@Override
+	protected void onResume() {
 		doBindService();
+		String loggedInId = sharedPrefs.getPreference(
+				DB_CONSTS.KEY_ID, "");
+		if(loggedInId != null && !"".equals(loggedInId)) {
+			loadApp(loggedInId);
+		}
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		doUnbindService();
+		super.onPause();
 	}
 
 	@Override
@@ -56,33 +72,40 @@ public class LoginActivity extends Activity {
 		EditText et = (EditText) findViewById(R.id.editIdNumber);
 		final String id = et.getText().toString();
 		et = (EditText) findViewById(R.id.editPassword);
-		String password = et.getText().toString();
+		final String password = et.getText().toString();
 
 		if (id != null && !id.equals("")) {
 			String loggedInId = sharedPrefs.getPreference(
-					PlayersDbAdapter.KEY_ID, "");
+					DB_CONSTS.KEY_ID, "");
 			if (!loggedInId.equals(id)) {
-				if (mIsBound) {
-					this.mProgDialog.setMessage("Logging in...");
-					this.mProgDialog.show();
-					mBoundService.login(id, password, "", new LoginHandler() {
-						@Override
-						public void onSuccess() {
-							loadApp(id);
-							mProgDialog.dismiss();
-						}
-
-						@Override
-						public void onFailure(String reason, int errorCode) {
-							mProgDialog.dismiss();
-							showDialog(
-									0,
-									DlgUtils.prepareDlgBundle("Failed login: "
-											+ reason));
-						}
-					});
-				}
+				perfromLogin(id, password);
 			}
+		}
+	}
+
+	private void perfromLogin(final String id, final String password) {
+		if (mIsBound) {
+			this.mProgDialog.setMessage("Logging in...");
+			this.mProgDialog.show();
+			mBoundService.login(id, password, "", new RequestHandler() {
+				@Override
+				public void onSuccess() {
+					sharedPrefs.setPreference(DB_CONSTS.KEY_ID, id);
+					sharedPrefs.setPreference(DB_CONSTS.KEY_PWRD, password);
+					loadApp(id);
+					mProgDialog.dismiss();
+				}
+
+				@Override
+				public void onFailure(String reason, int errorCode) {
+					mProgDialog.dismiss();
+					sharedPrefs.setPreference(DB_CONSTS.KEY_ID, "");
+					showDialog(
+							0,
+							DlgUtils.prepareDlgBundle("Failed login: "
+									+ reason));
+				}
+			});
 		}
 	}
 
@@ -92,14 +115,7 @@ public class LoginActivity extends Activity {
 		outState.putSerializable("State", 1);
 	}
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		doUnbindService();
-	}
-
 	private void loadApp(String id) {
-		sharedPrefs.setPreference(PlayersDbAdapter.KEY_ID, id);
 		if (id != "") {
 			Intent appIntent = new Intent(this, HomeActivity.class);
 			startActivity(appIntent);

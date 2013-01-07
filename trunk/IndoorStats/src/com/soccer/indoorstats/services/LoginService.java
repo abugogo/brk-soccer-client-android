@@ -7,32 +7,28 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Service;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
 import android.os.IBinder;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.soccer.db.local.PlayersDbAdapter;
-import com.soccer.db.local.StateDbAdapter;
+import com.soccer.db.local.GameDbAdapter;
 import com.soccer.db.remote.R_DB_CONSTS;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.impl.DAOPlayer;
-import com.soccer.indoorstats.services.handlers.LoginHandler;
+import com.soccer.indoorstats.services.handlers.RequestHandler;
 import com.soccer.indoorstats.services.i.ILoginService;
 import com.soccer.indoorstats.utils.log.Logger;
-import com.soccer.preferences.Prefs;
 import com.soccer.rest.LoopjRestClient;
 
-public class LoginService extends Service implements ILoginService {
-	Prefs sharedPrefs;
-	private PlayersDbAdapter mDbHelper;
+public class LoginService extends BaseService implements ILoginService {
 	private final IBinder mBinder = new LocalBinder();
 
 	@Override
 	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
 		return mBinder;
 	}
 
@@ -43,16 +39,8 @@ public class LoginService extends Service implements ILoginService {
 	}
 
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		Logger.i("Received start id " + startId + ": " + intent);
-		// We want this service to continue running until it is explicitly
-		// stopped, so return sticky.
-		return START_STICKY;
-	}
-
-	@Override
 	public void login(String user, String password, final String account,
-			final LoginHandler handler) {
+			final RequestHandler handler) {
 		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
 		if (sUrl.equals("NULL")) {
 			sUrl = R_DB_CONSTS.SERVER_DEFAULT;
@@ -80,8 +68,8 @@ public class LoginService extends Service implements ILoginService {
 				});
 	}
 
-	protected void onLoginSuccess(JSONObject res, String account,
-			LoginHandler handler) {
+	private void onLoginSuccess(JSONObject res, String account,
+			RequestHandler handler) {
 		try {
 			JSONArray acc_arr = res.getJSONArray("accounts");
 			int s = acc_arr.length();
@@ -96,7 +84,7 @@ public class LoginService extends Service implements ILoginService {
 	}
 
 	private void LoginToAccount(CharSequence accountName, String account,
-			final LoginHandler handler) {
+			final RequestHandler handler) {
 
 		sharedPrefs.setPreference("account_name", (String) accountName);
 		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
@@ -131,44 +119,30 @@ public class LoginService extends Service implements ILoginService {
 		}
 	}
 
-	protected void onAccountLoginSuccess(JSONArray res) {
+	private void onAccountLoginSuccess(JSONArray res) {
 		// refresh players list
 		ArrayList<DAOPlayer> pArr = EntityManager.readPlayers(res.toString());
-		LoadPlayers(pArr);
+		SQLiteDatabase db = openDB();
+		LoadPlayers(pArr, db);
 		// remove app state
-		StateDbAdapter sdba = new StateDbAdapter(this);
-		sdba.open();
+		GameDbAdapter sdba = new GameDbAdapter(db);
 		sdba.deleteAllStates();
-		sdba.close();
+		closeDB();
 	}
 
-	private void LoadPlayers(ArrayList<DAOPlayer> pArr) {
+	private void LoadPlayers(ArrayList<DAOPlayer> pArr, SQLiteDatabase db) {
 		try {
 			if (pArr != null) {
-				mDbHelper.deletePlayers();
+				PlayersDbAdapter pda = new PlayersDbAdapter(db);
+				pda.deletePlayers();
 				Iterator<DAOPlayer> itr = pArr.iterator();
 				while (itr.hasNext()) {
 					DAOPlayer p = itr.next();
-					mDbHelper.createPlayer(p);
+					pda.createPlayer(p);
 				}
 			}
 		} catch (Exception e) {
 			Logger.e("login activity failed due players creation failure", e);
 		}
 	}
-
-	@Override
-	public void onCreate() {
-		sharedPrefs = new Prefs(this);
-		mDbHelper = new PlayersDbAdapter(this);
-		mDbHelper.open();
-		super.onCreate();
-	}
-
-	@Override
-	public void onDestroy() {
-		mDbHelper.close();
-		super.onDestroy();
-	}
-
 }

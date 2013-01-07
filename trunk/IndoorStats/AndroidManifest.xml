@@ -69,6 +69,8 @@
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <service android:name=".services.LoginService"></service>
+        <service android:name=".services.PlayerService"></service>
+        <service android:name=".services.GameService"></service>
     </application>
 
 </manifest>
