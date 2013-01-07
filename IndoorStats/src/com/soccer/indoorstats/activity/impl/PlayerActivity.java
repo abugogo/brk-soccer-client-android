@@ -1,37 +1,37 @@
 package com.soccer.indoorstats.activity.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
-import android.database.Cursor;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
-import com.soccer.db.local.PlayersDbAdapter;
+import com.soccer.db.local.DB_CONSTS;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.ImageLoader;
 import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.services.PlayerService;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.preferences.Prefs;
 
 public class PlayerActivity extends Activity {
 
-	private PlayersDbAdapter mDbHelper;
 	private DAOPlayer mPlayer = null;
 	private String mPID = null;
 	private ImageLoader imageLoader;
 	private Prefs mPrefs;
+	private PlayerService mBoundService;
+	private boolean mIsBound;
 
 	public void onCreate(Bundle savedInstanceState) {
 		Logger.i("PlayerActivity onCreate");
@@ -41,33 +41,16 @@ public class PlayerActivity extends Activity {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle(R.string.player);
 
-		/*
-		 * final Action StatsAction = new IntentAction(this, new Intent(this,
-		 * StatsTabActivity.class), R.drawable.heart);
-		 * actionBar.addAction(StatsAction);
-		 */
 		final Action EditAction = new IntentAction(this, new Intent(this,
 				PlayerUpdateActivity.class), R.drawable.edit);
 		actionBar.addAction(EditAction);
-		/*
-		 * final Action GroupAction = new IntentAction(this, new Intent(this,
-		 * GroupActivity.class), R.drawable.players_icon);
-		 * actionBar.addAction(GroupAction); final Action GameAction = new
-		 * IntentAction(this, new Intent(this, GameActivity.class),
-		 * R.drawable.game_icon); actionBar.addAction(GameAction);
-		 */
 
 		final Action HomeAction = new IntentAction(this, new Intent(this,
 				HomeActivity.class), R.drawable.home_icon);
 		actionBar.addAction(HomeAction);
 
-		mDbHelper = new PlayersDbAdapter(this);
-		mDbHelper.open();
-		Intent i = getIntent();
-		mPID = (String) i.getSerializableExtra("player_id");
-
 		mPrefs = new Prefs(this);
-		mPID = (String) mPrefs.getPreference(PlayersDbAdapter.KEY_ID, mPID);
+		mPID = (String) mPrefs.getPreference(DB_CONSTS.KEY_ID, mPID);
 
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		imageLoader = new ImageLoader(this.getApplicationContext());
@@ -76,8 +59,6 @@ public class PlayerActivity extends Activity {
 	private void populateFields() {
 		Logger.i("PlayerActivity populateFields");
 		if (mPID != null && !mPID.equals("")) {
-			LoadPlayerFromDB(mPID);
-
 			if (mPlayer != null && mPlayer.getId() != null
 					&& mPlayer.getId() != "") {
 				((TextView) findViewById(R.id.pfname)).setText(mPlayer
@@ -88,8 +69,8 @@ public class PlayerActivity extends Activity {
 						.getEmail());
 				((TextView) findViewById(R.id.ptel1))
 						.setText(mPlayer.getTel1());
-				((TextView) findViewById(R.id.desc))
-						.setText(mPlayer.getDescription());
+				((TextView) findViewById(R.id.desc)).setText(mPlayer
+						.getDescription());
 
 				String bDay = mPlayer.getBdayAsString(null);
 				if (bDay != null)
@@ -102,11 +83,8 @@ public class PlayerActivity extends Activity {
 				sharedPrefs.setPreference("LoggedIn", -1);
 				showDialog(0,
 						DlgUtils.prepareDlgBundle("Failed to load player"));
-
 			}
-
 		}
-
 	}
 
 	@Override
@@ -114,91 +92,50 @@ public class PlayerActivity extends Activity {
 		return DlgUtils.createAlertMessage(this, args);
 	}
 
-	private void LoadPlayerFromDB(String id) {
-		DAOPlayer p = new DAOPlayer();
-		Cursor cP = mDbHelper.fetchPlayer(Long.parseLong(id));
-		startManagingCursor(cP);
-		if (cP.getCount() > 0) {
-			p.setFname(cP.getString(cP
-					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_FNAME)));
-			p.setLname(cP.getString(cP
-					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_LNAME)));
-			p.setEmail(cP.getString(cP
-					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_EMAIL)));
-			p.setP_img(cP.getString(cP
-					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_IMG)));
-			p.setDescription(cP.getString(cP
-					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_DESC)));
-			
-			Date d = null;
-			try {
-				String sBDate = cP.getString(cP
-						.getColumnIndexOrThrow(PlayersDbAdapter.KEY_BDAY));
-				if (sBDate != null && !sBDate.equals(""))
-					d = (Date) new SimpleDateFormat(
-							"EEE MMM d HH:mm:ss zzz yyyy", Locale.ENGLISH)
-							.parse(sBDate);
-
-			} catch (IllegalArgumentException e) {
-				Logger.e(
-						"player activity loadplayersfromdb failed due to illegal state",
-						e);
-			} catch (ParseException e) {
-				Logger.e(
-						"player activity loadplayersfromdb failed due to parser exception",
-						e);
-			}
-			if (d != null)
-				p.setBday(d);
-			p.setId(cP.getString(cP
-					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_ID)));
-			p.setTel1(cP.getString(cP
-					.getColumnIndexOrThrow(PlayersDbAdapter.KEY_TEL1)));
-		}
-
-		mPlayer = p;
-	}
-
 	@Override
 	protected void onPause() {
-		Logger.i("PlayerActivity onPause");
 		super.onPause();
-		saveState();
+		Logger.i("PlayerActivity onPause");
+		doUnbindService();
 	}
 
 	@Override
 	protected void onResume() {
-		Logger.i("PlayerActivity onResume");
 		super.onResume();
-		mPID = mPrefs.getPreference(PlayersDbAdapter.KEY_ID, mPID);
-		populateFields();
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		Logger.i("PlayerActivity onSaveInstanceState");
-		super.onSaveInstanceState(outState);
-		saveState();
-	}
-
-	private void saveState() {
-		mPrefs.setPreference(PlayersDbAdapter.KEY_ID, mPID);
+		Logger.i("PlayerActivity onResume");
+		mPrefs = new Prefs(this);
+		mPID = mPrefs.getPreference(DB_CONSTS.KEY_ID, mPID);
+		doBindService();
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mDbHelper.close();
 	}
 
-	/*
-	 * @Override public boolean onCreateOptionsMenu(Menu menu) {
-	 * menu.add(Menu.NONE, 0, 0, "Save"); return
-	 * super.onCreateOptionsMenu(menu); }
-	 * 
-	 * @Override public boolean onOptionsItemSelected(MenuItem item) { switch
-	 * (item.getItemId()) { case 0: updatePlayer(); return true; } return false;
-	 * }
-	 */
+	private ServiceConnection mConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			mBoundService = (PlayerService) ((PlayerService.LocalBinder) service)
+					.getService();
+			mPlayer = mBoundService.getPlayer(mPID);
+			populateFields();
+		}
 
+		public void onServiceDisconnected(ComponentName className) {
+			mBoundService = null;
+		}
+	};
+
+	private void doBindService() {
+		bindService(new Intent(PlayerActivity.this, PlayerService.class),
+				mConnection, Context.BIND_AUTO_CREATE);
+		mIsBound = true;
+	}
+
+	private void doUnbindService() {
+		if (mIsBound) {
+			unbindService(mConnection);
+			mIsBound = false;
+		}
+	}
 }

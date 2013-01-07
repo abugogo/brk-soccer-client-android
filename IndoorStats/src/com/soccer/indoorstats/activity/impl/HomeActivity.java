@@ -7,8 +7,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.soccer.db.local.DB_CONSTS;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
+import com.soccer.preferences.Prefs;
 import com.soccer.preferences.SoccerPrefsActivity;
 
 public class HomeActivity extends Activity {
@@ -57,6 +59,8 @@ public class HomeActivity extends Activity {
 				break;
 			case R.id.homeButton6:
 				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+				Prefs sharedPrefs = new Prefs(this);
+				sharedPrefs.setPreference(DB_CONSTS.KEY_ID, "");
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
 				break;

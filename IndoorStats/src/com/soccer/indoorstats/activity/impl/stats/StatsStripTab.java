@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TableLayout;
@@ -17,18 +15,14 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-import com.soccer.db.local.PlayersDbAdapter;
+import com.soccer.db.local.DB_CONSTS;
 import com.soccer.db.remote.R_DB_CONSTS;
-import com.soccer.db.remote.RemoteDBAdapter;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.IWinLoseStrip;
 import com.soccer.entities.impl.WinLoseStrip;
 import com.soccer.indoorstats.R;
-import com.soccer.indoorstats.activity.i.IAsyncTaskAct;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.log.Logger;
-import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
 import com.soccer.rest.LoopjRestClient;
 
@@ -53,7 +47,7 @@ public class StatsStripTab extends Activity {
 
 			mPrefs = new Prefs(this);
 			String mPID = (String) mPrefs.getPreference(
-					PlayersDbAdapter.KEY_ID, "");
+					DB_CONSTS.KEY_ID, "");
 			String sUrl = mPrefs.getPreference("server_port", "NULL");
 			if (sUrl.equals("NULL")) {
 				sUrl = R_DB_CONSTS.SERVER_DEFAULT;

@@ -5,27 +5,32 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import android.app.ListActivity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.ListView;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
-import com.soccer.db.local.PlayersDbAdapter;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.LazyAdapter;
 import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.services.PlayerService;
 
 public class GroupActivity extends ListActivity {
 
-	PlayersDbAdapter mDbHelper = null;
 	ListView list;
 	LazyAdapter adapter;
 	private ArrayList<DAOPlayer> mPList;
 	private int sign = 1;
+	private PlayerService mBoundService;
+	private boolean mIsBound;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,11 +43,18 @@ public class GroupActivity extends ListActivity {
 		actionBar.addAction(HomeAction);
 
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-		mDbHelper = new PlayersDbAdapter(this);
-		mDbHelper.open();
-		mPList = mDbHelper.fetchAllPlayersAsArray();
-		mDbHelper.close();
-		fillData();
+	}
+
+	@Override
+	protected void onPause() {
+		doUnbindService();
+		super.onPause();
+	}
+
+	@Override
+	protected void onResume() {
+		doBindService();
+		super.onResume();
 	}
 
 	@Override
@@ -76,6 +88,32 @@ public class GroupActivity extends ListActivity {
 	private final class SortByName implements Comparator<DAOPlayer> {
 		public int compare(DAOPlayer i1, DAOPlayer i2) {
 			return i1.getFname().compareTo(i2.getFname()) * sign;
+		}
+	}
+
+	private ServiceConnection mConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			mBoundService = (PlayerService) ((PlayerService.LocalBinder) service)
+					.getService();
+			mPList = mBoundService.getAllPlayers();
+			fillData();
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			mBoundService = null;
+		}
+	};
+
+	private void doBindService() {
+		bindService(new Intent(GroupActivity.this, PlayerService.class),
+				mConnection, Context.BIND_AUTO_CREATE);
+		mIsBound = true;
+	}
+
+	private void doUnbindService() {
+		if (mIsBound) {
+			unbindService(mConnection);
+			mIsBound = false;
 		}
 	}
 }
