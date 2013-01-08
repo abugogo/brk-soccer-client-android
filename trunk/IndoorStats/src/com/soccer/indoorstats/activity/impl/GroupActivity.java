@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.LazyAdapter;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.services.PlayerService;
+import com.soccer.preferences.Prefs;
 
 public class GroupActivity extends ListActivity {
 
@@ -36,7 +38,10 @@ public class GroupActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.group_layout);
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		actionBar.setTitle(R.string.group);
+		Prefs sharedPrefs = new Prefs(this);
+		String title = sharedPrefs.getPreference("account_name", getString(R.string.group));
+		actionBar.setTitle(title);
+		
 
 		final Action HomeAction = new IntentAction(this, new Intent(this,
 				HomeActivity.class), R.drawable.home_icon);

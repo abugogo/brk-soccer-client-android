@@ -78,9 +78,11 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.game_main);
+		sharedPrefs = new Prefs(this);
 
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		actionBar.setTitle(R.string.game);
+		String title = sharedPrefs.getPreference("account_name", getString(R.string.game));
+		actionBar.setTitle(title);
 
 		final Action SaveAction = new SaveGameAction();
 		actionBar.addAction(SaveAction);
@@ -101,7 +103,7 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		if ((GameState) getLastNonConfigurationInstance() != null)
 			_gState = (GameState) getLastNonConfigurationInstance();
-		sharedPrefs = new Prefs(this);
+		
 
 		this.mProgDialog = new ProgressDialog(this);
 	}
