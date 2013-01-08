@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ public class PlayerActivity extends Activity {
 	private Prefs mPrefs;
 	private PlayerService mBoundService;
 	private boolean mIsBound;
+	private ActionBar actionBar;
 
 	public void onCreate(Bundle savedInstanceState) {
 		Logger.i("PlayerActivity onCreate");
@@ -40,7 +42,7 @@ public class PlayerActivity extends Activity {
 		mPrefs = new Prefs(this);
 		
 
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		actionBar = (ActionBar) findViewById(R.id.actionbar);
 		String title = mPrefs.getPreference("account_name", getString(R.string.player));
 		actionBar.setTitle(title);
 

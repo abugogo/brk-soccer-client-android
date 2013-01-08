@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/pitch1" >
+    android:background="@drawable/app_bg" >
 
     <ScrollView
         android:id="@+id/scrollView1"
@@ -14,7 +14,7 @@
             style="@style/AppTheme"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/pitch1"
+            android:background="@drawable/app_bg"
             android:scrollbars="vertical" >
         </TableLayout>
     </ScrollView>

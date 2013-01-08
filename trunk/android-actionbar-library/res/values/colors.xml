@@ -16,8 +16,8 @@
 <resources>
     <color name="actionbar_separator">#8B1A1A</color>
     <color name="actionbar_title">#FFFFFF</color>
-    <color name="actionbar_background_start">#f5c98c</color>
-    <color name="actionbar_background_end">#f7ddb8</color>
-    <color name="actionbar_background_item_pressed_start">#fb9d23</color>
-    <color name="actionbar_background_item_pressed_end">#ffc579</color>
+    <color name="actionbar_background_start">#FFFFFF</color>
+    <color name="actionbar_background_end">#000000</color>
+    <color name="actionbar_background_item_pressed_start">#55fb9d23</color>
+    <color name="actionbar_background_item_pressed_end">#55ffc579</color>
 </resources>

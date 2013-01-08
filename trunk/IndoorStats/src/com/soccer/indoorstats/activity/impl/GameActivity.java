@@ -14,7 +14,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -63,10 +62,10 @@ public class GameActivity extends Activity implements OnClickListener {
 	CheckedListAdapter adapter;
 	CheckedListAdapter adapter2;
 	Prefs sharedPrefs;
-	private ProgressDialog mProgDialog;
 	private GameService mBoundGameService;
 	private PlayerService mBoundPlayerService;
 	private boolean mIsBound;
+	private ActionBar actionBar;
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
@@ -80,7 +79,7 @@ public class GameActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.game_main);
 		sharedPrefs = new Prefs(this);
 
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		actionBar = (ActionBar) findViewById(R.id.actionbar);
 		String title = sharedPrefs.getPreference("account_name", getString(R.string.game));
 		actionBar.setTitle(title);
 
@@ -103,9 +102,6 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		if ((GameState) getLastNonConfigurationInstance() != null)
 			_gState = (GameState) getLastNonConfigurationInstance();
-		
-
-		this.mProgDialog = new ProgressDialog(this);
 	}
 
 	public void createGame() {
@@ -155,21 +151,20 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		try {
 			if (mIsBound) {
-				this.mProgDialog.setMessage("Uploading Game");
-				this.mProgDialog.show();
+				actionBar.setProgressBarVisibility(View.VISIBLE);
 				mBoundGameService.updateGame(daoGame, new RequestHandler() {
 
 					@Override
 					public void onSuccess() {
 						Logger.i("Game created success");
-						mProgDialog.dismiss();
+						actionBar.setProgressBarVisibility(View.INVISIBLE);
 						onCreateGameSuccess();
 					}
 
 					@Override
 					public void onFailure(String reason, int errorCode) {
 						Logger.i("Game creation failure");
-						mProgDialog.dismiss();
+						actionBar.setProgressBarVisibility(View.INVISIBLE);
 						onCreateGameFailure(errorCode, reason);
 					}
 				});
