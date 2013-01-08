@@ -48,8 +48,10 @@ public class PlayerUpdateActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.player_update_layout);
 
+		mPrefs = new Prefs(this);
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		actionBar.setTitle(R.string.updatePlayer);
+		String title = mPrefs.getPreference("account_name", getString(R.string.updatePlayer));
+		actionBar.setTitle(title);
 
 		final Action SaveAction = new SavePAction();
 		actionBar.addAction(SaveAction);
@@ -168,7 +170,6 @@ public class PlayerUpdateActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		Logger.i("PlayerUpdateActivity onResume");
-		mPrefs = new Prefs(this);
 		mPID = mPrefs.getPreference(DB_CONSTS.KEY_ID, mPID);
 		doBindService();
 	}

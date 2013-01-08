@@ -37,9 +37,12 @@ public class PlayerActivity extends Activity {
 		Logger.i("PlayerActivity onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.player_layout);
+		mPrefs = new Prefs(this);
+		
 
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		actionBar.setTitle(R.string.player);
+		String title = mPrefs.getPreference("account_name", getString(R.string.player));
+		actionBar.setTitle(title);
 
 		final Action EditAction = new IntentAction(this, new Intent(this,
 				PlayerUpdateActivity.class), R.drawable.edit);
@@ -49,7 +52,6 @@ public class PlayerActivity extends Activity {
 				HomeActivity.class), R.drawable.home_icon);
 		actionBar.addAction(HomeAction);
 
-		mPrefs = new Prefs(this);
 		mPID = (String) mPrefs.getPreference(DB_CONSTS.KEY_ID, mPID);
 
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
