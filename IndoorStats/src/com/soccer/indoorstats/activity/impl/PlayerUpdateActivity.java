@@ -5,7 +5,6 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -38,9 +37,9 @@ public class PlayerUpdateActivity extends Activity {
 	private String mPID = null;
 	private ImageLoader imageLoader;
 	private Prefs mPrefs;
-	private ProgressDialog mProgDialog;
 	private PlayerService mBoundService;
 	private boolean mIsBound;
+	private ActionBar actionBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,16 +48,15 @@ public class PlayerUpdateActivity extends Activity {
 		setContentView(R.layout.player_update_layout);
 
 		mPrefs = new Prefs(this);
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		String title = mPrefs.getPreference("account_name", getString(R.string.updatePlayer));
+		actionBar = (ActionBar) findViewById(R.id.actionbar);
+		String title = mPrefs.getPreference("account_name",
+				getString(R.string.updatePlayer));
 		actionBar.setTitle(title);
 
 		final Action SaveAction = new SavePAction();
 		actionBar.addAction(SaveAction);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		imageLoader = new ImageLoader(this.getApplicationContext());
-
-		this.mProgDialog = new ProgressDialog(this);
 	}
 
 	private void populateFields() {
@@ -130,21 +128,20 @@ public class PlayerUpdateActivity extends Activity {
 				mPlayer.setEmail(newEmail);
 				mPlayer.setTel1(newPhone);
 				if (mIsBound) {
-					this.mProgDialog.setMessage("Updating Player Data");
-					this.mProgDialog.show();
+					actionBar.setProgressBarVisibility(View.VISIBLE);
 					mBoundService.updatePlayer(mPlayer, new RequestHandler() {
 
 						@Override
 						public void onSuccess() {
 							Logger.i("PlayerUpdateActivity success");
-							mProgDialog.dismiss();
+							actionBar.setProgressBarVisibility(View.INVISIBLE);
 							onUpdateSuccess();
 						}
 
 						@Override
 						public void onFailure(String reason, int errorCode) {
 							Logger.i("PlayerUpdateActivity failure");
-							mProgDialog.dismiss();
+							actionBar.setProgressBarVisibility(View.INVISIBLE);
 							onUpdateFailure(errorCode, reason);
 						}
 					});
@@ -192,7 +189,7 @@ public class PlayerUpdateActivity extends Activity {
 				0,
 				DlgUtils.prepareDlgBundle("Failed updating player info: "
 						+ result));
-		if(mIsBound)
+		if (mIsBound)
 			mPlayer = mBoundService.getPlayer(mPID);
 		populateFields();
 	}
