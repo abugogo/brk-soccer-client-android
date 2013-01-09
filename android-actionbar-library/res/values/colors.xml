@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 <resources>
-    <color name="actionbar_separator">#8B1A1A</color>
+    <color name="actionbar_separator">#FFFFFF</color>
     <color name="actionbar_title">#FFFFFF</color>
     <color name="actionbar_background_start">#FFFFFF</color>
     <color name="actionbar_background_end">#000000</color>

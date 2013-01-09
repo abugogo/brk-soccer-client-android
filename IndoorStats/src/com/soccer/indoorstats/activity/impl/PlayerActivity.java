@@ -40,21 +40,31 @@ public class PlayerActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.player_layout);
 		mPrefs = new Prefs(this);
-		
+		Bundle b = getIntent().getExtras();
+		if(null != b)
+			mPID = b.getString("pid");
+		if (mPID == null || "".equals(mPID))
+			mPID = mPrefs.getPreference(DB_CONSTS.KEY_ID, mPID);
 
 		actionBar = (ActionBar) findViewById(R.id.actionbar);
-		String title = mPrefs.getPreference("account_name", getString(R.string.player));
+		String title = mPrefs.getPreference("account_name",
+				getString(R.string.player));
 		actionBar.setTitle(title);
 
-		final Action EditAction = new IntentAction(this, new Intent(this,
-				PlayerUpdateActivity.class), R.drawable.edit);
-		actionBar.addAction(EditAction);
+		// allow editing of yourself only
+		if (mPrefs.getPreference(DB_CONSTS.KEY_ID, "").equals(mPID)) {
+			Intent pupdateIntent = new Intent(this, PlayerUpdateActivity.class);
+			Bundle bintent = new Bundle();
+			bintent.putString("pid", mPID);
+			pupdateIntent.putExtras(bintent);
+			final Action EditAction = new IntentAction(this, pupdateIntent,
+					R.drawable.edit);
+			actionBar.addAction(EditAction);
+		}
 
 		final Action HomeAction = new IntentAction(this, new Intent(this,
 				HomeActivity.class), R.drawable.home_icon);
 		actionBar.addAction(HomeAction);
-
-		mPID = (String) mPrefs.getPreference(DB_CONSTS.KEY_ID, mPID);
 
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		imageLoader = new ImageLoader(this.getApplicationContext());
@@ -107,8 +117,6 @@ public class PlayerActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		Logger.i("PlayerActivity onResume");
-		mPrefs = new Prefs(this);
-		mPID = mPrefs.getPreference(DB_CONSTS.KEY_ID, mPID);
 		doBindService();
 	}
 

@@ -236,7 +236,7 @@ public class GameActivity extends Activity implements OnClickListener {
 			if (passed)
 				tvTextView.setTextColor(Color.RED);
 			else
-				tvTextView.setTextColor(Color.BLACK);
+				tvTextView.setTextColor(Color.WHITE);
 		}
 	}
 
@@ -255,7 +255,7 @@ public class GameActivity extends Activity implements OnClickListener {
 		if (btnStart != null && tvTextView != null) {
 			btnStart.setText("Start");
 			tvTextView.setText("00:00");
-			tvTextView.setTextColor(Color.BLACK);
+			tvTextView.setTextColor(Color.WHITE);
 		}
 	}
 
