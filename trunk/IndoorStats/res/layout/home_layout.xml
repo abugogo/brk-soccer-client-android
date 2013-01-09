@@ -112,7 +112,7 @@
             android:layout_centerVertical="true"
             android:src="@drawable/arrow" />
     </RelativeLayout>
-    
+
     <RelativeLayout
         android:id="@+id/rl6"
         android:layout_width="fill_parent"
@@ -134,5 +134,4 @@
             android:layout_centerVertical="true"
             android:src="@drawable/arrow" />
     </RelativeLayout>
-
-</RelativeLayout>
+</RelativeLayout>
