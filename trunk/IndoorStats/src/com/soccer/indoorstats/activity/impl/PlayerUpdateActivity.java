@@ -167,7 +167,10 @@ public class PlayerUpdateActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		Logger.i("PlayerUpdateActivity onResume");
-		mPID = mPrefs.getPreference(DB_CONSTS.KEY_ID, mPID);
+		Bundle b = getIntent().getExtras();
+		mPID = b.getString("pid");
+		if (mPID == null || "".equals(mPID))
+			mPID = mPrefs.getPreference(DB_CONSTS.KEY_ID, mPID);
 		doBindService();
 	}
 

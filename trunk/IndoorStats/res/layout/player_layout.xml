@@ -16,7 +16,6 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@id/actionbar"
         android:layout_marginRight="5dip"
-        android:background="@drawable/image_bg"
         android:padding="3dip" >
 
         <ImageView
@@ -24,7 +23,7 @@
             android:layout_width="50dip"
             android:layout_height="50dip"
             android:contentDescription="@string/emptyString"
-            android:src="@drawable/no_image" />
+            android:src="@drawable/soccer_time_logo" />
     </LinearLayout>
 
     <!-- First name of player -->
@@ -34,10 +33,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/thumbnail"
+        android:layout_marginTop="10sp"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
         android:textColor="#C0C0C0"
-        android:textSize="15dip"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:typeface="sans" />
 
@@ -52,7 +52,7 @@
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
         android:textColor="#C0C0C0"
-        android:textSize="15dip" />
+        android:textSize="15sp" />
 
     <View
         android:id="@+id/sepa1"
@@ -69,8 +69,8 @@
         android:layout_below="@id/sepa1"
         android:layout_marginTop="12dip"
         android:text="@string/phone"
-        android:textColor="#000000"
-        android:textSize="12dip" />
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/ptel1"
@@ -79,8 +79,8 @@
         android:layout_alignTop="@id/ptel1Caption"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
-        android:textColor="#000000"
-        android:textSize="12dip" />
+        android:textColor="#C0C0C0"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/emailCaption"
@@ -89,8 +89,8 @@
         android:layout_alignLeft="@id/thumbnail"
         android:layout_below="@id/ptel1Caption"
         android:text="@string/email"
-        android:textColor="#000000"
-        android:textSize="12dip" />
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/email"
@@ -99,8 +99,8 @@
         android:layout_alignTop="@id/emailCaption"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
-        android:textColor="#000000"
-        android:textSize="12dip" />
+        android:textColor="#C0C0C0"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/bdayCaption"
@@ -109,8 +109,8 @@
         android:layout_alignLeft="@id/thumbnail"
         android:layout_below="@id/emailCaption"
         android:text="@string/birthday"
-        android:textColor="#000000"
-        android:textSize="12dip" />
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/bday"
@@ -119,8 +119,8 @@
         android:layout_alignTop="@id/bdayCaption"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
-        android:textColor="#000000"
-        android:textSize="12dip" />
+        android:textColor="#C0C0C0"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/descCaption"
@@ -129,8 +129,8 @@
         android:layout_alignLeft="@id/thumbnail"
         android:layout_below="@id/bday"
         android:text="@string/description"
-        android:textColor="#000000"
-        android:textSize="12dip" />
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/desc"
@@ -139,8 +139,8 @@
         android:layout_alignTop="@id/descCaption"
         android:layout_toRightOf="@+id/thumbnail"
         android:text=""
-        android:textColor="#000000"
-        android:textSize="12dip" />
+        android:textColor="#C0C0C0"
+        android:textSize="12sp" />
 
     <!-- Tel1 of player -->
 

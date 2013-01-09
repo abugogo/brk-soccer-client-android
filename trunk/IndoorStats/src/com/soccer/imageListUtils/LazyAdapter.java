@@ -6,8 +6,10 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.activity.impl.PlayerActivity;
 import com.soccer.indoorstats.utils.ActivitySwipeDetector;
 import com.soccer.indoorstats.utils.ISwipeInterface;
 
@@ -62,7 +65,20 @@ public class LazyAdapter extends BaseAdapter implements ISwipeInterface {
 
 		DAOPlayer player = new DAOPlayer();
 		player = data.get(position);
+		final String pid = player.getId();
+		vi.setOnClickListener(new OnClickListener() {
 
+			@Override
+			public void onClick(View v) {
+				Intent appIntent = new Intent(activity, PlayerActivity.class);
+				Bundle b = new Bundle();
+				b.putString("pid", pid); 
+				appIntent.putExtras(b); 
+				activity.startActivity(appIntent);
+
+			}
+		});
+		
 		// Setting all values in listview
 		pfname.setText(player.getFname());
 		plname.setText(player.getLname());
@@ -80,8 +96,8 @@ public class LazyAdapter extends BaseAdapter implements ISwipeInterface {
 	@Override
 	public void left2right(View v) {
 		TextView tel = (TextView) v.findViewById(R.id.ptel1);
-		Intent intent = new Intent(Intent.ACTION_CALL,
-				Uri.parse("tel:" + tel.getText()));
+		Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"
+				+ tel.getText()));
 
 		LazyAdapter.this.activity.startActivity(intent);
 	}
@@ -89,8 +105,8 @@ public class LazyAdapter extends BaseAdapter implements ISwipeInterface {
 	@Override
 	public void right2left(View v) {
 		TextView tel = (TextView) v.findViewById(R.id.ptel1);
-		Intent intent = new Intent(Intent.ACTION_SENDTO,
-					Uri.parse("sms:" + tel.getText()));
+		Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("sms:"
+				+ tel.getText()));
 
 		LazyAdapter.this.activity.startActivity(intent);
 	}
