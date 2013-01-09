@@ -13,14 +13,19 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
+import com.soccer.db.local.DB_CONSTS;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.LazyAdapter;
 import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
 import com.soccer.indoorstats.services.PlayerService;
 import com.soccer.preferences.Prefs;
 
@@ -36,18 +41,62 @@ public class GroupActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.group_layout);
+		// top action bar
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		Prefs sharedPrefs = new Prefs(this);
-		String title = sharedPrefs.getPreference("account_name", getString(R.string.group));
+		String title = sharedPrefs.getPreference("account_name",
+				getString(R.string.group));
 		actionBar.setTitle(title);
-		
-
 		final Action HomeAction = new IntentAction(this, new Intent(this,
 				HomeActivity.class), R.drawable.home_icon);
 		actionBar.addAction(HomeAction);
+		// bottom bar
+		RadioButton radioButton;
+		radioButton = (RadioButton) findViewById(R.id.btnGame);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		radioButton = (RadioButton) findViewById(R.id.btnGroup);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		radioButton = (RadioButton) findViewById(R.id.btnSeason);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		radioButton = (RadioButton) findViewById(R.id.btnStats);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
 
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 	}
+
+	private CompoundButton.OnCheckedChangeListener btnNavBarOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+		public void onCheckedChanged(CompoundButton buttonView,
+				boolean isChecked) {
+			if (isChecked) {
+				Toast.makeText(GroupActivity.this, buttonView.getText(),
+						Toast.LENGTH_SHORT).show();
+
+				Intent appIntent = null;
+
+				switch (buttonView.getId()) {
+				case R.id.btnGame:
+					appIntent = new Intent(GroupActivity.this,
+							GameActivity.class);
+					break;
+				case R.id.btnSeason:
+					Toast.makeText(GroupActivity.this, "not implemented",
+							Toast.LENGTH_SHORT).show();
+					break;
+				case R.id.btnStats:
+					appIntent = new Intent(GroupActivity.this,
+							StatsTabActivity.class);
+					break;
+				}
+				if (appIntent != null)
+					startActivity(appIntent);
+
+			}
+		}
+	};
 
 	@Override
 	protected void onPause() {

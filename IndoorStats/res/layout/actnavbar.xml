@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:orientation="vertical" >
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#FFFFFF" />
+
+    <RadioGroup
+        android:id="@+id/rgroup"
+        android:layout_width="fill_parent"
+        android:layout_height="46dp"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/btnGroup"
+            style="@style/navbar_button"
+            android:layout_marginTop="5dp"
+            android:drawableTop="@drawable/navbar_groupselector"
+            android:text="Group" />
+
+        <RadioButton
+            android:id="@+id/btnStats"
+            style="@style/navbar_button"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:drawableTop="@drawable/navbar_statsselector"
+            android:text="Stats" />
+
+        <RadioButton
+            android:id="@+id/btnGame"
+            style="@style/navbar_button"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:drawableTop="@drawable/navbar_gameselector"
+            android:text="Game" />
+
+        <RadioButton
+            android:id="@+id/btnSeason"
+            style="@style/navbar_button"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:drawableTop="@drawable/navbar_seasonselector"
+            android:text="Season" />
+    </RadioGroup>
+
+</LinearLayout>
