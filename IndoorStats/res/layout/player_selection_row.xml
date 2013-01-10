@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal"
+    android:padding="5dip" >
+
+    <!-- First name of player -->
+
+    <TextView
+        android:id="@+id/pfname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="2sp"
+        android:text="Player name"
+        android:textColor="#040404"
+        android:textSize="5sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+    <!-- Last name of player -->
+
+    <TextView
+        android:id="@+id/plname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pfname"
+        android:layout_centerHorizontal="true"
+        android:text="Player family name"
+        android:textColor="#343434"
+        android:textSize="5sp" />
+
+    <TextView
+        android:id="@+id/txtSelectLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:visibility="invisible"
+        android:text="X" />
+
+    <TextView
+        android:id="@+id/txtSelectRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:visibility="invisible"
+        android:text="X" />
+
+</RelativeLayout>
