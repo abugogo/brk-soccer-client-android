@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TabHost;
+import android.widget.Toast;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 
@@ -14,6 +17,8 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.activity.impl.GameActivity;
+import com.soccer.indoorstats.activity.impl.GroupActivity;
 import com.soccer.indoorstats.activity.impl.HomeActivity;
 
 public class StatsTabActivity extends TabActivity {
@@ -69,8 +74,54 @@ public class StatsTabActivity extends TabActivity {
 		addTab(tabHost, new Intent(this, StatsStripTab.class), "Strips",
 				R.drawable.arrow);
 
+		//buttom navigation bar
+		RadioButton radioButton;
+		radioButton = (RadioButton) findViewById(R.id.btnStats);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		radioButton = (RadioButton) findViewById(R.id.btnGame);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		radioButton = (RadioButton) findViewById(R.id.btnGroup);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		radioButton = (RadioButton) findViewById(R.id.btnSeason);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		
 	}
 
+	private CompoundButton.OnCheckedChangeListener btnNavBarOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+		public void onCheckedChanged(CompoundButton buttonView,
+				boolean isChecked) {
+			if (isChecked) {
+				Toast.makeText(StatsTabActivity.this, buttonView.getText(),
+						Toast.LENGTH_SHORT).show();
+
+				Intent appIntent = null;
+
+				switch (buttonView.getId()) {
+				case R.id.btnGroup:
+					appIntent = new Intent(StatsTabActivity.this,
+							GroupActivity.class);
+					break;
+				case R.id.btnSeason:
+					Toast.makeText(StatsTabActivity.this, "not implemented",
+							Toast.LENGTH_SHORT).show();
+					break;
+				case R.id.btnGame:
+					appIntent = new Intent(StatsTabActivity.this,
+							GameActivity.class);
+					break;
+				}
+				if (appIntent != null)
+					startActivity(appIntent);
+
+			}
+		}
+	};
+
+	
 	private void addTab(TabHost tabHost, Intent intent, String label,
 			int drawableId) {
 		TabHost.TabSpec spec = tabHost.newTabSpec(label);

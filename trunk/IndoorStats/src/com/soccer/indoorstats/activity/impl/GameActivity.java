@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,7 +28,9 @@ import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +45,7 @@ import com.soccer.entities.impl.DAOGame;
 import com.soccer.entities.impl.DAOLineup;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
 import com.soccer.indoorstats.activity.states.GameState;
 import com.soccer.indoorstats.services.GameService;
 import com.soccer.indoorstats.services.PlayerService;
@@ -102,7 +106,52 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		if ((GameState) getLastNonConfigurationInstance() != null)
 			_gState = (GameState) getLastNonConfigurationInstance();
+
+		//buttom navigation bar
+		RadioButton radioButton;
+		radioButton = (RadioButton) findViewById(R.id.btnGame);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		radioButton = (RadioButton) findViewById(R.id.btnGroup);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		radioButton = (RadioButton) findViewById(R.id.btnSeason);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		radioButton = (RadioButton) findViewById(R.id.btnStats);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+
 	}
+	private CompoundButton.OnCheckedChangeListener btnNavBarOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+		public void onCheckedChanged(CompoundButton buttonView,
+				boolean isChecked) {
+			if (isChecked) {
+				Toast.makeText(GameActivity.this, buttonView.getText(),
+						Toast.LENGTH_SHORT).show();
+
+				Intent appIntent = null;
+
+				switch (buttonView.getId()) {
+				case R.id.btnGroup:
+					appIntent = new Intent(GameActivity.this,
+							GroupActivity.class);
+					break;
+				case R.id.btnSeason:
+					Toast.makeText(GameActivity.this, "not implemented",
+							Toast.LENGTH_SHORT).show();
+					break;
+				case R.id.btnStats:
+					appIntent = new Intent(GameActivity.this,
+							StatsTabActivity.class);
+					break;
+				}
+				if (appIntent != null)
+					startActivity(appIntent);
+
+			}
+		}
+	};
 
 	public void createGame() {
 		List<DAOLineup> lpList = new ArrayList<DAOLineup>();
