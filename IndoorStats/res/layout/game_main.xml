@@ -8,110 +8,123 @@
     <com.markupartist.android.widget.ActionBar
         android:id="@+id/actionbar"
         style="@style/ActionBar"/>
-
-    <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="fill_parent"
-        android:layout_height="200dp"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/actionbar"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/textViewTimer"
-            android:layout_width="fill_parent"
-            android:layout_height="100dp"
-            android:clickable="true"
-            android:gravity="center_horizontal|center_vertical"
-            android:onClick="setBackwards"
-            android:text="@string/_0_0"
-            android:textColor="#FFFFFF"
-            android:textSize="80dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal" >
-
-            <Button
-                android:id="@+id/buttonStart"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:height="50dp"
-                android:text="@string/start"
-                style="@style/button_style"
-                android:width="100dp" />
-
-            <Button
-                android:id="@+id/buttonReset"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:height="50dp"
-                android:layout_marginLeft="10dp"
-                android:text="@string/reset"
-                style="@style/button_style"
-                android:width="100dp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+ 
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/CenterScreenLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/rgroup_divider"
+        android:layout_below="@id/actionbar" >
+    
+	    <LinearLayout
+	        android:id="@+id/linearLayoutTopCenterScreen"
+	        android:layout_width="fill_parent"
+	        android:layout_height="200dp"
+	        android:orientation="vertical" >
+	
+	        <TextView
+	            android:id="@+id/textViewTimer"
+	            android:layout_width="fill_parent"
+	            android:layout_height="100dp"
+	            android:clickable="true"
+	            android:gravity="center_horizontal|center_vertical"
+	            android:onClick="setBackwards"
+	            android:text="@string/_0_0"
+	            android:textColor="#FFFFFF"
+	            android:textSize="80dp" />
+	
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:gravity="center_horizontal" >
+	
+	            <Button
+	                android:id="@+id/buttonStart"
+	                android:layout_width="wrap_content"
+	                android:layout_height="match_parent"
+	                android:height="50dp"
+	                android:text="@string/start"
+	                style="@style/button_style"
+	                android:width="100dp" />
+	
+	            <Button
+	                android:id="@+id/buttonReset"
+	                android:layout_width="wrap_content"
+	                android:layout_height="match_parent"
+	                android:height="50dp"
+	                android:layout_marginLeft="10dp"
+	                android:text="@string/reset"
+	                style="@style/button_style"
+	                android:width="100dp" />
+	        </LinearLayout>
+	    </LinearLayout>
+	
+	    <LinearLayout
+	        android:id="@+id/linearLayoutButtomCenterScreen"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:layout_alignParentBottom="true"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/linearLayoutTopCenterScreen" android:baselineAligned="false">
+	
+	        <LinearLayout
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:layout_gravity="center"
+	            android:layout_weight="1"
+	            android:gravity="center_horizontal|center_vertical"
+	            android:orientation="vertical" >
+	
+	            <Button
+	                android:id="@+id/button2"
+	                android:layout_width="100dp"
+	                android:layout_height="50dp"
+	                android:layout_weight="0"
+	                android:onClick="onAddItem"
+	                style="@style/button_style"
+	                android:text="@string/team_1" />
+	
+	            <ListView
+	                android:id="@+id/listView1"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:layout_weight="1" >
+	            </ListView>
+	        </LinearLayout>
+	
+	        <LinearLayout
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:layout_gravity="center"
+	            android:layout_weight="1"
+	            android:gravity="center_horizontal|center_vertical"
+	            android:orientation="vertical" >
+	
+	            <Button
+	                android:id="@+id/button3"
+	                android:layout_width="100dp"
+	                android:layout_height="50dp"
+	                
+	                android:onClick="onAddItem"
+	                style="@style/button_style"
+	                android:text="@string/team_2" />
+	
+	            <ListView
+	                android:id="@+id/listView2"
+	                android:layout_width="match_parent"
+	                android:layout_height="0dip"
+	                android:layout_gravity="center_vertical|center_horizontal"
+	                android:layout_weight="1" >
+	            </ListView>
+	        </LinearLayout>
+	    </LinearLayout>
+	</RelativeLayout>
+    <include
+        android:id="@+id/rgroup_divider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/linearLayout1" android:baselineAligned="false">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:gravity="center_horizontal|center_vertical"
-            android:orientation="vertical" >
-
-            <Button
-                android:id="@+id/button2"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:layout_weight="0"
-                android:onClick="onAddItem"
-                style="@style/button_style"
-                android:text="@string/team_1" />
-
-            <ListView
-                android:id="@+id/listView1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" >
-            </ListView>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:gravity="center_horizontal|center_vertical"
-            android:orientation="vertical" >
-
-            <Button
-                android:id="@+id/button3"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                
-                android:onClick="onAddItem"
-                style="@style/button_style"
-                android:text="@string/team_2" />
-
-            <ListView
-                android:id="@+id/listView2"
-                android:layout_width="match_parent"
-                android:layout_height="0dip"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:layout_weight="1" >
-            </ListView>
-        </LinearLayout>
-    </LinearLayout>
-
+        layout="@layout/actnavbar" />
+    
 </RelativeLayout>

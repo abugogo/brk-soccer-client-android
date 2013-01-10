@@ -9,139 +9,155 @@
         android:id="@+id/actionbar"
         style="@style/ActionBar" />
 
-    <LinearLayout
-        android:id="@+id/thumbnail"
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/CenterScreenLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/actionbar"
-        android:layout_marginRight="5dip"
-        android:padding="3dip" >
-
-        <ImageView
-            android:id="@+id/pimage"
-            android:layout_width="50dip"
-            android:layout_height="50dip"
-            android:contentDescription="@string/emptyString"
-            android:src="@drawable/soccer_time_logo" />
-    </LinearLayout>
-
-    <!-- First name of player -->
-
-    <TextView
-        android:id="@+id/pfname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/thumbnail"
-        android:layout_marginTop="10sp"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:text=""
-        android:textColor="#C0C0C0"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:typeface="sans" />
-
-    <!-- Last name of player -->
-
-    <TextView
-        android:id="@+id/plname"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/pfname"
-        android:layout_marginTop="1dip"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:text=""
-        android:textColor="#C0C0C0"
-        android:textSize="15sp" />
-
-    <View
-        android:id="@+id/sepa1"
-        android:layout_width="fill_parent"
-        android:layout_height="2dip"
-        android:layout_below="@id/thumbnail"
-        android:background="#FFFFFFFF" />
-
-    <TextView
-        android:id="@+id/ptel1Caption"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/thumbnail"
-        android:layout_below="@id/sepa1"
-        android:layout_marginTop="12dip"
-        android:text="@string/phone"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/ptel1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/ptel1Caption"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:text=""
-        android:textColor="#C0C0C0"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/emailCaption"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/thumbnail"
-        android:layout_below="@id/ptel1Caption"
-        android:text="@string/email"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/email"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/emailCaption"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:text=""
-        android:textColor="#C0C0C0"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/bdayCaption"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/thumbnail"
-        android:layout_below="@id/emailCaption"
-        android:text="@string/birthday"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/bday"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/bdayCaption"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:text=""
-        android:textColor="#C0C0C0"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/descCaption"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/thumbnail"
-        android:layout_below="@id/bday"
-        android:text="@string/description"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/desc"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/descCaption"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:text=""
-        android:textColor="#C0C0C0"
-        android:textSize="12sp" />
-
+        android:layout_above="@+id/rgroup_divider"
+        android:layout_below="@id/actionbar" >
+    
+	    <LinearLayout
+	        android:id="@+id/thumbnail"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@id/actionbar"
+	        android:layout_marginRight="5dip"
+	        android:padding="3dip" >
+	
+	        <ImageView
+	            android:id="@+id/pimage"
+	            android:layout_width="50dip"
+	            android:layout_height="50dip"
+	            android:contentDescription="@string/emptyString"
+	            android:src="@drawable/soccer_time_logo" />
+	    </LinearLayout>
+	
+	    <!-- First name of player -->
+	
+	    <TextView
+	        android:id="@+id/pfname"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignTop="@+id/thumbnail"
+	        android:layout_marginTop="10sp"
+	        android:layout_toRightOf="@+id/thumbnail"
+	        android:text=""
+	        android:textColor="#C0C0C0"
+	        android:textSize="15sp"
+	        android:textStyle="bold"
+	        android:typeface="sans" />
+	
+	    <!-- Last name of player -->
+	
+	    <TextView
+	        android:id="@+id/plname"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@id/pfname"
+	        android:layout_marginTop="1dip"
+	        android:layout_toRightOf="@+id/thumbnail"
+	        android:text=""
+	        android:textColor="#C0C0C0"
+	        android:textSize="15sp" />
+	
+	    <View
+	        android:id="@+id/sepa1"
+	        android:layout_width="fill_parent"
+	        android:layout_height="2dip"
+	        android:layout_below="@id/thumbnail"
+	        android:background="#FFFFFFFF" />
+	
+	    <TextView
+	        android:id="@+id/ptel1Caption"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@id/thumbnail"
+	        android:layout_below="@id/sepa1"
+	        android:layout_marginTop="12dip"
+	        android:text="@string/phone"
+	        android:textColor="#FFFFFF"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/ptel1"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignTop="@id/ptel1Caption"
+	        android:layout_toRightOf="@+id/thumbnail"
+	        android:text=""
+	        android:textColor="#C0C0C0"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/emailCaption"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@id/thumbnail"
+	        android:layout_below="@id/ptel1Caption"
+	        android:text="@string/email"
+	        android:textColor="#FFFFFF"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/email"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignTop="@id/emailCaption"
+	        android:layout_toRightOf="@+id/thumbnail"
+	        android:text=""
+	        android:textColor="#C0C0C0"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/bdayCaption"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@id/thumbnail"
+	        android:layout_below="@id/emailCaption"
+	        android:text="@string/birthday"
+	        android:textColor="#FFFFFF"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/bday"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignTop="@id/bdayCaption"
+	        android:layout_toRightOf="@+id/thumbnail"
+	        android:text=""
+	        android:textColor="#C0C0C0"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/descCaption"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@id/thumbnail"
+	        android:layout_below="@id/bday"
+	        android:text="@string/description"
+	        android:textColor="#FFFFFF"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/desc"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignTop="@id/descCaption"
+	        android:layout_toRightOf="@+id/thumbnail"
+	        android:text=""
+	        android:textColor="#C0C0C0"
+	        android:textSize="12sp" />
+	
     <!-- Tel1 of player -->
-
+	</RelativeLayout>
+	
+  <include
+        android:id="@+id/rgroup_divider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        layout="@layout/actnavbar" />
+ 	
 </RelativeLayout>

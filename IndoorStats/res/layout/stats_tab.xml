@@ -9,33 +9,49 @@
         android:id="@+id/actionbar"
         style="@style/ActionBar"/>
 
-    <TabHost
+    <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@android:id/tabhost"
-        android:background="@drawable/app_bg"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:id="@+id/CenterScreenLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/rgroup_divider"
         android:layout_below="@id/actionbar" >
-
-        <LinearLayout
-            android:id="@+id/LinearLayout01"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical" >
-
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
-
-            </TabWidget>
-
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" >
-            </FrameLayout>
-        </LinearLayout>
-    </TabHost>
-
+    
+	    <TabHost
+	        xmlns:android="http://schemas.android.com/apk/res/android"
+	        android:id="@android:id/tabhost"
+	        android:background="@drawable/app_bg"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:layout_below="@id/actionbar" >
+	
+	        <LinearLayout
+	            android:id="@+id/LinearLayout01"
+	            android:layout_width="fill_parent"
+	            android:layout_height="fill_parent"
+	            android:orientation="vertical" >
+	
+	            <TabWidget
+	                android:id="@android:id/tabs"
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content" >
+	
+	            </TabWidget>
+	
+	            <FrameLayout
+	                android:id="@android:id/tabcontent"
+	                android:layout_width="fill_parent"
+	                android:layout_height="fill_parent" >
+	            </FrameLayout>
+	        </LinearLayout>
+	    </TabHost>
+	</RelativeLayout>
+    <include
+        android:id="@+id/rgroup_divider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        layout="@layout/actnavbar" />
+    
+	    
 </RelativeLayout>

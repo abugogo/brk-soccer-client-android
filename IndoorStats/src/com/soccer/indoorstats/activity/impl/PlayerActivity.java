@@ -10,8 +10,11 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
@@ -20,6 +23,7 @@ import com.soccer.db.local.DB_CONSTS;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.ImageLoader;
 import com.soccer.indoorstats.R;
+import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
 import com.soccer.indoorstats.services.PlayerService;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.log.Logger;
@@ -66,10 +70,62 @@ public class PlayerActivity extends Activity {
 				HomeActivity.class), R.drawable.home_icon);
 		actionBar.addAction(HomeAction);
 
+		//buttom navigation bar
+		RadioButton radioButton;
+		radioButton = (RadioButton) findViewById(R.id.btnGame);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		radioButton = (RadioButton) findViewById(R.id.btnGroup);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		radioButton = (RadioButton) findViewById(R.id.btnSeason);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+		radioButton = (RadioButton) findViewById(R.id.btnStats);
+		radioButton
+				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+
+		
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		imageLoader = new ImageLoader(this.getApplicationContext());
 	}
 
+	private CompoundButton.OnCheckedChangeListener btnNavBarOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+		public void onCheckedChanged(CompoundButton buttonView,
+				boolean isChecked) {
+			if (isChecked) {
+				Toast.makeText(PlayerActivity.this, buttonView.getText(),
+						Toast.LENGTH_SHORT).show();
+
+				Intent appIntent = null;
+
+				switch (buttonView.getId()) {
+				case R.id.btnGroup:
+					appIntent = new Intent(PlayerActivity.this,
+							GroupActivity.class);
+					break;
+				case R.id.btnSeason:
+					Toast.makeText(PlayerActivity.this, "not implemented",
+							Toast.LENGTH_SHORT).show();
+					break;
+				case R.id.btnStats:
+					appIntent = new Intent(PlayerActivity.this,
+							StatsTabActivity.class);
+					break;
+
+				case R.id.btnGame:
+					appIntent = new Intent(PlayerActivity.this,
+							StatsTabActivity.class);
+					break;
+				}
+				if (appIntent != null)
+					startActivity(appIntent);
+
+			}
+		}
+	};
+
+	
 	private void populateFields() {
 		Logger.i("PlayerActivity populateFields");
 		if (mPID != null && !mPID.equals("")) {
