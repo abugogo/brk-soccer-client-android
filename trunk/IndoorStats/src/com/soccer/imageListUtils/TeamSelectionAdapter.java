@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.soccer.entities.impl.DAOLineup;
@@ -29,8 +30,10 @@ public class TeamSelectionAdapter extends BaseAdapter implements
 	public TeamSelectionAdapter(ListActivity a, ArrayList<DAOPlayer> d,
 			HashMap<String, DAOLineup> lpd) {
 		activity = a;
-		data = d;
-		lpdata = lpd;
+		if (d != null)
+			data = d;
+		if (lpd != null)
+			lpdata = lpd;
 		inflater = (LayoutInflater) activity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -68,8 +71,8 @@ public class TeamSelectionAdapter extends BaseAdapter implements
 
 			@Override
 			public void onClick(View v) {
-				TextView r = (TextView) v.findViewById(R.id.txtSelectRight);
-				TextView l = (TextView) v.findViewById(R.id.txtSelectLeft);
+				LinearLayout r = (LinearLayout) v.findViewById(R.id.unithumbright);
+				LinearLayout l = (LinearLayout) v.findViewById(R.id.unithumbleft);
 				r.setVisibility(View.INVISIBLE);
 				l.setVisibility(View.INVISIBLE);
 				lpdata.remove(pid);
@@ -80,6 +83,19 @@ public class TeamSelectionAdapter extends BaseAdapter implements
 		// Setting all values in listview
 		pfname.setText(player.getFname());
 		plname.setText(player.getLname());
+		LinearLayout r = (LinearLayout) vi.findViewById(R.id.unithumbright);
+		LinearLayout l = (LinearLayout) vi.findViewById(R.id.unithumbleft);
+		r.setVisibility(View.INVISIBLE);
+		l.setVisibility(View.INVISIBLE);
+		DAOLineup lp = lpdata.get(pid);
+		if (lp != null) {
+			if (lp.getColor().equals('b')) {
+				r.setVisibility(View.VISIBLE);
+			} else {
+				l.setVisibility(View.VISIBLE);
+			}
+		}
+
 		return vi;
 	}
 
@@ -91,26 +107,26 @@ public class TeamSelectionAdapter extends BaseAdapter implements
 
 	@Override
 	public void left2right(View v) {
-		TextView r = (TextView) v.findViewById(R.id.txtSelectRight);
-		TextView l = (TextView) v.findViewById(R.id.txtSelectLeft);
+		LinearLayout r = (LinearLayout) v.findViewById(R.id.unithumbright);
+		LinearLayout l = (LinearLayout) v.findViewById(R.id.unithumbleft);
 		r.setVisibility(View.VISIBLE);
 		l.setVisibility(View.INVISIBLE);
 		DAOLineup d = new DAOLineup();
 		d.setColor('b');
-		d.setPlayerId((String)v.getTag());
-		lpdata.put((String)v.getTag(), d);
+		d.setPlayerId((String) v.getTag());
+		lpdata.put((String) v.getTag(), d);
 	}
 
 	@Override
 	public void right2left(View v) {
-		TextView r = (TextView) v.findViewById(R.id.txtSelectRight);
-		TextView l = (TextView) v.findViewById(R.id.txtSelectLeft);
+		LinearLayout r = (LinearLayout) v.findViewById(R.id.unithumbright);
+		LinearLayout l = (LinearLayout) v.findViewById(R.id.unithumbleft);
 		r.setVisibility(View.INVISIBLE);
 		l.setVisibility(View.VISIBLE);
 		DAOLineup d = new DAOLineup();
 		d.setColor('w');
-		d.setPlayerId((String)v.getTag());
-		lpdata.put((String)v.getTag(), d);
+		d.setPlayerId((String) v.getTag());
+		lpdata.put((String) v.getTag(), d);
 	}
 
 	@Override
@@ -119,4 +135,7 @@ public class TeamSelectionAdapter extends BaseAdapter implements
 
 	}
 
+	public HashMap<String, DAOLineup> getLpdata() {
+		return lpdata;
+	}
 }

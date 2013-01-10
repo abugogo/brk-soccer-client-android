@@ -10,16 +10,13 @@ package com.soccer.indoorstats.activity.impl;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,7 +26,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,9 +34,7 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
-import com.soccer.dialog.CheckedListAdapter;
-import com.soccer.dialog.MultiSelectListDialog;
-import com.soccer.dialog.PLineupItems;
+import com.soccer.dialog.LineupListAdapter;
 import com.soccer.entities.impl.DAOGame;
 import com.soccer.entities.impl.DAOLineup;
 import com.soccer.entities.impl.DAOPlayer;
@@ -63,8 +57,9 @@ public class GameActivity extends Activity implements OnClickListener {
 	private TextView tvTextView;
 	private Button btnStart;
 	Button btnReset;
-	CheckedListAdapter adapter;
-	CheckedListAdapter adapter2;
+	LineupListAdapter badapter;
+	LineupListAdapter wadapter;
+	HashMap<String, DAOLineup> lineupData = null;
 	Prefs sharedPrefs;
 	private GameService mBoundGameService;
 	private PlayerService mBoundPlayerService;
@@ -84,7 +79,8 @@ public class GameActivity extends Activity implements OnClickListener {
 		sharedPrefs = new Prefs(this);
 
 		actionBar = (ActionBar) findViewById(R.id.actionbar);
-		String title = sharedPrefs.getPreference("account_name", getString(R.string.game));
+		String title = sharedPrefs.getPreference("account_name",
+				getString(R.string.game));
 		actionBar.setTitle(title);
 
 		final Action SaveAction = new SaveGameAction();
@@ -107,7 +103,27 @@ public class GameActivity extends Activity implements OnClickListener {
 		if ((GameState) getLastNonConfigurationInstance() != null)
 			_gState = (GameState) getLastNonConfigurationInstance();
 
-		//buttom navigation bar
+		badapter = new LineupListAdapter(this, new ArrayList<DAOLineup>());
+		wadapter = new LineupListAdapter(this, new ArrayList<DAOLineup>());
+		// in case returned from team selection - capture the selection
+		Intent intent = getIntent();
+		if (intent != null && intent.getExtras() != null) {
+			Object objSentData = intent.getExtras().get("llist");
+			if (null != objSentData) {
+				lineupData = (HashMap<String, DAOLineup>) objSentData;
+				if (lineupData != null) {
+					for (DAOLineup l : lineupData.values()) {
+						if (l.getColor().equals('b'))
+							badapter.addItem(l);
+						else
+							wadapter.addItem(l);
+					}
+					badapter.notifyDataSetChanged();
+					wadapter.notifyDataSetChanged();
+				}
+			}
+		}
+		// buttom navigation bar
 		RadioButton radioButton;
 		radioButton = (RadioButton) findViewById(R.id.btnGame);
 		radioButton
@@ -123,6 +139,7 @@ public class GameActivity extends Activity implements OnClickListener {
 				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
 
 	}
+
 	private CompoundButton.OnCheckedChangeListener btnNavBarOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
 		public void onCheckedChanged(CompoundButton buttonView,
 				boolean isChecked) {
@@ -154,25 +171,19 @@ public class GameActivity extends Activity implements OnClickListener {
 	};
 
 	public void createGame() {
-		List<DAOLineup> lpList = new ArrayList<DAOLineup>();
+		ArrayList<DAOLineup> lpList = new ArrayList<DAOLineup>();
+		ArrayList<DAOLineup> lpbList = badapter.getData();
+		ArrayList<DAOLineup> lpwList = wadapter.getData();
 		int bG = 0, wG = 0;
-		for (PLineupItems pt1 : _gState.get_team1List()) {
-			if (pt1.mChecked) {
-				DAOLineup d = pt1.getEvents();
-				d.setColor('b');
-				bG += d.getGoal();
-				wG += d.getOGoal();
-				lpList.add(d);
-			}
+		for (DAOLineup pt1 : lpbList) {
+			bG += pt1.getGoal();
+			wG += pt1.getOGoal();
+			lpList.add(pt1);
 		}
-		for (PLineupItems pt2 : _gState.get_team2List()) {
-			if (pt2.mChecked) {
-				DAOLineup d = pt2.getEvents();
-				d.setColor('w');
-				wG += d.getGoal();
-				bG += d.getOGoal();
-				lpList.add(d);
-			}
+		for (DAOLineup pt2 : lpwList) {
+			bG += pt2.getGoal();
+			wG += pt2.getOGoal();
+			lpList.add(pt2);
 		}
 
 		char winner = 'd';
@@ -249,8 +260,8 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	public void resetGame() {
 		resetTimer();
-		adapter.setData(null);
-		adapter2.setData(null);
+		badapter.setData(null);
+		wadapter.setData(null);
 	}
 
 	@Override
@@ -324,58 +335,11 @@ public class GameActivity extends Activity implements OnClickListener {
 	}
 
 	public void onAddItem(View v) {
-		MultiSelectListDialog dlg;
-		ArrayList<String> rivalLstIds = new ArrayList<String>();
-		if (v == (Button) findViewById(R.id.button2)) {
-			for (PLineupItems lI : _gState.get_team2List()) {
-				if (lI.mChecked)
-					rivalLstIds.add(lI.mId);
-			}
-			dlg = new MultiSelectListDialog(this, 0, 0,
-					_gState.get_team1List(), rivalLstIds) {
-
-				public void onClick(DialogInterface dialog, int which) {
-					ListView list = ((AlertDialog) dialog).getListView();
-					_gState.get_team1List().get(which).mChecked = list
-							.isItemChecked(which);
-				}
-
-				@Override
-				public boolean onOkClicked(String input) {
-					adapter.setData(_gState.get_team1List());
-					return true;
-				}
-			};
-		} else {
-			for (PLineupItems lI : _gState.get_team1List()) {
-				if (lI.mChecked)
-					rivalLstIds.add(lI.mId);
-			}
-			dlg = new MultiSelectListDialog(this, 0, 0,
-					_gState.get_team2List(), rivalLstIds) {
-
-				public void onClick(DialogInterface dialog, int which) {
-					ListView list = ((AlertDialog) dialog).getListView();
-					_gState.get_team2List().get(which).mChecked = list
-							.isItemChecked(which);
-				}
-
-				@Override
-				public boolean onOkClicked(String input) {
-					adapter2.setData(_gState.get_team2List());
-					return true;
-				}
-			};
-
-		}
-		dlg.create();
-		dlg.show();
-	}
-
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		restoreState();
+		Intent teamSelection = new Intent(this, TeamSelectionActivity.class);
+		teamSelection.putExtra("plist", new ArrayList<DAOPlayer>(_gState
+				.get_pList().values()));
+		teamSelection.putExtra("llist", lineupData);
+		startActivity(teamSelection);
 	}
 
 	@Override
@@ -405,13 +369,15 @@ public class GameActivity extends Activity implements OnClickListener {
 		} else
 			initState();
 
-		ListView lstView = (ListView) findViewById(R.id.listView1);
-		adapter = new CheckedListAdapter(this, _gState.get_team1List());
-		lstView.setAdapter(adapter);
-
-		ListView lstView2 = (ListView) findViewById(R.id.listView2);
-		adapter2 = new CheckedListAdapter(this, _gState.get_team2List());
-		lstView2.setAdapter(adapter2);
+		/*
+		 * ListView lstView = (ListView) findViewById(R.id.listView1); adapter =
+		 * new CheckedListAdapter(this, _gState.get_team1List());
+		 * lstView.setAdapter(adapter);
+		 * 
+		 * ListView lstView2 = (ListView) findViewById(R.id.listView2); adapter2
+		 * = new CheckedListAdapter(this, _gState.get_team2List());
+		 * lstView2.setAdapter(adapter2);
+		 */
 	}
 
 	private void initState() {
@@ -419,19 +385,10 @@ public class GameActivity extends Activity implements OnClickListener {
 		ArrayList<DAOPlayer> pArr = new ArrayList<DAOPlayer>();
 		if (mIsBound && mBoundPlayerService != null) {
 			pArr = mBoundPlayerService.getAllPlayers();
-		}
-
-		int s = pArr.size();
-		for (int i = 0; i < s; i++) {
-			_gState.get_team1List().add(
-					new PLineupItems(pArr.get(i).getFname() + " "
-							+ pArr.get(i).getLname(), pArr.get(i).getId(),
-							false));
-			_gState.get_team2List().add(
-					new PLineupItems(pArr.get(i).getFname() + " "
-							+ pArr.get(i).getLname(), pArr.get(i).getId(),
-							false));
-			_gState.get_pList().put(pArr.get(i).getId(), pArr.get(i));
+			int s = pArr.size();
+			for (int i = 0; i < s; i++) {
+				_gState.get_pList().put(pArr.get(i).getId(), pArr.get(i));
+			}
 		}
 	}
 

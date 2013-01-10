@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/list_selector"
     android:orientation="horizontal"
-    android:padding="5dip" >
+     >
 
     <!-- ListRow Left sied Thumbnail image -->
 
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginRight="5dip"
-        android:padding="3dip" >
+         >
 
         <ImageView
             android:id="@+id/list_image"
@@ -29,7 +29,7 @@
         android:id="@+id/pfname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/thumbnail"
+        android:layout_above="@+id/plname"
         android:layout_toRightOf="@+id/thumbnail"
         android:text="Rihanna Love the way lie"
         android:textColor="#040404"
@@ -43,8 +43,9 @@
         android:id="@+id/plname"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/pfname"
+        android:layout_alignBottom="@+id/thumbnail"
         android:layout_marginTop="1dip"
+        android:layout_marginBottom="4dip"
         android:layout_toRightOf="@+id/thumbnail"
         android:text="Just gona stand there and ..."
         android:textColor="#343434"

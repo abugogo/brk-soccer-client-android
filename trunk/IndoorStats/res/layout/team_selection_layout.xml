@@ -25,6 +25,38 @@
             android:layout_height="wrap_content"
             android:listSelector="@drawable/list_selector" />
     </LinearLayout>
+    <!--
+         TextView
+        android:id="@+id/android:empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_players" /
+    -->
+
+
+    <!--
+    LinearLayout
+        style="@android:style/ButtonBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:text="@string/sort"
+            android:onClick="onSort" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:text="@string/send..." />
+    </LinearLayout
+    -->
 
     <include
         android:id="@+id/rgroup_divider"
