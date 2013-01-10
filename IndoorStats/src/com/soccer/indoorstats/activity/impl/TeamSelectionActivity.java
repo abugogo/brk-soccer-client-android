@@ -4,43 +4,49 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.ListActivity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.view.View;
 import android.widget.ListView;
 
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.AbstractAction;
+import com.markupartist.android.widget.ActionBar.Action;
 import com.soccer.entities.impl.DAOLineup;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.TeamSelectionAdapter;
 import com.soccer.indoorstats.R;
-import com.soccer.indoorstats.services.PlayerService;
 
 public class TeamSelectionActivity extends ListActivity {
 
 	ListView list;
 	TeamSelectionAdapter adapter;
-	private ArrayList<DAOPlayer> mPList;
-	private PlayerService mBoundService;
-	private boolean mIsBound;
+	private ArrayList<DAOPlayer> mPList = null;
+	private HashMap<String, DAOLineup> mLList = null;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.group_layout);
-		
-	}
+		setContentView(R.layout.team_selection_layout);
 
-	@Override
-	protected void onPause() {
-		doUnbindService();
-		super.onPause();
+		ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		String title = "Teams Lineup";
+		actionBar.setTitle(title);
+
+		final Action okAction = new OkAction();
+		actionBar.addAction(okAction);
+		
+		final Action cancelAction = new CancelAction();
+		actionBar.addAction(cancelAction);
+		
+		Intent caller = getIntent();
+		mLList = (HashMap<String, DAOLineup>)caller.getExtras().get("llist");
+		mPList = (ArrayList<DAOPlayer>)caller.getExtras().get("plist");
+		fillData();
 	}
 
 	@Override
 	protected void onResume() {
-		doBindService();
+		
 		super.onResume();
 	}
 
@@ -54,33 +60,31 @@ public class TeamSelectionActivity extends ListActivity {
 	private void fillData() {
 		list = (ListView) findViewById(android.R.id.list);
 
-		adapter = new TeamSelectionAdapter(this, mPList, new HashMap<String, DAOLineup>());
+		adapter = new TeamSelectionAdapter(this, mPList, mLList);
 		list.setAdapter(adapter);
 	}
-
-	private ServiceConnection mConnection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			mBoundService = (PlayerService) ((PlayerService.LocalBinder) service)
-					.getService();
-			mPList = mBoundService.getAllPlayers();
-			fillData();
+	
+	private class OkAction extends AbstractAction {
+		public OkAction() {
+			super(R.drawable.v);
 		}
 
-		public void onServiceDisconnected(ComponentName className) {
-			mBoundService = null;
+		@Override
+		public void performAction(View view) {
+			Intent appIntent = new Intent(TeamSelectionActivity.this, GameActivity.class);
+			appIntent.putExtra("llist", adapter.getLpdata());
+			startActivity(appIntent);
 		}
-	};
-
-	private void doBindService() {
-		bindService(new Intent(TeamSelectionActivity.this, PlayerService.class),
-				mConnection, Context.BIND_AUTO_CREATE);
-		mIsBound = true;
 	}
+	
+	private class CancelAction extends AbstractAction {
+		public CancelAction() {
+			super(R.drawable.x);
+		}
 
-	private void doUnbindService() {
-		if (mIsBound) {
-			unbindService(mConnection);
-			mIsBound = false;
+		@Override
+		public void performAction(View view) {
+			finish();
 		}
 	}
 }

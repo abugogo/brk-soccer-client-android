@@ -4,19 +4,23 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 import com.soccer.db.local.PlayersDbAdapter;
+import com.soccer.entities.impl.DAOGame;
 import com.soccer.entities.impl.DAOPlayer;
 
-public class GameState implements Serializable {
+
+public class NewGameState implements Serializable{
 
 	private static final long serialVersionUID = -8375922051362602160L;
-	private PlayersDbAdapter _mDbHelper = null;
+	DAOGame _curGame = new DAOGame();
+	
+	PlayersDbAdapter _mDbHelper = null;
 	final private HashMap<String, DAOPlayer> _pList = new HashMap<String, DAOPlayer>();
 	private boolean _backwards = false;
 	private boolean _started = false;
 	private long _startTime = 0;
 	private long _stopTime = 0;
 	private boolean _running = false;
-
+	
 	public long get_startTime() {
 		return _startTime;
 	}

@@ -39,13 +39,15 @@ public class ImageLoader {
 	final int stub_id = R.drawable.soccer_time_logo;
 
 	public void DisplayImage(String url, ImageView imageView) {
-		imageViews.put(imageView, url);
-		Bitmap bitmap = memoryCache.get(url);
-		if (bitmap != null)
-			imageView.setImageBitmap(bitmap);
-		else {
-			queuePhoto(url, imageView);
-			imageView.setImageResource(stub_id);
+		if (imageView != null) {
+			imageViews.put(imageView, url);
+			Bitmap bitmap = memoryCache.get(url);
+			if (bitmap != null)
+				imageView.setImageBitmap(bitmap);
+			else {
+				queuePhoto(url, imageView);
+				imageView.setImageResource(stub_id);
+			}
 		}
 	}
 
