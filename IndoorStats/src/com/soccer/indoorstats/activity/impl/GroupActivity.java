@@ -21,7 +21,6 @@ import android.widget.Toast;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
-import com.soccer.db.local.DB_CONSTS;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.LazyAdapter;
 import com.soccer.indoorstats.R;

@@ -183,7 +183,7 @@ public class PlayerUpdateActivity extends Activity {
 		Toast toast = Toast.makeText(this.getApplicationContext(),
 				"Updated successfully", Toast.LENGTH_SHORT);
 		toast.show();
-
+		setResult(RESULT_OK);
 		this.finish();
 	}
 

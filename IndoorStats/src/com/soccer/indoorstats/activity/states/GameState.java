@@ -1,16 +1,16 @@
 package com.soccer.indoorstats.activity.states;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
 
+import com.soccer.dal.entities.PrintableLineup;
 import com.soccer.db.local.PlayersDbAdapter;
-import com.soccer.entities.impl.DAOPlayer;
 
 public class GameState implements Serializable {
 
 	private static final long serialVersionUID = -8375922051362602160L;
 	private PlayersDbAdapter _mDbHelper = null;
-	final private HashMap<String, DAOPlayer> _pList = new HashMap<String, DAOPlayer>();
+	final private ArrayList<PrintableLineup> _lpList = new ArrayList<PrintableLineup>();
 	private boolean _backwards = false;
 	private boolean _started = false;
 	private long _startTime = 0;
@@ -64,9 +64,9 @@ public class GameState implements Serializable {
 	public void setStarted(boolean start) {
 		_started = start;
 	}
-
-	public HashMap<String, DAOPlayer> get_pList() {
-		return _pList;
+	
+	public ArrayList<PrintableLineup> get_lpList() {
+		return _lpList;
 	}
 
 }

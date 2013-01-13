@@ -1,12 +1,5 @@
 package com.soccer.indoorstats.activity.impl;
 
-/*This code has been created for a demo by Shawn for ShawnBe.com 
- * please do not redistribute this without my permission, you
- * can email me at shawn@shawnbe.com. If these tutorials has helped
- * you please consider donating to me via paypal on my website 
- * ShawnBe.com
- */
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +19,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,15 +28,14 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
+import com.soccer.dal.entities.PrintableLineup;
 import com.soccer.dialog.LineupListAdapter;
 import com.soccer.entities.impl.DAOGame;
 import com.soccer.entities.impl.DAOLineup;
-import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
 import com.soccer.indoorstats.activity.states.GameState;
 import com.soccer.indoorstats.services.GameService;
-import com.soccer.indoorstats.services.PlayerService;
 import com.soccer.indoorstats.services.handlers.RequestHandler;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.StopWatch;
@@ -59,10 +52,9 @@ public class GameActivity extends Activity implements OnClickListener {
 	Button btnReset;
 	LineupListAdapter badapter;
 	LineupListAdapter wadapter;
-	HashMap<String, DAOLineup> lineupData = null;
+	HashMap<String, PrintableLineup> lineupData = null;
 	Prefs sharedPrefs;
 	private GameService mBoundGameService;
-	private PlayerService mBoundPlayerService;
 	private boolean mIsBound;
 	private ActionBar actionBar;
 
@@ -103,26 +95,8 @@ public class GameActivity extends Activity implements OnClickListener {
 		if ((GameState) getLastNonConfigurationInstance() != null)
 			_gState = (GameState) getLastNonConfigurationInstance();
 
-		badapter = new LineupListAdapter(this, new ArrayList<DAOLineup>());
-		wadapter = new LineupListAdapter(this, new ArrayList<DAOLineup>());
-		// in case returned from team selection - capture the selection
-		Intent intent = getIntent();
-		if (intent != null && intent.getExtras() != null) {
-			Object objSentData = intent.getExtras().get("llist");
-			if (null != objSentData) {
-				lineupData = (HashMap<String, DAOLineup>) objSentData;
-				if (lineupData != null) {
-					for (DAOLineup l : lineupData.values()) {
-						if (l.getColor().equals('b'))
-							badapter.addItem(l);
-						else
-							wadapter.addItem(l);
-					}
-					badapter.notifyDataSetChanged();
-					wadapter.notifyDataSetChanged();
-				}
-			}
-		}
+		badapter = new LineupListAdapter(this, new HashMap<String, PrintableLineup>());
+		wadapter = new LineupListAdapter(this, new HashMap<String, PrintableLineup>());
 		// buttom navigation bar
 		RadioButton radioButton;
 		radioButton = (RadioButton) findViewById(R.id.btnGame);
@@ -172,18 +146,22 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	public void createGame() {
 		ArrayList<DAOLineup> lpList = new ArrayList<DAOLineup>();
-		ArrayList<DAOLineup> lpbList = badapter.getData();
-		ArrayList<DAOLineup> lpwList = wadapter.getData();
+		HashMap<String, PrintableLineup> lpbList = badapter.getData();
+		HashMap<String, PrintableLineup> lpwList = wadapter.getData();
 		int bG = 0, wG = 0;
-		for (DAOLineup pt1 : lpbList) {
-			bG += pt1.getGoal();
-			wG += pt1.getOGoal();
-			lpList.add(pt1);
+		if (lpbList != null && lpbList.values() != null) {
+			for (DAOLineup pt1 : lpbList.values()) {
+				bG += pt1.getGoal();
+				wG += pt1.getOGoal();
+				lpList.add(pt1);
+			}
 		}
-		for (DAOLineup pt2 : lpwList) {
-			bG += pt2.getGoal();
-			wG += pt2.getOGoal();
-			lpList.add(pt2);
+		if (lpwList != null && lpwList.values() != null) {
+			for (DAOLineup pt2 : lpwList.values()) {
+				bG += pt2.getGoal();
+				wG += pt2.getOGoal();
+				lpList.add(pt2);
+			}
 		}
 
 		char winner = 'd';
@@ -336,10 +314,32 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	public void onAddItem(View v) {
 		Intent teamSelection = new Intent(this, TeamSelectionActivity.class);
-		teamSelection.putExtra("plist", new ArrayList<DAOPlayer>(_gState
-				.get_pList().values()));
 		teamSelection.putExtra("llist", lineupData);
-		startActivity(teamSelection);
+		startActivityForResult(teamSelection, 1);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == RESULT_OK) {
+			if (data != null && data.getExtras() != null) {
+				Object objSentData = data.getExtras().get("llist");
+				if (null != objSentData) {
+					badapter.clearData();
+					wadapter.clearData();
+					lineupData = (HashMap<String, PrintableLineup>) objSentData;
+					if (lineupData != null) {
+						for (PrintableLineup l : lineupData.values()) {
+							if (l.getColor().equals('b'))
+								badapter.addItem(l);
+							else
+								wadapter.addItem(l);
+						}
+					}
+				}
+			}
+		}
+
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override
@@ -368,28 +368,34 @@ public class GameActivity extends Activity implements OnClickListener {
 			}
 		} else
 			initState();
+		setListsAdapters();
+	}
 
-		/*
-		 * ListView lstView = (ListView) findViewById(R.id.listView1); adapter =
-		 * new CheckedListAdapter(this, _gState.get_team1List());
-		 * lstView.setAdapter(adapter);
-		 * 
-		 * ListView lstView2 = (ListView) findViewById(R.id.listView2); adapter2
-		 * = new CheckedListAdapter(this, _gState.get_team2List());
-		 * lstView2.setAdapter(adapter2);
-		 */
+	private void setListsAdapters() {
+		
+		ListView blstView = (ListView) findViewById(R.id.listView1);
+		if (badapter == null)
+			badapter = new LineupListAdapter(this, new HashMap<String, PrintableLineup>());
+		
+		ListView wlstView = (ListView) findViewById(R.id.listView2);
+		if (wadapter == null)
+			wadapter = new LineupListAdapter(this, new HashMap<String, PrintableLineup>());
+		
+		if (_gState != null && _gState.get_lpList() != null) {
+			for (PrintableLineup lp : _gState.get_lpList()) {
+				if (lp.getColor().equals('b'))
+					badapter.addItem(lp);
+				else
+					wadapter.addItem(lp);
+			}
+		}
+		
+		blstView.setAdapter(badapter);
+		wlstView.setAdapter(wadapter);
 	}
 
 	private void initState() {
 		_gState = new GameState();
-		ArrayList<DAOPlayer> pArr = new ArrayList<DAOPlayer>();
-		if (mIsBound && mBoundPlayerService != null) {
-			pArr = mBoundPlayerService.getAllPlayers();
-			int s = pArr.size();
-			for (int i = 0; i < s; i++) {
-				_gState.get_pList().put(pArr.get(i).getId(), pArr.get(i));
-			}
-		}
 	}
 
 	// http://www.easywayserver.com/blog/how-to-serializable-object-in-java-2/
@@ -477,12 +483,9 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	private ServiceConnection mGameConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
-			synchronized (GameActivity.class) {
-				mBoundGameService = (GameService) ((GameService.LocalBinder) service)
-						.getService();
-				if (mBoundPlayerService != null)
-					restoreState();
-			}
+			mBoundGameService = (GameService) ((GameService.LocalBinder) service)
+					.getService();
+			restoreState();
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -490,33 +493,15 @@ public class GameActivity extends Activity implements OnClickListener {
 		}
 	};
 
-	private ServiceConnection mPlayerConnection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			synchronized (GameActivity.class) {
-				mBoundPlayerService = (PlayerService) ((PlayerService.LocalBinder) service)
-						.getService();
-				if (mBoundGameService != null)
-					restoreState();
-			}
-		}
-
-		public void onServiceDisconnected(ComponentName className) {
-			mBoundPlayerService = null;
-		}
-	};
-
 	private void doBindServices() {
 		bindService(new Intent(GameActivity.this, GameService.class),
 				mGameConnection, Context.BIND_AUTO_CREATE);
-		bindService(new Intent(GameActivity.this, PlayerService.class),
-				mPlayerConnection, Context.BIND_AUTO_CREATE);
 		mIsBound = true;
 	}
 
 	private void doUnbindServices() {
 		if (mIsBound) {
 			unbindService(mGameConnection);
-			unbindService(mPlayerConnection);
 			mIsBound = false;
 		}
 	}
