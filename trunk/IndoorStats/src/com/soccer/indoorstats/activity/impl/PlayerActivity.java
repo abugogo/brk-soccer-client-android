@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.db.local.DB_CONSTS;
@@ -57,12 +58,7 @@ public class PlayerActivity extends Activity {
 
 		// allow editing of yourself only
 		if (mPrefs.getPreference(DB_CONSTS.KEY_ID, "").equals(mPID)) {
-			Intent pupdateIntent = new Intent(this, PlayerUpdateActivity.class);
-			Bundle bintent = new Bundle();
-			bintent.putString("pid", mPID);
-			pupdateIntent.putExtras(bintent);
-			final Action EditAction = new IntentAction(this, pupdateIntent,
-					R.drawable.edit);
+			final Action EditAction = new EditPlayerAction();
 			actionBar.addAction(EditAction);
 		}
 
@@ -154,6 +150,19 @@ public class PlayerActivity extends Activity {
 				showDialog(0,
 						DlgUtils.prepareDlgBundle("Failed to load player"));
 			}
+		}
+	}
+	
+	private class EditPlayerAction extends AbstractAction {
+		public EditPlayerAction() {
+			super(R.drawable.edit);
+		}
+
+		@Override
+		public void performAction(View view) {
+			Intent pupdateIntent = new Intent(PlayerActivity.this, PlayerUpdateActivity.class);
+			pupdateIntent.putExtra("pid", mPID);
+			startActivityForResult(pupdateIntent, 1);
 		}
 	}
 
