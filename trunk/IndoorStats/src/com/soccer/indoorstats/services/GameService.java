@@ -1,5 +1,8 @@
 package com.soccer.indoorstats.services;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+
 import org.json.JSONObject;
 
 import android.content.Intent;
@@ -13,7 +16,6 @@ import com.soccer.db.local.GameDbAdapter;
 import com.soccer.db.remote.R_DB_CONSTS;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.impl.DAOGame;
-import com.soccer.indoorstats.activity.states.GameState;
 import com.soccer.indoorstats.services.handlers.RequestHandler;
 import com.soccer.indoorstats.services.i.IGameService;
 import com.soccer.indoorstats.utils.log.Logger;
@@ -35,21 +37,20 @@ public class GameService extends BaseService implements IGameService {
 	}
 
 	@Override
-	public GameState getCurGameState() {
-		GameState state = null;
+	public ObjectInputStream getCurGameState() {
 		SQLiteDatabase db = openDB();
 		GameDbAdapter gda = new GameDbAdapter(db);
-		state = gda.fetchState();
+		ObjectInputStream objectIn = gda.fetchState();
 		closeDB();
 		
-		return state;
+		return objectIn;
 	}
 
 	@Override
-	public void saveGameState(GameState state) {
+	public void saveGameState(ByteArrayOutputStream bos) {
 		SQLiteDatabase db = openDB();
 		GameDbAdapter gda = new GameDbAdapter(db);
-		gda.insertOrUpdateState(state);
+		gda.insertOrUpdateState(bos);
 		closeDB();
 	}
 

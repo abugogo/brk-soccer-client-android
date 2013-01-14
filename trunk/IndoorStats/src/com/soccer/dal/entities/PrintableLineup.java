@@ -1,9 +1,11 @@
 package com.soccer.dal.entities;
 
+import java.io.Serializable;
+
 import com.soccer.entities.impl.DAOLEvent;
 import com.soccer.entities.impl.DAOLineup;
 
-public class PrintableLineup extends DAOLineup {
+public class PrintableLineup extends DAOLineup implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String fname = "";

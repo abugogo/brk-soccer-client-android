@@ -20,17 +20,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
-
-import com.soccer.indoorstats.activity.states.GameState;
-import com.soccer.indoorstats.utils.log.Logger;
 
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+
+import com.soccer.indoorstats.utils.log.Logger;
 
 public class GameDbAdapter {
 
@@ -55,8 +52,8 @@ public class GameDbAdapter {
 		return mDB.delete(DB_CONSTS.DATABASE_STATE_TABLE, null, null) > 0;
 	}
 
-	public GameState fetchState() throws SQLException {
-		GameState state = null;
+	public ObjectInputStream fetchState() throws SQLException {
+		ObjectInputStream objectIn = null;
 		Cursor mCursor =
 
 		mDB.query(true, DB_CONSTS.DATABASE_STATE_TABLE, new String[] { "_id",
@@ -68,13 +65,9 @@ public class GameDbAdapter {
 				byte[] bs = (mCursor.getBlob(mCursor
 						.getColumnIndexOrThrow(DB_CONSTS.KEY_GAME_STATE)));
 				if (bs != null && !bs.equals("")) {
-					ObjectInputStream objectIn;
-					Object obj;
 					try {
 						objectIn = new ObjectInputStream(
 								new ByteArrayInputStream(bs));
-						obj = objectIn.readObject();
-						state = (GameState) obj;
 					} catch (StreamCorruptedException e) {
 						Logger.e(
 								"game activity restore state failed due to corrupted stream",
@@ -83,28 +76,15 @@ public class GameDbAdapter {
 						Logger.e(
 								"game activity restore state failed due to io issue",
 								e);
-					} catch (ClassNotFoundException e) {
-						Logger.e(
-								"game activity restore state failed due to class not found",
-								e);
 					}
 				}
 			}
 			mCursor.close();
 		}
-		return state;
+		return objectIn;
 	}
 
-	public boolean insertOrUpdateState(GameState state) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		try {
-			ObjectOutput out = new ObjectOutputStream(bos);
-			out.writeObject(state);
-			out.flush();
-			out.close();
-		} catch (IOException e) {
-			Logger.e("game activity save state failed due to io", e);
-		}
+	public boolean insertOrUpdateState(ByteArrayOutputStream bos) {
 		SQLiteStatement p = mDB.compileStatement("insert or replace into "
 				+ DB_CONSTS.DATABASE_STATE_TABLE + " (_id, " + DB_CONSTS.KEY_ID
 				+ "," + DB_CONSTS.KEY_GAME_STATE + ") values(0, 0, ?)");

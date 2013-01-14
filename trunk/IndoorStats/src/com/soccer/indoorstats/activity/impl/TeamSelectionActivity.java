@@ -2,6 +2,7 @@ package com.soccer.indoorstats.activity.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import android.app.ListActivity;
 import android.content.ComponentName;
@@ -27,7 +28,7 @@ public class TeamSelectionActivity extends ListActivity {
 	ListView list;
 	TeamSelectionAdapter adapter;
 	private ArrayList<DAOPlayer> mPList = null;
-	private HashMap<String, PrintableLineup> mLList = null;
+	private LinkedHashMap<String, PrintableLineup> mLList = null;
 	private PlayerService mBoundService;
 	private boolean mIsBound;
 
@@ -46,7 +47,12 @@ public class TeamSelectionActivity extends ListActivity {
 		actionBar.addAction(cancelAction);
 		
 		Intent caller = getIntent();
-		mLList = (HashMap<String, PrintableLineup>)caller.getExtras().get("llist");
+		mLList = new LinkedHashMap<String, PrintableLineup>();
+		@SuppressWarnings("unchecked")
+		HashMap<String, PrintableLineup> map = (HashMap<String, PrintableLineup>)caller.getExtras().get("llist");
+		if(map != null) {
+			mLList.putAll(map);
+		}
 	}
 
 	@Override
