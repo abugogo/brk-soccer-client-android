@@ -1,7 +1,6 @@
 package com.soccer.dialog;
 
 import java.sql.Time;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import android.app.Activity;
@@ -27,7 +26,7 @@ public class LineupListAdapter extends BaseAdapter {
 	private LinkedHashMap<String, PrintableLineup> data = new LinkedHashMap<String, PrintableLineup>();
 	private static LayoutInflater inflater = null;
 
-	public LineupListAdapter(Activity a, HashMap<String, PrintableLineup> d) {
+	public LineupListAdapter(Activity a, LinkedHashMap<String, PrintableLineup> d) {
 		activity = a;
 		setData(d);
 		inflater = (LayoutInflater) activity
@@ -55,11 +54,11 @@ public class LineupListAdapter extends BaseAdapter {
 		return position;
 	}
 
-	public final HashMap<String, PrintableLineup> getData() {
+	public final LinkedHashMap<String, PrintableLineup> getData() {
 		return data;
 	}
 
-	public void setData(HashMap<String, PrintableLineup> map) {
+	public void setData(LinkedHashMap<String, PrintableLineup> map) {
 		clearData();
 		data.putAll(map);
 		notifyDataSetChanged();

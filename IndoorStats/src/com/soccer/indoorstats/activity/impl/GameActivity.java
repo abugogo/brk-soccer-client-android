@@ -1,9 +1,11 @@
 package com.soccer.indoorstats.activity.impl;
 
+import java.io.ObjectInputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -45,14 +47,14 @@ import com.soccer.preferences.Prefs;
 public class GameActivity extends Activity implements OnClickListener {
 
 	private StopWatch _timer = new StopWatch();
-	private GameState _gState = null;
+	private GameState _gState = new GameState();
 	private StopWatchHandler mHandler = new StopWatchHandler(this);
 	private TextView tvTextView;
 	private Button btnStart;
 	Button btnReset;
 	LineupListAdapter badapter;
 	LineupListAdapter wadapter;
-	HashMap<String, PrintableLineup> lineupData = null;
+	LinkedHashMap<String, PrintableLineup> lineupData = null;
 	Prefs sharedPrefs;
 	private GameService mBoundGameService;
 	private boolean mIsBound;
@@ -95,8 +97,10 @@ public class GameActivity extends Activity implements OnClickListener {
 		if ((GameState) getLastNonConfigurationInstance() != null)
 			_gState = (GameState) getLastNonConfigurationInstance();
 
-		badapter = new LineupListAdapter(this, new HashMap<String, PrintableLineup>());
-		wadapter = new LineupListAdapter(this, new HashMap<String, PrintableLineup>());
+		badapter = new LineupListAdapter(this,
+				new LinkedHashMap<String, PrintableLineup>());
+		wadapter = new LineupListAdapter(this,
+				new LinkedHashMap<String, PrintableLineup>());
 		// buttom navigation bar
 		RadioButton radioButton;
 		radioButton = (RadioButton) findViewById(R.id.btnGame);
@@ -146,8 +150,8 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	public void createGame() {
 		ArrayList<DAOLineup> lpList = new ArrayList<DAOLineup>();
-		HashMap<String, PrintableLineup> lpbList = badapter.getData();
-		HashMap<String, PrintableLineup> lpwList = wadapter.getData();
+		LinkedHashMap<String, PrintableLineup> lpbList = badapter.getData();
+		LinkedHashMap<String, PrintableLineup> lpwList = wadapter.getData();
 		int bG = 0, wG = 0;
 		if (lpbList != null && lpbList.values() != null) {
 			for (DAOLineup pt1 : lpbList.values()) {
@@ -314,31 +318,27 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	public void onAddItem(View v) {
 		Intent teamSelection = new Intent(this, TeamSelectionActivity.class);
-		teamSelection.putExtra("llist", lineupData);
+		teamSelection.putExtra("llist", _gState.get_lpList());
 		startActivityForResult(teamSelection, 1);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
 		if (resultCode == RESULT_OK) {
 			if (data != null && data.getExtras() != null) {
 				Object objSentData = data.getExtras().get("llist");
 				if (null != objSentData) {
-					badapter.clearData();
-					wadapter.clearData();
-					lineupData = (HashMap<String, PrintableLineup>) objSentData;
-					if (lineupData != null) {
-						for (PrintableLineup l : lineupData.values()) {
-							if (l.getColor().equals('b'))
-								badapter.addItem(l);
-							else
-								wadapter.addItem(l);
-						}
+					HashMap<String, PrintableLineup> map = (HashMap<String, PrintableLineup>) objSentData;
+					if (map != null) {
+						lineupData = new LinkedHashMap<String, PrintableLineup>();
+						lineupData.putAll(map);
 					}
 				}
 			}
-		}
-
+		} else
+			lineupData = null;
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
@@ -349,10 +349,12 @@ public class GameActivity extends Activity implements OnClickListener {
 	}
 
 	private void restoreState() {
-		_gState = mBoundGameService.getCurGameState();
+		ObjectInputStream objIn = mBoundGameService.getCurGameState();
+		if (objIn != null)
+			_gState.deserialize(objIn);
 		if (_gState != null) {
 			if (btnStart != null)
-				btnStart.setText((_gState != null && _gState.isStarted() && _gState
+				btnStart.setText((_gState.isStarted() && _gState
 						.is_running()) ? "Stop" : "Start");
 			_timer.setStartTime(_gState.get_startTime());
 			_timer.setStopTime(_gState.get_stopTime());
@@ -372,24 +374,30 @@ public class GameActivity extends Activity implements OnClickListener {
 	}
 
 	private void setListsAdapters() {
-		
+
 		ListView blstView = (ListView) findViewById(R.id.listView1);
 		if (badapter == null)
-			badapter = new LineupListAdapter(this, new HashMap<String, PrintableLineup>());
-		
+			badapter = new LineupListAdapter(this,
+					new LinkedHashMap<String, PrintableLineup>());
+
 		ListView wlstView = (ListView) findViewById(R.id.listView2);
 		if (wadapter == null)
-			wadapter = new LineupListAdapter(this, new HashMap<String, PrintableLineup>());
-		
-		if (_gState != null && _gState.get_lpList() != null) {
-			for (PrintableLineup lp : _gState.get_lpList()) {
+			wadapter = new LineupListAdapter(this,
+					new LinkedHashMap<String, PrintableLineup>());
+
+		if (_gState != null) {
+			if (lineupData != null) {
+				_gState.set_lpList(lineupData);
+				lineupData = null;
+			}
+			for (PrintableLineup lp : _gState.get_lpList().values()) {
 				if (lp.getColor().equals('b'))
 					badapter.addItem(lp);
 				else
 					wadapter.addItem(lp);
 			}
 		}
-		
+
 		blstView.setAdapter(badapter);
 		wlstView.setAdapter(wadapter);
 	}
@@ -401,7 +409,7 @@ public class GameActivity extends Activity implements OnClickListener {
 	// http://www.easywayserver.com/blog/how-to-serializable-object-in-java-2/
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		saveState();
+		// saveState();
 	}
 
 	@Override
@@ -413,7 +421,10 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	private void saveState() {
 		if (mIsBound && mBoundGameService != null) {
-			mBoundGameService.saveGameState(_gState);
+			_gState.set_running(_timer.isRunning());
+			_gState.set_startTime(_timer.getStartTime());
+			_gState.set_stopTime(_timer.getStopTime());
+			mBoundGameService.saveGameState(_gState.serialize());
 		}
 	}
 
