@@ -58,7 +58,14 @@ public class LoginService extends BaseService implements ILoginService {
 
 					@Override
 					public void onFailure(Throwable tr, String res) {
-						handler.onFailure(tr.getMessage(), 0);
+						String err = tr.getMessage();
+						if (err == null) {
+							if (tr.getCause() != null)
+								err = tr.getCause().getMessage();
+							else
+								err = "Unknown failure";
+						}
+						handler.onFailure(err, 0);
 					}
 
 					@Override

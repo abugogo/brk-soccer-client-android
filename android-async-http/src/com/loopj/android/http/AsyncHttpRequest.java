@@ -94,12 +94,14 @@ class AsyncHttpRequest implements Runnable {
                 makeRequest();
                 return;
             } catch (UnknownHostException e) {
+            	retry = false;
 		        if(responseHandler != null) {
 		            responseHandler.sendFailureMessage(e, "can't resolve host");
 		        }
 	        	return;
             }catch (SocketException e){
                 // Added to detect host unreachable
+            	retry = false;
                 if(responseHandler != null) {
                     responseHandler.sendFailureMessage(e, "can't resolve host");
                 }
@@ -113,6 +115,11 @@ class AsyncHttpRequest implements Runnable {
                 // http://code.google.com/p/android/issues/detail?id=5255
                 cause = new IOException("NPE in HttpClient" + e.getMessage());
                 retry = retryHandler.retryRequest(cause, ++executionCount, context);
+            } catch (IllegalArgumentException iae) {
+            	retry = false;
+            	if(responseHandler != null) {
+                    responseHandler.sendFailureMessage(iae, "Host name illegal");
+                }
             }
         }
 
