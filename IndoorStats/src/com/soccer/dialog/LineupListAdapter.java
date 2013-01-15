@@ -15,9 +15,9 @@ import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.soccer.dal.entities.PrintableLineup;
 import com.soccer.entities.IDAOLEvent.EventType;
 import com.soccer.entities.impl.DAOLEvent;
+import com.soccer.entities.impl.PrintableLineup;
 import com.soccer.indoorstats.R;
 
 public class LineupListAdapter extends BaseAdapter {
@@ -26,7 +26,8 @@ public class LineupListAdapter extends BaseAdapter {
 	private LinkedHashMap<String, PrintableLineup> data = new LinkedHashMap<String, PrintableLineup>();
 	private static LayoutInflater inflater = null;
 
-	public LineupListAdapter(Activity a, LinkedHashMap<String, PrintableLineup> d) {
+	public LineupListAdapter(Activity a,
+			LinkedHashMap<String, PrintableLineup> d) {
 		activity = a;
 		setData(d);
 		inflater = (LayoutInflater) activity
@@ -60,10 +61,11 @@ public class LineupListAdapter extends BaseAdapter {
 
 	public void setData(LinkedHashMap<String, PrintableLineup> map) {
 		clearData();
-		data.putAll(map);
+		if (map != null)
+			data.putAll(map);
 		notifyDataSetChanged();
 	}
-	
+
 	public void clearData() {
 		data.clear();
 	}
@@ -120,6 +122,7 @@ public class LineupListAdapter extends BaseAdapter {
 									else {
 										dle.setType(evt);
 										dle.setTime(new Time(0));
+										dle.setPlayerId(lp.getPlayerId());
 										lp.addEvent(dle);
 									}
 									notifyDataSetChanged();

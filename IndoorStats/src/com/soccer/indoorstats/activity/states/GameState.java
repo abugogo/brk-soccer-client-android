@@ -9,7 +9,7 @@ import java.io.OptionalDataException;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 
-import com.soccer.dal.entities.PrintableLineup;
+import com.soccer.entities.impl.PrintableLineup;
 import com.soccer.indoorstats.utils.log.Logger;
 
 public class GameState implements Serializable {
