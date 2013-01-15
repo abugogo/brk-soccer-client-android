@@ -13,8 +13,8 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.soccer.dal.entities.PrintableLineup;
 import com.soccer.entities.impl.DAOPlayer;
+import com.soccer.entities.impl.PrintableLineup;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.utils.ActivitySwipeDetector;
 import com.soccer.indoorstats.utils.ISwipeInterface;

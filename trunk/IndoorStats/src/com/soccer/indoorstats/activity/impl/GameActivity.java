@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -30,10 +31,9 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
-import com.soccer.dal.entities.PrintableLineup;
 import com.soccer.dialog.LineupListAdapter;
 import com.soccer.entities.impl.DAOGame;
-import com.soccer.entities.impl.DAOLineup;
+import com.soccer.entities.impl.PrintableLineup;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
 import com.soccer.indoorstats.activity.states.GameState;
@@ -149,21 +149,21 @@ public class GameActivity extends Activity implements OnClickListener {
 	};
 
 	public void createGame() {
-		ArrayList<DAOLineup> lpList = new ArrayList<DAOLineup>();
+		List<PrintableLineup> lpList = new ArrayList<PrintableLineup>();
 		LinkedHashMap<String, PrintableLineup> lpbList = badapter.getData();
 		LinkedHashMap<String, PrintableLineup> lpwList = wadapter.getData();
 		int bG = 0, wG = 0;
 		if (lpbList != null && lpbList.values() != null) {
-			for (DAOLineup pt1 : lpbList.values()) {
+			for (PrintableLineup pt1 : lpbList.values()) {
 				bG += pt1.getGoal();
 				wG += pt1.getOGoal();
 				lpList.add(pt1);
 			}
 		}
 		if (lpwList != null && lpwList.values() != null) {
-			for (DAOLineup pt2 : lpwList.values()) {
-				bG += pt2.getGoal();
-				wG += pt2.getOGoal();
+			for (PrintableLineup pt2 : lpwList.values()) {
+				wG += pt2.getGoal();
+				bG += pt2.getOGoal();
 				lpList.add(pt2);
 			}
 		}
@@ -175,11 +175,11 @@ public class GameActivity extends Activity implements OnClickListener {
 			else
 				winner = 'b';
 
-			for (DAOLineup ap : lpList) {
+			for (PrintableLineup ap : lpList) {
 				ap.setPoints((ap.getColor().equals(winner)) ? (short) 3 : 0);
 			}
 		} else {
-			for (DAOLineup ap : lpList) {
+			for (PrintableLineup ap : lpList) {
 				ap.setPoints((short) 1);
 			}
 		}
