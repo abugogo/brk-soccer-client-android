@@ -2,6 +2,7 @@ package com.soccer.indoorstats.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 
 import org.json.JSONObject;
 
@@ -22,7 +23,10 @@ import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.rest.LoopjRestClient;
 
 public class GameService extends BaseService implements IGameService {
-
+	public static enum GameStatus {
+		Pending,
+		Failed
+	}
 	private final IBinder mBinder = new LocalBinder();
 
 	@Override
@@ -63,19 +67,25 @@ public class GameService extends BaseService implements IGameService {
 
 		try {
 			RequestParams params = new RequestParams();
-			params.put("JSON", EntityManager.writeGame(game));
-
+			String g_json = EntityManager.writeGame(game);
+			// save game in status updating (remove on success)
+			final long growid = storeGame(g_json);
+			params.put("JSON", g_json);
+			
 			LoopjRestClient.put(this, sUrl.concat("/SoccerServer/rest/")
 					.concat(sharedPrefs.getPreference("account_name", ""))
 					.concat("/games"), params, new JsonHttpResponseHandler() {
 
 				@Override
 				public void onSuccess(JSONObject res) {
+					// remove game from "updating" status 
+					deleteGame(growid);
 					handler.onSuccess();
 				}
 
 				@Override
 				public void onFailure(Throwable tr, String res) {
+					updateGame(growid, GameStatus.Failed);
 					handler.onFailure(res, 0);
 				}
 
@@ -90,4 +100,38 @@ public class GameService extends BaseService implements IGameService {
 		}
 		
 	}
+	
+	private long storeGame(String g_json) {
+		SQLiteDatabase db = openDB();
+		GameDbAdapter gda = new GameDbAdapter(db);
+		long ret = gda.storeGame(g_json);
+		closeDB();
+		return ret;
+	}
+	
+	private long updateGame(long rowid, GameStatus gs) {
+		SQLiteDatabase db = openDB();
+		GameDbAdapter gda = new GameDbAdapter(db);
+		long ret = gda.updateGame(rowid, gs);
+		closeDB();
+		return ret;
+	}
+	
+	private int deleteGame(long rowid) {
+		SQLiteDatabase db = openDB();
+		GameDbAdapter gda = new GameDbAdapter(db);
+		int ret = gda.removeGame(rowid);
+		closeDB();
+		return ret;
+	}
+	
+	private ArrayList<String> getGames(GameStatus gs) {
+		SQLiteDatabase db = openDB();
+		GameDbAdapter gda = new GameDbAdapter(db);
+		ArrayList<String> ret = gda.getGames(gs);
+		closeDB();
+		return ret;
+	}
+	
+	
 }

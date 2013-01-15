@@ -15,6 +15,11 @@ public class DbAdapterBase extends SQLiteOpenHelper {
 			+ DB_CONSTS.DATABASE_STATE_TABLE
 			+ " (_id integer primary key autoincrement, " + DB_CONSTS.KEY_ID
 			+ " integer not null, " + DB_CONSTS.KEY_GAME_STATE + " text);";
+	
+	private static final String GAMES_TBL_CREATE = "create table "
+			+ DB_CONSTS.DATABASE_GAMES_TABLE
+			+ " (_id integer primary key autoincrement, " + DB_CONSTS.KEY_GAME_BLOB
+			+ " text not null, " + DB_CONSTS.KEY_GAME_STATUS + " integer not null);";
 
 	private static final String PLAYERS_TBL_CREATE = "create table "
 			+ DB_CONSTS.DATABASE_PLAYERS_TABLE
@@ -35,6 +40,7 @@ public class DbAdapterBase extends SQLiteOpenHelper {
 
 		db.execSQL(PLAYERS_TBL_CREATE);
 		db.execSQL(STATES_TBL_CREATE);
+		db.execSQL(GAMES_TBL_CREATE);
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(DB_CONSTS.KEY_GAME_STATE, "");
 		initialValues.put(DB_CONSTS.KEY_ID, 0);
@@ -48,6 +54,7 @@ public class DbAdapterBase extends SQLiteOpenHelper {
 				+ newVersion + ", which will destroy all old data");
 		db.execSQL("DROP TABLE IF EXISTS " + DB_CONSTS.DATABASE_PLAYERS_TABLE);
 		db.execSQL("DROP TABLE IF EXISTS " + DB_CONSTS.DATABASE_STATE_TABLE);
+		db.execSQL("DROP TABLE IF EXISTS " + DB_CONSTS.DATABASE_GAMES_TABLE);
 		onCreate(db);
 	}
 
