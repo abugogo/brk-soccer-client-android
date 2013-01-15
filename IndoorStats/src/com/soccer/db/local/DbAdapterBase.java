@@ -19,9 +19,12 @@ public class DbAdapterBase extends SQLiteOpenHelper {
 	private static final String PLAYERS_TBL_CREATE = "create table "
 			+ DB_CONSTS.DATABASE_PLAYERS_TABLE
 			+ " (_id integer primary key autoincrement, " + DB_CONSTS.KEY_ID
-			+ " integer not null, " + DB_CONSTS.KEY_EMAIL + " text, " + DB_CONSTS.KEY_FNAME
-			+ " text not null, " + DB_CONSTS.KEY_LNAME + " text, " + DB_CONSTS.KEY_TEL1 + " text, "
-			+ DB_CONSTS.KEY_IMG + " text, " + DB_CONSTS.KEY_DESC + " text, " + DB_CONSTS.KEY_BDAY + " text);";
+			+ " integer not null, " + DB_CONSTS.KEY_EMAIL + " text, "
+			+ DB_CONSTS.KEY_FNAME + " text not null, " + DB_CONSTS.KEY_LNAME
+			+ " text, " + DB_CONSTS.KEY_TEL1 + " text, " + DB_CONSTS.KEY_IMG
+			+ " text, " + DB_CONSTS.KEY_DESC + " text, " + DB_CONSTS.KEY_BDAY
+			+ " text, " + DB_CONSTS.KEY_ADMIN + " integer, "
+			+ DB_CONSTS.KEY_ACTIVE + " integer);";
 
 	public DbAdapterBase(Context context) {
 		super(context, DB_CONSTS.DB_NAME, null, DB_CONSTS.DB_VERSION);

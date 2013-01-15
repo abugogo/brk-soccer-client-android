@@ -49,6 +49,8 @@ public class PlayersDbAdapter {
 		initialValues.put(DB_CONSTS.KEY_TEL1, p.getTel1());
 		initialValues.put(DB_CONSTS.KEY_IMG, p.getP_img());
 		initialValues.put(DB_CONSTS.KEY_DESC, p.getDescription());
+		initialValues.put(DB_CONSTS.KEY_ADMIN, p.isAdmin());
+		initialValues.put(DB_CONSTS.KEY_ACTIVE, p.isActive());
 
 		return mDB
 				.insert(DB_CONSTS.DATABASE_PLAYERS_TABLE, null, initialValues);
@@ -70,7 +72,7 @@ public class PlayersDbAdapter {
 		return mDB.query(DB_CONSTS.DATABASE_PLAYERS_TABLE, new String[] {
 				"_id", DB_CONSTS.KEY_ID, DB_CONSTS.KEY_BDAY,
 				DB_CONSTS.KEY_EMAIL, DB_CONSTS.KEY_FNAME, DB_CONSTS.KEY_LNAME,
-				DB_CONSTS.KEY_TEL1, DB_CONSTS.KEY_IMG, DB_CONSTS.KEY_DESC },
+				DB_CONSTS.KEY_TEL1, DB_CONSTS.KEY_IMG, DB_CONSTS.KEY_DESC, DB_CONSTS.KEY_ADMIN, DB_CONSTS.KEY_ACTIVE },
 				null, null, null, null, null);
 	}
 
@@ -88,6 +90,8 @@ public class PlayersDbAdapter {
 				p.setTel1(PlayersCursor.getString(6));
 				p.setP_img(PlayersCursor.getString(7));
 				p.setDescription(PlayersCursor.getString(8));
+				p.setAdmin(PlayersCursor.getInt(9)==1);
+				p.setActive(PlayersCursor.getInt(10)==1);
 				pList.add(p);
 			} while (PlayersCursor.moveToNext());
 		}
@@ -105,7 +109,7 @@ public class PlayersDbAdapter {
 		mDB.query(true, DB_CONSTS.DATABASE_PLAYERS_TABLE, new String[] { "_id",
 				DB_CONSTS.KEY_ID, DB_CONSTS.KEY_BDAY, DB_CONSTS.KEY_EMAIL,
 				DB_CONSTS.KEY_FNAME, DB_CONSTS.KEY_LNAME, DB_CONSTS.KEY_TEL1,
-				DB_CONSTS.KEY_IMG, DB_CONSTS.KEY_DESC }, DB_CONSTS.KEY_ID + "="
+				DB_CONSTS.KEY_IMG, DB_CONSTS.KEY_DESC, DB_CONSTS.KEY_ADMIN, DB_CONSTS.KEY_ACTIVE }, DB_CONSTS.KEY_ID + "="
 				+ id, null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
@@ -149,6 +153,8 @@ public class PlayersDbAdapter {
 				p.setBday(d);
 			p.setId(cP.getString(cP.getColumnIndexOrThrow(DB_CONSTS.KEY_ID)));
 			p.setTel1(cP.getString(cP.getColumnIndexOrThrow(DB_CONSTS.KEY_TEL1)));
+			p.setAdmin(cP.getInt(cP.getColumnIndexOrThrow(DB_CONSTS.KEY_ADMIN))==1);
+			p.setActive(cP.getInt(cP.getColumnIndexOrThrow(DB_CONSTS.KEY_ACTIVE))==1);
 		}
 		if (null != cP)
 			cP.close();
@@ -168,6 +174,8 @@ public class PlayersDbAdapter {
 		args.put(DB_CONSTS.KEY_TEL1, p.getTel1());
 		args.put(DB_CONSTS.KEY_IMG, p.getP_img());
 		args.put(DB_CONSTS.KEY_DESC, p.getDescription());
+		args.put(DB_CONSTS.KEY_ADMIN, p.isAdmin());
+		args.put(DB_CONSTS.KEY_ACTIVE, p.isActive());
 
 		return mDB.update(DB_CONSTS.DATABASE_PLAYERS_TABLE, args,
 				DB_CONSTS.KEY_ID + "=" + p.getId(), null) > 0;
@@ -181,10 +189,12 @@ public class PlayersDbAdapter {
 				.concat(DB_CONSTS.KEY_LNAME).concat(",")
 				.concat(DB_CONSTS.KEY_TEL1).concat(",")
 				.concat(DB_CONSTS.KEY_IMG).concat(",")
-				.concat(DB_CONSTS.KEY_DESC);
+				.concat(DB_CONSTS.KEY_DESC).concat(",")
+				.concat(DB_CONSTS.KEY_ADMIN).concat(",")
+				.concat(DB_CONSTS.KEY_ACTIVE);
 		final String query = "INSERT OR REPLACE INTO "
 				.concat(DB_CONSTS.DATABASE_PLAYERS_TABLE).concat("  (")
-				.concat(fields).concat(") VALUES (?,?,?,?,?,?,?,?);");
+				.concat(fields).concat(") VALUES (?,?,?,?,?,?,?,?,?,?);");
 		try {
 			mDB.execSQL(
 					query,
@@ -192,7 +202,7 @@ public class PlayersDbAdapter {
 							p.getId(),
 							(null != p.getBday()) ? p.getBday().toString() : "",
 							p.getEmail(), p.getFname(), p.getLname(),
-							p.getTel1(), p.getP_img(), p.getDescription() });
+							p.getTel1(), p.getP_img(), p.getDescription(), (p.isAdmin()?"1":"0"), (p.isActive()?"1":"0") });
 		} catch (SQLException se) {
 			return false;
 		}
