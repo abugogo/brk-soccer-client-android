@@ -485,11 +485,7 @@ public class GameActivity extends Activity implements OnClickListener {
 	}
 
 	public void onCreateGameFailure(int responseCode, String result) {
-		showDialog(
-				0,
-				DlgUtils.prepareDlgBundle("Failed updating game info: "
-						+ result));
-
+		DlgUtils.showAlertMessage(this, "Gaem Update Failed", result);
 	}
 
 	private ServiceConnection mGameConnection = new ServiceConnection() {
