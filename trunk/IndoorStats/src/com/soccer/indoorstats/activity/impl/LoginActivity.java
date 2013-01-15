@@ -1,9 +1,11 @@
 package com.soccer.indoorstats.activity.impl;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -38,9 +40,8 @@ public class LoginActivity extends Activity {
 	@Override
 	protected void onResume() {
 		doBindService();
-		String loggedInId = sharedPrefs.getPreference(
-				DB_CONSTS.KEY_ID, "");
-		if(loggedInId != null && !"".equals(loggedInId)) {
+		String loggedInId = sharedPrefs.getPreference(DB_CONSTS.KEY_ID, "");
+		if (loggedInId != null && !"".equals(loggedInId)) {
 			loadApp(loggedInId);
 		}
 		super.onResume();
@@ -75,8 +76,7 @@ public class LoginActivity extends Activity {
 		final String password = et.getText().toString();
 
 		if (id != null && !id.equals("")) {
-			String loggedInId = sharedPrefs.getPreference(
-					DB_CONSTS.KEY_ID, "");
+			String loggedInId = sharedPrefs.getPreference(DB_CONSTS.KEY_ID, "");
 			if (!loggedInId.equals(id)) {
 				perfromLogin(id, password);
 			}
@@ -100,10 +100,10 @@ public class LoginActivity extends Activity {
 				public void onFailure(String reason, int errorCode) {
 					mProgDialog.dismiss();
 					sharedPrefs.setPreference(DB_CONSTS.KEY_ID, "");
-					showDialog(
-							0,
-							DlgUtils.prepareDlgBundle("Failed login: "
-									+ reason));
+					String error = "Failed login";
+					if (reason != null)
+						error = reason;
+					DlgUtils.showAlertMessage(LoginActivity.this, "Login Error", error);
 				}
 			});
 		}
