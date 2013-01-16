@@ -3,6 +3,8 @@ package com.soccer.indoorstats.activity.impl;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -129,10 +131,10 @@ public class PlayerUpdateActivity extends Activity {
 				mPlayer.setTel1(newPhone);
 				if (mIsBound) {
 					actionBar.setProgressBarVisibility(View.VISIBLE);
-					mBoundService.updatePlayer(mPlayer, new RequestHandler() {
+					mBoundService.updatePlayer(mPlayer, new RequestHandler<JSONObject>() {
 
 						@Override
-						public void onSuccess() {
+						public void onSuccess(JSONObject res) {
 							Logger.i("PlayerUpdateActivity success");
 							actionBar.setProgressBarVisibility(View.INVISIBLE);
 							onUpdateSuccess();

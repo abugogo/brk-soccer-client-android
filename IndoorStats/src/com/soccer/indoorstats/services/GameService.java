@@ -3,7 +3,9 @@ package com.soccer.indoorstats.services;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Intent;
@@ -15,6 +17,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.soccer.db.local.GameDbAdapter;
 import com.soccer.entities.EntityManager;
+import com.soccer.entities.IDAOGame.GameStatus;
 import com.soccer.entities.impl.DAOGame;
 import com.soccer.indoorstats.services.handlers.RequestHandler;
 import com.soccer.indoorstats.services.i.IGameService;
@@ -57,7 +60,7 @@ public class GameService extends BaseService implements IGameService {
 	}
 
 	@Override
-	public void updateGame(DAOGame game, final RequestHandler handler) {
+	public void updateGame(DAOGame game, final RequestHandler<JSONObject> handler) {
 
 		try {
 			RequestParams params = new RequestParams();
@@ -74,7 +77,7 @@ public class GameService extends BaseService implements IGameService {
 				public void onSuccess(JSONObject res) {
 					// remove game from "updating" status
 					deleteGame(growid);
-					handler.onSuccess();
+					handler.onSuccess(res);
 				}
 
 				@Override
@@ -96,18 +99,47 @@ public class GameService extends BaseService implements IGameService {
 	}
 
 	@Override
-	public ArrayList<DAOGame> getAllGames(int season) {
-		return null;
+	public void getAllGames(int season, final RequestHandler<JSONArray> handler) {
+		try {
+			LoopjRestClient.get(this, sUrl.concat("/SoccerServer/rest/")
+					.concat(sharedPrefs.getPreference("account_name", ""))
+					.concat("/games"), null, new JsonHttpResponseHandler() {
+
+				@Override
+				public void onSuccess(JSONArray res) {
+					handler.onSuccess(res);
+				}
+
+				@Override
+				public void onFailure(Throwable tr, String res) {
+					handler.onFailure(res, 0);
+				}
+
+				@Override
+				public void onFinish() {
+					Logger.i("Get all games finished");
+				}
+			});
+
+		} catch (Exception e) {
+			Logger.e("Get all games failed", e);
+		}
 	}
 
 	@Override
-	public ArrayList<DAOGame> getGames(GameStatus gs) {
+	public ArrayList<DAOGame> getGames(List<GameStatus> gsArray) {
 		ArrayList<DAOGame> retList = new ArrayList<DAOGame>();
 		try {
-			ArrayList<String> gamesBlobs = getGamesBlobs(gs);
-			if (gamesBlobs != null) {
-				for (String s : gamesBlobs) {
-					retList.add(EntityManager.readGame(s));
+			for (GameStatus gs : gsArray) {
+				ArrayList<String> gamesBlobs = getGamesBlobs(gs);
+				if (gamesBlobs != null) {
+					for (String s : gamesBlobs) {
+						DAOGame g = EntityManager.readGame(s);
+						if (g != null) {
+							g.setStatus(gs);
+							retList.add(g);
+						}
+					}
 				}
 			}
 		} catch (RuntimeException rte) {

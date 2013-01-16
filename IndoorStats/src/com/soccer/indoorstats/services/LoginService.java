@@ -40,7 +40,7 @@ public class LoginService extends BaseService implements ILoginService {
 
 	@Override
 	public void login(String user, String password, final String account,
-			final RequestHandler handler) {
+			final RequestHandler<JSONArray> handler) {
 		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
 		if (sUrl.equals("NULL")) {
 			sUrl = R_DB_CONSTS.SERVER_DEFAULT;
@@ -76,7 +76,7 @@ public class LoginService extends BaseService implements ILoginService {
 	}
 
 	private void onLoginSuccess(JSONObject res, String account,
-			RequestHandler handler) {
+			RequestHandler<JSONArray> handler) {
 		try {
 			JSONArray acc_arr = res.getJSONArray("accounts");
 			int s = acc_arr.length();
@@ -91,7 +91,7 @@ public class LoginService extends BaseService implements ILoginService {
 	}
 
 	private void LoginToAccount(CharSequence accountName, String account,
-			final RequestHandler handler) {
+			final RequestHandler<JSONArray> handler) {
 
 		sharedPrefs.setPreference("account_name", (String) accountName);
 		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
@@ -106,7 +106,7 @@ public class LoginService extends BaseService implements ILoginService {
 						@Override
 						public void onSuccess(JSONArray res) {
 							onAccountLoginSuccess(res);
-							handler.onSuccess();
+							handler.onSuccess(res);
 						}
 
 						@Override

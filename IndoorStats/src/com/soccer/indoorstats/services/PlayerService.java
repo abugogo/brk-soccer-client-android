@@ -47,7 +47,7 @@ public class PlayerService extends BaseService implements IPlayerService {
 	}
 
 	@Override
-	public void updatePlayer(final DAOPlayer player, final RequestHandler handler) {
+	public void updatePlayer(final DAOPlayer player, final RequestHandler<JSONObject> handler) {
 		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
 		if (sUrl.equals("NULL")) {
 			sUrl = R_DB_CONSTS.SERVER_DEFAULT;
@@ -65,7 +65,7 @@ public class PlayerService extends BaseService implements IPlayerService {
 				SQLiteDatabase db = openDB();
 				PlayersDbAdapter pda = new PlayersDbAdapter(db);
 				pda.updatePlayer(player);
-				handler.onSuccess();
+				handler.onSuccess(res);
 			}
 
 			@Override
