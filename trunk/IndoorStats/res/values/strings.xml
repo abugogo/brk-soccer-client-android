@@ -15,7 +15,7 @@
 	<string name="emptyString"></string>
 	<string name="team_1">Team 1</string>
 	<string name="team_2">Team 2</string>
-	<string name="_0_0">00:00</string>
+	<string name="_0_0">0:0</string>
 	<string name="start">Start</string>
 	<string name="reset">Reset</string>
 	<string name="password">Password</string>
@@ -25,4 +25,6 @@
 	<string name="about">About</string>
 	<string name="exit">Exit</string>
 	<string name="user_id">User ID</string>
+	<string name="team1">Team1</string>
+	<string name="team2">Team2</string>
 </resources>

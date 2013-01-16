@@ -14,7 +14,6 @@ import android.os.IBinder;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.soccer.db.local.GameDbAdapter;
-import com.soccer.db.remote.R_DB_CONSTS;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.impl.DAOGame;
 import com.soccer.indoorstats.services.handlers.RequestHandler;
@@ -23,14 +22,13 @@ import com.soccer.indoorstats.utils.log.Logger;
 import com.soccer.rest.LoopjRestClient;
 
 public class GameService extends BaseService implements IGameService {
-	public static enum GameStatus {
-		Pending,
-		Failed
-	}
+
 	private final IBinder mBinder = new LocalBinder();
+	private String sUrl = "";
 
 	@Override
 	public IBinder onBind(Intent arg0) {
+		sUrl = sharedPrefs.getPreference("server_port", "NULL");
 		return mBinder;
 	}
 
@@ -46,7 +44,7 @@ public class GameService extends BaseService implements IGameService {
 		GameDbAdapter gda = new GameDbAdapter(db);
 		ObjectInputStream objectIn = gda.fetchState();
 		closeDB();
-		
+
 		return objectIn;
 	}
 
@@ -60,10 +58,6 @@ public class GameService extends BaseService implements IGameService {
 
 	@Override
 	public void updateGame(DAOGame game, final RequestHandler handler) {
-		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
-		if (sUrl.equals("NULL")) {
-			sUrl = R_DB_CONSTS.SERVER_DEFAULT;
-		}
 
 		try {
 			RequestParams params = new RequestParams();
@@ -71,14 +65,14 @@ public class GameService extends BaseService implements IGameService {
 			// save game in status updating (remove on success)
 			final long growid = storeGame(g_json);
 			params.put("JSON", g_json);
-			
+
 			LoopjRestClient.put(this, sUrl.concat("/SoccerServer/rest/")
 					.concat(sharedPrefs.getPreference("account_name", ""))
 					.concat("/games"), params, new JsonHttpResponseHandler() {
 
 				@Override
 				public void onSuccess(JSONObject res) {
-					// remove game from "updating" status 
+					// remove game from "updating" status
 					deleteGame(growid);
 					handler.onSuccess();
 				}
@@ -98,9 +92,30 @@ public class GameService extends BaseService implements IGameService {
 		} catch (Exception e) {
 			Logger.e("create game failed", e);
 		}
-		
+
 	}
-	
+
+	@Override
+	public ArrayList<DAOGame> getAllGames(int season) {
+		return null;
+	}
+
+	@Override
+	public ArrayList<DAOGame> getGames(GameStatus gs) {
+		ArrayList<DAOGame> retList = new ArrayList<DAOGame>();
+		try {
+			ArrayList<String> gamesBlobs = getGamesBlobs(gs);
+			if (gamesBlobs != null) {
+				for (String s : gamesBlobs) {
+					retList.add(EntityManager.readGame(s));
+				}
+			}
+		} catch (RuntimeException rte) {
+			Logger.e(rte.getMessage(), rte);
+		}
+		return retList;
+	}
+
 	private long storeGame(String g_json) {
 		SQLiteDatabase db = openDB();
 		GameDbAdapter gda = new GameDbAdapter(db);
@@ -108,7 +123,7 @@ public class GameService extends BaseService implements IGameService {
 		closeDB();
 		return ret;
 	}
-	
+
 	private long updateGame(long rowid, GameStatus gs) {
 		SQLiteDatabase db = openDB();
 		GameDbAdapter gda = new GameDbAdapter(db);
@@ -116,7 +131,7 @@ public class GameService extends BaseService implements IGameService {
 		closeDB();
 		return ret;
 	}
-	
+
 	private int deleteGame(long rowid) {
 		SQLiteDatabase db = openDB();
 		GameDbAdapter gda = new GameDbAdapter(db);
@@ -124,14 +139,13 @@ public class GameService extends BaseService implements IGameService {
 		closeDB();
 		return ret;
 	}
-	
-	private ArrayList<String> getGames(GameStatus gs) {
+
+	private ArrayList<String> getGamesBlobs(GameStatus gs) {
 		SQLiteDatabase db = openDB();
 		GameDbAdapter gda = new GameDbAdapter(db);
 		ArrayList<String> ret = gda.getGames(gs);
 		closeDB();
 		return ret;
 	}
-	
-	
+
 }

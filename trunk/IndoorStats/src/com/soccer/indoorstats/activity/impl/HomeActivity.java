@@ -56,7 +56,7 @@ public class HomeActivity extends Activity {
 				appIntent = new Intent(this, StatsTabActivity.class);
 				break;
 			case R.id.homeButton5:
-				appIntent = new Intent(this, TeamSelectionActivity.class);
+				appIntent = new Intent(this, GamesListActivity.class);
 				break;
 			case R.id.homeButton6:
 				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);

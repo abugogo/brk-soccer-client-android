@@ -28,7 +28,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
-import com.soccer.indoorstats.services.GameService.GameStatus;
+import com.soccer.indoorstats.services.i.IGameService.GameStatus;
 import com.soccer.indoorstats.utils.log.Logger;
 
 public class GameDbAdapter {
@@ -139,6 +139,7 @@ public class GameDbAdapter {
 				if (gstr != null && !"".equals(gstr)) {
 					retArray.add(gstr);
 				}
+				mCursor.moveToNext();
 			}
 			mCursor.close();
 

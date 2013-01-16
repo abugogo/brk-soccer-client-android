@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/team1name"
+        android:layout_width="60sp"
+        android:layout_height="wrap_content"
+        android:text="@string/team1"
+        android:textColor="#040404"
+        android:textSize="15sp"
+        android:typeface="sans" />
+
+    <LinearLayout android:id="@+id/game_score_lyt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/team1name"
+        android:layout_toRightOf="@+id/team1name" 
+        android:paddingLeft="15sp"
+            android:paddingRight="15sp">
+
+        <TextView
+            android:id="@+id/game_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/_0_0"
+            android:textColor="#040404"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            
+            android:typeface="sans" />
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/team2name"
+        android:layout_width="60sp"
+        android:layout_height="wrap_content"
+        android:text="@string/team2"
+        android:layout_toRightOf="@+id/game_score_lyt"
+        android:textColor="#040404"
+        android:textSize="15sp"
+        android:typeface="sans" />
+    <!-- Rightend Arrow -->
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/arrow" />
+
+</RelativeLayout>
