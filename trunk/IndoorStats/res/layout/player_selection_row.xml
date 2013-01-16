@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5sp"
-        android:text="Player name"
+        android:text="@string/player"
         android:textColor="#040404"
         android:textSize="15sp"
         android:textStyle="bold"
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/pfname"
         android:layout_centerHorizontal="true"
-        android:text="Player family name"
+        android:text="@string/player"
         android:textColor="#343434"
         android:textSize="10sp" />
 

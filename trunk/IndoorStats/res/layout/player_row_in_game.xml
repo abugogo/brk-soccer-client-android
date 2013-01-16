@@ -29,7 +29,7 @@
         android:layout_alignTop="@+id/player_in_game_thumbnail"
         android:layout_toRightOf="@+id/player_in_game_thumbnail"
         android:textColor="#040404"
-        android:textSize="15dip"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:typeface="sans" />
 
