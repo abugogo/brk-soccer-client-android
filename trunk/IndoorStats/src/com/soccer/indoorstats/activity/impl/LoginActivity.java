@@ -1,5 +1,7 @@
 package com.soccer.indoorstats.activity.impl;
 
+import org.json.JSONArray;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -85,9 +87,9 @@ public class LoginActivity extends Activity {
 		if (mIsBound) {
 			this.mProgDialog.setMessage("Logging in...");
 			this.mProgDialog.show();
-			mBoundService.login(id, password, "", new RequestHandler() {
+			mBoundService.login(id, password, "", new RequestHandler<JSONArray>() {
 				@Override
-				public void onSuccess() {
+				public void onSuccess(JSONArray arr) {
 					sharedPrefs.setPreference(DB_CONSTS.KEY_ID, id);
 					sharedPrefs.setPreference(DB_CONSTS.KEY_PWRD, password);
 					loadApp(id);

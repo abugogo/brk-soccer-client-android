@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -194,10 +196,10 @@ public class GameActivity extends Activity implements OnClickListener {
 		try {
 			if (mIsBound) {
 				actionBar.setProgressBarVisibility(View.VISIBLE);
-				mBoundGameService.updateGame(daoGame, new RequestHandler() {
+				mBoundGameService.updateGame(daoGame, new RequestHandler<JSONObject>() {
 
 					@Override
-					public void onSuccess() {
+					public void onSuccess(JSONObject t) {
 						Logger.i("Game created success");
 						actionBar.setProgressBarVisibility(View.INVISIBLE);
 						onCreateGameSuccess();
