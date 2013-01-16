@@ -20,7 +20,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:textColor="#040404"
-        android:textSize="15dip"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:typeface="sans" />
 
@@ -39,7 +39,7 @@
         android:layout_toRightOf="@+id/tbl_divider1"
         android:ellipsize="marquee"
         android:textColor="#040404"
-        android:textSize="15dip"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:typeface="sans" />
 
@@ -57,7 +57,7 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/tbl_divider2"
         android:textColor="#040404"
-        android:textSize="15dip"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:typeface="sans" />
 
@@ -75,7 +75,7 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/tbl_divider3"
         android:textColor="#040404"
-        android:textSize="15dip"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:typeface="sans" />
 
@@ -93,7 +93,7 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/tbl_divider4"
         android:textColor="#040404"
-        android:textSize="15dip"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:typeface="sans" />
 
@@ -111,7 +111,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:textColor="#040404"
-        android:textSize="15dip"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:typeface="sans" />
 

@@ -19,7 +19,7 @@
         android:layout_height="40dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/loginLogo"
-        android:hint="User ID"
+        android:hint="@string/user_id"
         android:inputType="number" >
 
         <requestFocus />
@@ -31,7 +31,7 @@
         android:layout_height="40dp"
         android:layout_below="@+id/editIdNumber"
         android:layout_centerHorizontal="true"
-        android:hint="Password"
+        android:hint="@string/password"
         android:inputType="textPassword" >
     </EditText>
 

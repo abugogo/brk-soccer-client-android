@@ -15,7 +15,7 @@
             style="@style/menu_button_style"
             android:layout_centerVertical="true"
             android:onClick="homeClick"
-            android:text="Player Info" />
+            android:text="@string/player_info" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
             style="@style/menu_button_style"
             android:layout_centerVertical="true"
             android:onClick="homeClick"
-            android:text="Group Info" />
+            android:text="@string/group_info" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -58,7 +58,7 @@
             style="@style/menu_button_style"
             android:layout_centerVertical="true"
             android:onClick="homeClick"
-            android:text="Game" />
+            android:text="@string/game" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -80,7 +80,7 @@
             style="@style/menu_button_style"
             android:layout_centerVertical="true"
             android:onClick="homeClick"
-            android:text="Statistics" />
+            android:text="@string/stats" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -102,7 +102,7 @@
             style="@style/menu_button_style"
             android:layout_centerVertical="true"
             android:onClick="homeClick"
-            android:text="About" />
+            android:text="@string/about" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -124,7 +124,7 @@
             style="@style/menu_button_style"
             android:layout_centerVertical="true"
             android:onClick="homeClick"
-            android:text="Exit" />
+            android:text="@string/exit" />
 
         <ImageView
             android:layout_width="wrap_content"

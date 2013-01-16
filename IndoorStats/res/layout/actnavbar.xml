@@ -21,7 +21,7 @@
             style="@style/navbar_button"
             android:layout_marginTop="5dp"
             android:drawableTop="@drawable/navbar_groupselector"
-            android:text="Group" />
+            android:text="@string/group" />
 
         <RadioButton
             android:id="@+id/btnStats"
@@ -29,7 +29,7 @@
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:drawableTop="@drawable/navbar_statsselector"
-            android:text="Stats" />
+            android:text="@string/stats" />
 
         <RadioButton
             android:id="@+id/btnGame"
@@ -37,7 +37,7 @@
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:drawableTop="@drawable/navbar_gameselector"
-            android:text="Game" />
+            android:text="@string/game" />
 
         <RadioButton
             android:id="@+id/btnSeason"
@@ -45,7 +45,7 @@
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:drawableTop="@drawable/navbar_seasonselector"
-            android:text="Season" />
+            android:text="@string/season" />
     </RadioGroup>
 
 </LinearLayout>
