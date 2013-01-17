@@ -18,8 +18,8 @@ package com.soccer.db.local;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.Locale;
 
 import android.content.ContentValues;
@@ -76,9 +76,9 @@ public class PlayersDbAdapter {
 				null, null, null, null, null);
 	}
 
-	public ArrayList<DAOPlayer> fetchAllPlayersAsArray() {
+	public LinkedList<DAOPlayer> fetchAllPlayersAsList() {
 
-		ArrayList<DAOPlayer> pList = new ArrayList<DAOPlayer>();
+		LinkedList<DAOPlayer> pList = new LinkedList<DAOPlayer>();
 		// Get all of the rows from the database and create the item list
 		Cursor PlayersCursor = fetchAllPlayers();
 		if (PlayersCursor.moveToFirst()) {

@@ -1,6 +1,7 @@
 package com.soccer.indoorstats.activity.impl;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import org.json.JSONArray;
 
@@ -24,7 +25,6 @@ import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.IDAOGame.GameStatus;
 import com.soccer.entities.impl.DAOGame;
-import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
 import com.soccer.indoorstats.adapters.GamesListAdapter;
@@ -37,7 +37,7 @@ import com.soccer.preferences.Prefs;
 public class GamesListActivity extends ListActivity {
 
 	GamesListAdapter adapter;
-	private ArrayList<DAOGame> mGList;
+	private LinkedList<DAOGame> mGList;
 	private GameService mBoundService;
 	private boolean mIsBound;
 	private ActionBar actionBar;
@@ -129,23 +129,28 @@ public class GamesListActivity extends ListActivity {
 			@Override
 			public void onSuccess(JSONArray arr) {
 				Logger.i("Games retrievl success");
-				ArrayList<DAOGame> gArr = EntityManager.readGames(arr.toString());
-				mGList.addAll(gArr);
 				actionBar.setProgressBarVisibility(View.INVISIBLE);
-				adapter = new GamesListAdapter(GamesListActivity.this, mGList);
-				list.setAdapter(adapter);
+				ArrayList<DAOGame> gArr = EntityManager.readGames(arr
+						.toString());
+				if (gArr != null) {
+					mGList.addAll(gArr);
+
+					adapter = new GamesListAdapter(GamesListActivity.this,
+							mGList);
+					list.setAdapter(adapter);
+				}
 			}
 
 			@Override
 			public void onFailure(String reason, int errorCode) {
 				Logger.i("Games fetching failure");
 				actionBar.setProgressBarVisibility(View.INVISIBLE);
-				DlgUtils.showAlertMessage(GamesListActivity.this, "Failed Games Retrieval", reason);
+				DlgUtils.showAlertMessage(GamesListActivity.this,
+						"Failed Games Retrieval", reason);
 			}
 		});
-		
-		
-	}	
+
+	}
 
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {

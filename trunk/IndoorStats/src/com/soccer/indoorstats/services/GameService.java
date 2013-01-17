@@ -3,6 +3,7 @@ package com.soccer.indoorstats.services;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -127,8 +128,8 @@ public class GameService extends BaseService implements IGameService {
 	}
 
 	@Override
-	public ArrayList<DAOGame> getGames(List<GameStatus> gsArray) {
-		ArrayList<DAOGame> retList = new ArrayList<DAOGame>();
+	public LinkedList<DAOGame> getGames(List<GameStatus> gsArray) {
+		LinkedList<DAOGame> retList = new LinkedList<DAOGame>();
 		try {
 			for (GameStatus gs : gsArray) {
 				ArrayList<String> gamesBlobs = getGamesBlobs(gs);

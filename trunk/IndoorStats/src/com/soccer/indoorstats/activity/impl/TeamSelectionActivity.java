@@ -28,7 +28,7 @@ public class TeamSelectionActivity extends ListActivity {
 
 	ListView list;
 	TeamSelectionAdapter adapter;
-	private ArrayList<DAOPlayer> mPList = null;
+	private LinkedList<DAOPlayer> mPList = null;
 	private LinkedList<PrintableLineup> mLList = null;
 	private PlayerService mBoundService;
 	private boolean mIsBound;
