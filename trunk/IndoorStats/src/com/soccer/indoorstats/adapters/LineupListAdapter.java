@@ -1,17 +1,14 @@
-package com.soccer.dialog;
+package com.soccer.indoorstats.adapters;
 
 import java.sql.Time;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -20,54 +17,11 @@ import com.soccer.entities.impl.DAOLEvent;
 import com.soccer.entities.impl.PrintableLineup;
 import com.soccer.indoorstats.R;
 
-public class LineupListAdapter extends BaseAdapter {
-
-	private Activity activity;
-	private LinkedHashMap<String, PrintableLineup> data = new LinkedHashMap<String, PrintableLineup>();
-	private static LayoutInflater inflater = null;
+public class LineupListAdapter extends SoccerBaseAdapter<PrintableLineup> {
 
 	public LineupListAdapter(Activity a,
-			LinkedHashMap<String, PrintableLineup> d) {
-		activity = a;
-		setData(d);
-		inflater = (LayoutInflater) activity
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	}
-
-	public int getCount() {
-		return data.size();
-	}
-
-	public PrintableLineup getItem(int position) {
-		if (position < data.size() && !(position < 0))
-			return (PrintableLineup) data.values().toArray()[position];
-		return null;
-	}
-
-	public void addItem(PrintableLineup l) {
-		if (data == null)
-			data = new LinkedHashMap<String, PrintableLineup>();
-		if (l != null)
-			data.put(l.getPlayerId(), l);
-	}
-
-	public long getItemId(int position) {
-		return position;
-	}
-
-	public final LinkedHashMap<String, PrintableLineup> getData() {
-		return data;
-	}
-
-	public void setData(LinkedHashMap<String, PrintableLineup> map) {
-		clearData();
-		if (map != null)
-			data.putAll(map);
-		notifyDataSetChanged();
-	}
-
-	public void clearData() {
-		data.clear();
+			LinkedList<PrintableLineup> d) {
+		super(a, d);
 	}
 
 	public View getView(final int position, View convertView, ViewGroup parent) {

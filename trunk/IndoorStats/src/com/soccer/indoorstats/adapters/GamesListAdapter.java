@@ -1,4 +1,4 @@
-package com.soccer.imageListUtils;
+package com.soccer.indoorstats.adapters;
 
 import java.util.ArrayList;
 

@@ -22,9 +22,9 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.entities.impl.DAOPlayer;
-import com.soccer.imageListUtils.LazyAdapter;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
+import com.soccer.indoorstats.adapters.LazyAdapter;
 import com.soccer.indoorstats.services.PlayerService;
 import com.soccer.preferences.Prefs;
 

@@ -1,4 +1,4 @@
-package com.soccer.imageListUtils;
+package com.soccer.indoorstats.adapters;
 
 import java.util.ArrayList;
 
@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.soccer.entities.impl.DAOPlayer;
+import com.soccer.imageListUtils.ImageLoader;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.impl.PlayerActivity;
 import com.soccer.indoorstats.utils.ActivitySwipeDetector;

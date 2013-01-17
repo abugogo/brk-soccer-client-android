@@ -7,7 +7,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.io.Serializable;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 import com.soccer.entities.impl.PrintableLineup;
 import com.soccer.indoorstats.utils.log.Logger;
@@ -15,7 +15,7 @@ import com.soccer.indoorstats.utils.log.Logger;
 public class GameState implements Serializable {
 
 	private static final long serialVersionUID = -8375922051362602160L;
-	private LinkedHashMap<String, PrintableLineup> _lpList = new LinkedHashMap<String, PrintableLineup>();
+	private LinkedList<PrintableLineup> _lpList = new LinkedList<PrintableLineup>();
 	private boolean _backwards;
 	private boolean _started;
 	private long _startTime;
@@ -23,7 +23,7 @@ public class GameState implements Serializable {
 	private boolean _running;
 
 	public GameState() {
-		_lpList = new LinkedHashMap<String, PrintableLineup>();
+		_lpList = new LinkedList<PrintableLineup>();
 		_backwards = false;
 		_started = false;
 		_startTime = 0;
@@ -71,16 +71,16 @@ public class GameState implements Serializable {
 		_started = start;
 	}
 
-	public LinkedHashMap<String, PrintableLineup> get_lpList() {
+	public LinkedList<PrintableLineup> get_lpList() {
 		return _lpList;
 	}
 
-	public void set_lpList(LinkedHashMap<String, PrintableLineup> lpMap) {
-		if (lpMap != null) {
+	public void set_lpList(LinkedList<PrintableLineup> lpList) {
+		if (lpList != null) {
 			if (this._lpList == null)
-				this._lpList = new LinkedHashMap<String, PrintableLineup>();
+				this._lpList = new LinkedList<PrintableLineup>();
 			this._lpList.clear();
-			this._lpList.putAll(lpMap);
+			this._lpList.addAll(lpList);
 		}
 	}
 
