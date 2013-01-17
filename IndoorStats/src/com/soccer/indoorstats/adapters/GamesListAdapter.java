@@ -1,44 +1,22 @@
 package com.soccer.indoorstats.adapters;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
-import android.app.ListActivity;
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Color;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.soccer.entities.IDAOGame.GameStatus;
 import com.soccer.entities.impl.DAOGame;
 import com.soccer.indoorstats.R;
 
-public class GamesListAdapter extends BaseAdapter {
+public class GamesListAdapter extends SoccerBaseAdapter<DAOGame> {
 
-	private ListActivity activity;
-	private ArrayList<DAOGame> data;
-	private static LayoutInflater inflater = null;
-
-	public GamesListAdapter(ListActivity a, ArrayList<DAOGame> d) {
-		activity = a;
-		data = d;
-		inflater = (LayoutInflater) activity
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	}
-
-	public int getCount() {
-		return data.size();
-	}
-
-	public Object getItem(int position) {
-		return position;
-	}
-
-	public long getItemId(int position) {
-		return position;
+	public GamesListAdapter(Activity a, LinkedList<DAOGame> d) {
+		super(a, d);
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {

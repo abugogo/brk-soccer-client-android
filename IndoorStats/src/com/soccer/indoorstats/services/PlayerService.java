@@ -1,6 +1,7 @@
 package com.soccer.indoorstats.services;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import org.json.JSONObject;
 
@@ -82,11 +83,11 @@ public class PlayerService extends BaseService implements IPlayerService {
 	}
 
 	@Override
-	public ArrayList<DAOPlayer> getAllPlayers() {
-		ArrayList<DAOPlayer> arr = new ArrayList<DAOPlayer>();
+	public LinkedList<DAOPlayer> getAllPlayers() {
+		LinkedList<DAOPlayer> arr = new LinkedList<DAOPlayer>();
 		SQLiteDatabase db = openDB();
 		PlayersDbAdapter pda = new PlayersDbAdapter(db);
-		arr = pda.fetchAllPlayersAsArray();
+		arr = pda.fetchAllPlayersAsList();
 		
 		return arr;
 	}

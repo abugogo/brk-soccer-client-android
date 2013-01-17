@@ -1,8 +1,8 @@
 package com.soccer.indoorstats.activity.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 
 import android.app.ListActivity;
 import android.content.ComponentName;
@@ -32,7 +32,7 @@ public class GroupActivity extends ListActivity {
 
 	ListView list;
 	LazyAdapter adapter;
-	private ArrayList<DAOPlayer> mPList;
+	private LinkedList<DAOPlayer> mPList;
 	private int sign = 1;
 	private PlayerService mBoundService;
 	private boolean mIsBound;

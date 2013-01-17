@@ -2,7 +2,7 @@ package com.soccer.indoorstats.services.i;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -17,5 +17,5 @@ public interface IGameService {
 	public void saveGameState(ByteArrayOutputStream bos);
 	public void updateGame(DAOGame game, RequestHandler<JSONObject> handler);
 	public void getAllGames(int season, final RequestHandler<JSONArray> handler);
-	public ArrayList<DAOGame> getGames(List<GameStatus> gs);
+	public LinkedList<DAOGame> getGames(List<GameStatus> gs);
 }
