@@ -26,7 +26,7 @@ public class GamesListAdapter extends SoccerBaseAdapter<DAOGame> {
 
 		TextView team1 = (TextView) vi.findViewById(R.id.team1name);
 		TextView team2 = (TextView) vi.findViewById(R.id.team2name);
-		TextView score = (TextView) vi.findViewById(R.id.game_score); // image
+		TextView score = (TextView) vi.findViewById(R.id.game_score); 
 
 		DAOGame game = new DAOGame();
 		game = data.get(position);
@@ -48,8 +48,12 @@ public class GamesListAdapter extends SoccerBaseAdapter<DAOGame> {
 				score.setTextColor(Color.YELLOW);
 				break;
 			default:
+				score.setTextColor(Color.parseColor("#040404"));
 				break;
 			}
+		}
+		else {
+			score.setTextColor(Color.parseColor("#040404"));
 		}
 		team1.setText("Blue");
 		team2.setText("White");
