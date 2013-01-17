@@ -4,8 +4,7 @@ import java.io.ObjectInputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -33,12 +32,12 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
-import com.soccer.dialog.LineupListAdapter;
 import com.soccer.entities.impl.DAOGame;
 import com.soccer.entities.impl.PrintableLineup;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
 import com.soccer.indoorstats.activity.states.GameState;
+import com.soccer.indoorstats.adapters.LineupListAdapter;
 import com.soccer.indoorstats.services.GameService;
 import com.soccer.indoorstats.services.handlers.RequestHandler;
 import com.soccer.indoorstats.utils.DlgUtils;
@@ -56,7 +55,7 @@ public class GameActivity extends Activity implements OnClickListener {
 	Button btnReset;
 	LineupListAdapter badapter;
 	LineupListAdapter wadapter;
-	LinkedHashMap<String, PrintableLineup> lineupData = null;
+	LinkedList<PrintableLineup> lineupData = null;
 	Prefs sharedPrefs;
 	private GameService mBoundGameService;
 	private boolean mIsBound;
@@ -99,10 +98,8 @@ public class GameActivity extends Activity implements OnClickListener {
 		if ((GameState) getLastNonConfigurationInstance() != null)
 			_gState = (GameState) getLastNonConfigurationInstance();
 
-		badapter = new LineupListAdapter(this,
-				new LinkedHashMap<String, PrintableLineup>());
-		wadapter = new LineupListAdapter(this,
-				new LinkedHashMap<String, PrintableLineup>());
+		badapter = new LineupListAdapter(this, new LinkedList<PrintableLineup>());
+		wadapter = new LineupListAdapter(this, new LinkedList<PrintableLineup>());
 		// buttom navigation bar
 		RadioButton radioButton;
 		radioButton = (RadioButton) findViewById(R.id.btnGame);
@@ -152,18 +149,18 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	public void createGame() {
 		List<PrintableLineup> lpList = new ArrayList<PrintableLineup>();
-		LinkedHashMap<String, PrintableLineup> lpbList = badapter.getData();
-		LinkedHashMap<String, PrintableLineup> lpwList = wadapter.getData();
+		LinkedList<PrintableLineup> lpbList = badapter.getData();
+		LinkedList<PrintableLineup> lpwList = wadapter.getData();
 		int bG = 0, wG = 0;
-		if (lpbList != null && lpbList.values() != null) {
-			for (PrintableLineup pt1 : lpbList.values()) {
+		if (lpbList != null) {
+			for (PrintableLineup pt1 : lpbList) {
 				bG += pt1.getGoal();
 				wG += pt1.getOGoal();
 				lpList.add(pt1);
 			}
 		}
-		if (lpwList != null && lpwList.values() != null) {
-			for (PrintableLineup pt2 : lpwList.values()) {
+		if (lpwList != null) {
+			for (PrintableLineup pt2 : lpwList) {
 				wG += pt2.getGoal();
 				bG += pt2.getOGoal();
 				lpList.add(pt2);
@@ -196,22 +193,25 @@ public class GameActivity extends Activity implements OnClickListener {
 		try {
 			if (mIsBound) {
 				actionBar.setProgressBarVisibility(View.VISIBLE);
-				mBoundGameService.updateGame(daoGame, new RequestHandler<JSONObject>() {
+				mBoundGameService.updateGame(daoGame,
+						new RequestHandler<JSONObject>() {
 
-					@Override
-					public void onSuccess(JSONObject t) {
-						Logger.i("Game created success");
-						actionBar.setProgressBarVisibility(View.INVISIBLE);
-						onCreateGameSuccess();
-					}
+							@Override
+							public void onSuccess(JSONObject t) {
+								Logger.i("Game created success");
+								actionBar
+										.setProgressBarVisibility(View.INVISIBLE);
+								onCreateGameSuccess();
+							}
 
-					@Override
-					public void onFailure(String reason, int errorCode) {
-						Logger.i("Game creation failure");
-						actionBar.setProgressBarVisibility(View.INVISIBLE);
-						onCreateGameFailure(errorCode, reason);
-					}
-				});
+							@Override
+							public void onFailure(String reason, int errorCode) {
+								Logger.i("Game creation failure");
+								actionBar
+										.setProgressBarVisibility(View.INVISIBLE);
+								onCreateGameFailure(errorCode, reason);
+							}
+						});
 			}
 		} catch (Exception e) {
 			Logger.e("create game failed", e);
@@ -332,10 +332,10 @@ public class GameActivity extends Activity implements OnClickListener {
 			if (data != null && data.getExtras() != null) {
 				Object objSentData = data.getExtras().get("llist");
 				if (null != objSentData) {
-					HashMap<String, PrintableLineup> map = (HashMap<String, PrintableLineup>) objSentData;
-					if (map != null) {
-						lineupData = new LinkedHashMap<String, PrintableLineup>();
-						lineupData.putAll(map);
+					ArrayList<PrintableLineup> lst = (ArrayList<PrintableLineup>) objSentData;
+					if (lst != null) {
+						lineupData = new LinkedList<PrintableLineup>();
+						lineupData.addAll(lst);
 					}
 				}
 			}
@@ -356,8 +356,8 @@ public class GameActivity extends Activity implements OnClickListener {
 			_gState.deserialize(objIn);
 		if (_gState != null) {
 			if (btnStart != null)
-				btnStart.setText((_gState.isStarted() && _gState
-						.is_running()) ? "Stop" : "Start");
+				btnStart.setText((_gState.isStarted() && _gState.is_running()) ? "Stop"
+						: "Start");
 			_timer.setStartTime(_gState.get_startTime());
 			_timer.setStopTime(_gState.get_stopTime());
 			_timer.setRunning(_gState.is_running());
@@ -378,25 +378,23 @@ public class GameActivity extends Activity implements OnClickListener {
 	private void setListsAdapters() {
 
 		ListView blstView = (ListView) findViewById(R.id.listView1);
-		if (badapter == null)
-			badapter = new LineupListAdapter(this,
-					new LinkedHashMap<String, PrintableLineup>());
+		badapter = new LineupListAdapter(this, new LinkedList<PrintableLineup>());
 
 		ListView wlstView = (ListView) findViewById(R.id.listView2);
-		if (wadapter == null)
-			wadapter = new LineupListAdapter(this,
-					new LinkedHashMap<String, PrintableLineup>());
+		wadapter = new LineupListAdapter(this, new LinkedList<PrintableLineup>());
 
 		if (_gState != null) {
 			if (lineupData != null) {
 				_gState.set_lpList(lineupData);
 				lineupData = null;
 			}
-			for (PrintableLineup lp : _gState.get_lpList().values()) {
-				if (lp.getColor().equals('b'))
-					badapter.addItem(lp);
-				else
-					wadapter.addItem(lp);
+			for (PrintableLineup lp : _gState.get_lpList()) {
+				if (lp.getColor() != null) {
+					if (lp.getColor().equals('b'))
+						badapter.addItem(lp);
+					else
+						wadapter.addItem(lp);
+				}
 			}
 		}
 
