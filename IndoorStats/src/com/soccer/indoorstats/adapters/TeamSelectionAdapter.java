@@ -56,7 +56,7 @@ public class TeamSelectionAdapter extends SoccerBaseAdapter<PrintableLineup>
 						.findViewById(R.id.unithumbleft);
 				r.setVisibility(View.INVISIBLE);
 				l.setVisibility(View.INVISIBLE);
-				data.remove(position);
+				data.get(position).setColor(null);
 
 			}
 		});

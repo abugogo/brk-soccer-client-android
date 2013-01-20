@@ -3,7 +3,6 @@ package com.soccer.indoorstats.adapters;
 import java.util.LinkedList;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -42,18 +41,18 @@ public class GamesListAdapter extends SoccerBaseAdapter<DAOGame> {
 		if (gs != null) {
 			switch (gs) {
 			case Failed:
-				score.setTextColor(Color.RED);
+				vi.setBackgroundResource(R.drawable.list_selector_normal_red);
 				break;
 			case Pending:
-				score.setTextColor(Color.YELLOW);
+				vi.setBackgroundResource(R.drawable.list_selector_normal_yellow);
 				break;
 			default:
-				score.setTextColor(Color.parseColor("#040404"));
+				vi.setBackgroundResource(R.drawable.list_selector_normal);
 				break;
 			}
 		}
 		else {
-			score.setTextColor(Color.parseColor("#040404"));
+			vi.setBackgroundResource(R.drawable.list_selector_normal);
 		}
 		team1.setText("Blue");
 		team2.setText("White");

@@ -14,6 +14,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -52,11 +53,12 @@ public class GameActivity extends Activity implements OnClickListener {
 	private StopWatchHandler mHandler = new StopWatchHandler(this);
 	private TextView tvTextView;
 	private Button btnStart;
-	Button btnReset;
-	LineupListAdapter badapter;
-	LineupListAdapter wadapter;
-	LinkedList<PrintableLineup> lineupData = null;
-	Prefs sharedPrefs;
+	private Button btnReset;
+	private LineupListAdapter badapter;
+	private LineupListAdapter wadapter;
+	private LineupObserver listsObserver = null;;
+	private LinkedList<PrintableLineup> lineupData = null;
+	private Prefs sharedPrefs;
 	private GameService mBoundGameService;
 	private boolean mIsBound;
 	private ActionBar actionBar;
@@ -78,6 +80,9 @@ public class GameActivity extends Activity implements OnClickListener {
 				getString(R.string.game));
 		actionBar.setTitle(title);
 
+		final Action teamSelectionAction = new TeamSelectionAction();
+		actionBar.addAction(teamSelectionAction);
+
 		final Action SaveAction = new SaveGameAction();
 		actionBar.addAction(SaveAction);
 
@@ -98,8 +103,6 @@ public class GameActivity extends Activity implements OnClickListener {
 		if ((GameState) getLastNonConfigurationInstance() != null)
 			_gState = (GameState) getLastNonConfigurationInstance();
 
-		badapter = new LineupListAdapter(this, new LinkedList<PrintableLineup>());
-		wadapter = new LineupListAdapter(this, new LinkedList<PrintableLineup>());
 		// buttom navigation bar
 		RadioButton radioButton;
 		radioButton = (RadioButton) findViewById(R.id.btnGame);
@@ -220,6 +223,17 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	}
 
+	private class TeamSelectionAction extends AbstractAction {
+		public TeamSelectionAction() {
+			super(R.drawable.input_output_arrows);
+		}
+
+		@Override
+		public void performAction(View view) {
+			teamSelection();
+		}
+	}
+
 	private class SaveGameAction extends AbstractAction {
 		public SaveGameAction() {
 			super(R.drawable.save);
@@ -244,6 +258,7 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	public void resetGame() {
 		resetTimer();
+		_gState = new GameState();
 		badapter.setData(null);
 		wadapter.setData(null);
 	}
@@ -318,7 +333,7 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	}
 
-	public void onAddItem(View v) {
+	public void teamSelection() {
 		Intent teamSelection = new Intent(this, TeamSelectionActivity.class);
 		teamSelection.putExtra("llist", _gState.get_lpList());
 		startActivityForResult(teamSelection, 1);
@@ -378,16 +393,32 @@ public class GameActivity extends Activity implements OnClickListener {
 	private void setListsAdapters() {
 
 		ListView blstView = (ListView) findViewById(R.id.listView1);
-		badapter = new LineupListAdapter(this, new LinkedList<PrintableLineup>());
+
+		if (badapter == null)
+			badapter = new LineupListAdapter(this,
+					new LinkedList<PrintableLineup>());
+		// badapter.registerDataSetObserver(new LineupObserver());
 
 		ListView wlstView = (ListView) findViewById(R.id.listView2);
-		wadapter = new LineupListAdapter(this, new LinkedList<PrintableLineup>());
+
+		if (wadapter == null)
+			wadapter = new LineupListAdapter(this,
+					new LinkedList<PrintableLineup>());
+		// wadapter.registerDataSetObserver(new LineupObserver());
+
+		if (listsObserver == null) {
+			listsObserver = new LineupObserver();
+			badapter.registerDataSetObserver(listsObserver);
+			wadapter.registerDataSetObserver(listsObserver);
+		}
 
 		if (_gState != null) {
 			if (lineupData != null) {
 				_gState.set_lpList(lineupData);
 				lineupData = null;
 			}
+			badapter.setData(null);
+			wadapter.setData(null);
 			for (PrintableLineup lp : _gState.get_lpList()) {
 				if (lp.getColor() != null) {
 					if (lp.getColor().equals('b'))
@@ -395,11 +426,37 @@ public class GameActivity extends Activity implements OnClickListener {
 					else
 						wadapter.addItem(lp);
 				}
+				badapter.notifyDataSetChanged();
+				wadapter.notifyDataSetChanged();
 			}
 		}
 
 		blstView.setAdapter(badapter);
 		wlstView.setAdapter(wadapter);
+	}
+
+	private class LineupObserver extends DataSetObserver {
+		@Override
+		public void onChanged() {
+			LinkedList<PrintableLineup> lpbList = badapter.getData();
+			LinkedList<PrintableLineup> lpwList = wadapter.getData();
+			int bG = 0, wG = 0;
+			if (lpbList != null) {
+				for (PrintableLineup pt1 : lpbList) {
+					bG += pt1.getGoal();
+					wG += pt1.getOGoal();
+				}
+			}
+			if (lpwList != null) {
+				for (PrintableLineup pt2 : lpwList) {
+					wG += pt2.getGoal();
+					bG += pt2.getOGoal();
+				}
+			}
+
+			TextView score = (TextView) findViewById(R.id.txtGameScore);
+			score.setText(bG + ":" + wG);
+		}
 	}
 
 	private void initState() {
@@ -485,7 +542,7 @@ public class GameActivity extends Activity implements OnClickListener {
 	}
 
 	public void onCreateGameFailure(int responseCode, String result) {
-		DlgUtils.showAlertMessage(this, "Gaem Update Failed", result);
+		DlgUtils.showAlertMessage(this, "Game Update Failed", result);
 	}
 
 	private ServiceConnection mGameConnection = new ServiceConnection() {
@@ -501,9 +558,11 @@ public class GameActivity extends Activity implements OnClickListener {
 	};
 
 	private void doBindServices() {
-		bindService(new Intent(GameActivity.this, GameService.class),
-				mGameConnection, Context.BIND_AUTO_CREATE);
-		mIsBound = true;
+		if (!mIsBound) {
+			bindService(new Intent(GameActivity.this, GameService.class),
+					mGameConnection, Context.BIND_AUTO_CREATE);
+			mIsBound = true;
+		}
 	}
 
 	private void doUnbindServices() {
