@@ -1,11 +1,15 @@
 package com.soccer.indoorstats.adapters;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 
 import android.app.Activity;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.DigitalClock;
 import android.widget.TextView;
 
 import com.soccer.entities.IDAOGame.GameStatus;
@@ -25,10 +29,15 @@ public class GamesListAdapter extends SoccerBaseAdapter<DAOGame> {
 
 		TextView team1 = (TextView) vi.findViewById(R.id.team1name);
 		TextView team2 = (TextView) vi.findViewById(R.id.team2name);
-		TextView score = (TextView) vi.findViewById(R.id.game_score); 
+		TextView score = (TextView) vi.findViewById(R.id.game_score);
 
-		DAOGame game = new DAOGame();
-		game = data.get(position);
+		DAOGame game = data.get(position);
+		if(game.getGameDate() != null) {
+			TextView dg = (TextView) vi.findViewById(R.id.gameDate);
+			dg.setText(game.getGameDate().toLocaleString());
+		}
+			
+
 		final String gid = game.getGameId();
 		vi.setOnClickListener(new OnClickListener() {
 
@@ -50,8 +59,7 @@ public class GamesListAdapter extends SoccerBaseAdapter<DAOGame> {
 				vi.setBackgroundResource(R.drawable.list_selector_normal);
 				break;
 			}
-		}
-		else {
+		} else {
 			vi.setBackgroundResource(R.drawable.list_selector_normal);
 		}
 		team1.setText("Blue");
@@ -59,5 +67,4 @@ public class GamesListAdapter extends SoccerBaseAdapter<DAOGame> {
 		score.setText(game.getBgoals() + ":" + game.getWgoals());
 		return vi;
 	}
-
 }

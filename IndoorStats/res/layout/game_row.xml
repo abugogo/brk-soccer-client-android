@@ -14,13 +14,14 @@
         android:textSize="15sp"
         android:typeface="sans" />
 
-    <LinearLayout android:id="@+id/game_score_lyt"
+    <LinearLayout
+        android:id="@+id/game_score_lyt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/team1name"
-        android:layout_toRightOf="@+id/team1name" 
+        android:layout_toRightOf="@+id/team1name"
         android:paddingLeft="15sp"
-            android:paddingRight="15sp">
+        android:paddingRight="15sp" >
 
         <TextView
             android:id="@+id/game_score"
@@ -30,22 +31,28 @@
             android:textColor="#040404"
             android:textSize="15sp"
             android:textStyle="bold"
-            
             android:typeface="sans" />
     </LinearLayout>
-    
+
     <TextView
         android:id="@+id/team2name"
         android:layout_width="60sp"
         android:layout_height="wrap_content"
-        android:text="@string/team2"
         android:layout_toRightOf="@+id/game_score_lyt"
+        android:text="@string/team2"
         android:textColor="#040404"
         android:textSize="15sp"
         android:typeface="sans" />
     <!-- Rightend Arrow -->
 
+    <TextView
+        android:id="@+id/gameDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/team2name" />
+
     <ImageView
+        android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
