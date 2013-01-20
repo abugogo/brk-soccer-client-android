@@ -42,8 +42,7 @@ public class LineupListAdapter extends SoccerBaseAdapter<PrintableLineup> {
 					final CharSequence[] items = { "Goal", "Cook", "Own goal",
 							"Yellow card", "Red card", "-Reset-" };
 
-					AlertDialog.Builder builder = new AlertDialog.Builder(v
-							.getContext());
+					AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 					builder.setTitle("Event");
 					builder.setItems(items,
 							new DialogInterface.OnClickListener() {

@@ -50,11 +50,14 @@ public abstract class SoccerBaseAdapter<T> extends BaseAdapter {
 	}
 
 	public void setData(LinkedList<T> list) {
-		data = new LinkedList<T>();
+		if (data == null)
+			data = new LinkedList<T>();
 		if (list != null) {
 			data.addAll(list);
-			notifyDataSetChanged();
 		}
+		else
+			data.clear();
+		notifyDataSetChanged();
 	}
 
 	@Override

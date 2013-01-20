@@ -19,6 +19,7 @@ import com.soccer.db.local.DB_CONSTS;
 import com.soccer.db.remote.R_DB_CONSTS;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.IWinLoseStrip;
+import com.soccer.entities.IWinLoseStrip.GameResultType;
 import com.soccer.entities.impl.WinLoseStrip;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.utils.DlgUtils;
@@ -46,8 +47,7 @@ public class StatsStripTab extends Activity {
 		if (m_pArr == null) {
 
 			mPrefs = new Prefs(this);
-			String mPID = (String) mPrefs.getPreference(
-					DB_CONSTS.KEY_ID, "");
+			String mPID = (String) mPrefs.getPreference(DB_CONSTS.KEY_ID, "");
 			String sUrl = mPrefs.getPreference("server_port", "NULL");
 			if (sUrl.equals("NULL")) {
 				sUrl = R_DB_CONSTS.SERVER_DEFAULT;
@@ -56,13 +56,10 @@ public class StatsStripTab extends Activity {
 			try {
 				this.mProgDialog.setMessage("Getting Player stats...");
 				this.mProgDialog.show();
-				LoopjRestClient.get(this,
-						sUrl.concat("/SoccerServer/rest/")
-								.concat(mPrefs
-										.getPreference("account_name", ""))
-								.concat("/players/").concat(mPID)
-								.concat("/stats"), null,
-						new JsonHttpResponseHandler() {
+				LoopjRestClient.get(this, sUrl.concat("/SoccerServer/rest/")
+						.concat(mPrefs.getPreference("account_name", ""))
+						.concat("/players/").concat(mPID).concat("/stats"),
+						null, new JsonHttpResponseHandler() {
 							@Override
 							public void onSuccess(JSONArray res) {
 								onGetStatsSuccess(res.toString());
@@ -96,24 +93,21 @@ public class StatsStripTab extends Activity {
 			for (Iterator<IWinLoseStrip> iter = m_pArr.iterator(); iter
 					.hasNext();) {
 				WinLoseStrip wls = (WinLoseStrip) iter.next();
-				int minStrips = getMinStrip(6);
-				if (minStrips <= wls.getNumber()) {
-					TextView textView = new TextView(this);
-					String winlose = wls.getType().equals("WIN") ? "Wins: "
-							: "Loses: ";
-					textView.setText(winlose
-							+ wls.getNumber()
-							+ ". "
-							+ SimpleDateFormat.getDateInstance().format(
-									wls.getStartDate())
-							+ "-"
-							+ SimpleDateFormat.getDateInstance().format(
-									wls.getEndDate()));
-					textView.setTextColor(Color.BLACK);
-					TableRow tRow = new TableRow(this);
-					tRow.addView(textView);
-					tblLayout.addView(tRow);
-				}
+				TextView textView = new TextView(this);
+				String winlose = (wls.getType() == GameResultType.WIN) ? "Wins: "
+						: "Loses: ";
+				textView.setText(winlose
+						+ wls.getNumber()
+						+ ". "
+						+ SimpleDateFormat.getDateInstance().format(
+								wls.getStartDate())
+						+ "-"
+						+ SimpleDateFormat.getDateInstance().format(
+								wls.getEndDate()));
+				textView.setTextColor(Color.BLACK);
+				TableRow tRow = new TableRow(this);
+				tRow.addView(textView);
+				tblLayout.addView(tRow);
 			}
 		}
 	}
