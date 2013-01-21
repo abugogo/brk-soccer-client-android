@@ -19,8 +19,6 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
-import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
@@ -46,9 +44,7 @@ public class GroupActivity extends ListActivity {
 		String title = sharedPrefs.getPreference("account_name",
 				getString(R.string.group));
 		actionBar.setTitle(title);
-		final Action HomeAction = new IntentAction(this, new Intent(this,
-				HomeActivity.class), R.drawable.home_icon);
-		actionBar.addAction(HomeAction);
+
 		// bottom bar
 		RadioButton radioButton;
 		radioButton = (RadioButton) findViewById(R.id.btnGame);

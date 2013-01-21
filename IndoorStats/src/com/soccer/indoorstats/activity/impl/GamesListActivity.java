@@ -1,7 +1,9 @@
 package com.soccer.indoorstats.activity.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.json.JSONArray;
 
@@ -22,6 +24,7 @@ import android.widget.Toast;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
+import com.soccer.entities.DAOGameListEntry;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.IDAOGame.GameStatus;
 import com.soccer.entities.impl.DAOGame;
@@ -37,7 +40,7 @@ import com.soccer.preferences.Prefs;
 public class GamesListActivity extends ListActivity {
 
 	GamesListAdapter adapter;
-	private LinkedList<DAOGame> mGList;
+	private LinkedList<DAOGameListEntry> mGList;
 	private GameService mBoundService;
 	private boolean mIsBound;
 	private ActionBar actionBar;
@@ -51,9 +54,7 @@ public class GamesListActivity extends ListActivity {
 		String title = sharedPrefs.getPreference("account_name",
 				getString(R.string.group));
 		actionBar.setTitle(title);
-		final Action HomeAction = new IntentAction(this, new Intent(this,
-				HomeActivity.class), R.drawable.home_icon);
-		actionBar.addAction(HomeAction);
+
 		// bottom bar
 		RadioButton radioButton;
 		radioButton = (RadioButton) findViewById(R.id.btnGame);
@@ -133,7 +134,17 @@ public class GamesListActivity extends ListActivity {
 				ArrayList<DAOGame> gArr = EntityManager.readGames(arr
 						.toString());
 				if (gArr != null) {
-					mGList.addAll(gArr);
+					Date lastDate = null;
+					DAOGameListEntry ge;
+					for (DAOGame g : gArr) {
+						if(!sameDay(g.getGameDate(), lastDate)) {
+							ge = new DAOGameListEntry(true, g.getGameDate(), g.getStatus());
+							mGList.add(ge);
+							lastDate = g.getGameDate();
+						}
+						ge = new DAOGameListEntry(g, false);
+						mGList.add(ge);
+					}
 
 					adapter = new GamesListAdapter(GamesListActivity.this,
 							mGList);
@@ -152,6 +163,13 @@ public class GamesListActivity extends ListActivity {
 
 	}
 
+	private boolean sameDay(Date d1, Date d2) {
+		if(d1 == null || d2 == null)
+			return false;
+		return (d1.getDay() == d2.getDay() && d1.getMonth() == d2.getMonth() && d1
+				.getYear() == d2.getYear());
+	}
+
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			mBoundService = (GameService) ((GameService.LocalBinder) service)
@@ -159,7 +177,22 @@ public class GamesListActivity extends ListActivity {
 			ArrayList<GameStatus> ags = new ArrayList<GameStatus>();
 			ags.add(GameStatus.Failed);
 			ags.add(GameStatus.Pending);
-			mGList = mBoundService.getGames(ags);
+			List<DAOGame> lstFailed = mBoundService.getGames(ags);
+			mGList = new LinkedList<DAOGameListEntry>();
+			if (lstFailed != null) {
+				GameStatus gs = GameStatus.Success;
+				for (DAOGame g : lstFailed) {
+					DAOGameListEntry ge;
+					if (g.getStatus() != gs) {
+						ge = new DAOGameListEntry(true, g.getGameDate(), g.getStatus());
+						mGList.add(ge);
+						gs = g.getStatus();
+					}
+					ge = new DAOGameListEntry(g, false);
+					mGList.add(ge);
+				}
+			}
+
 			fillData();
 		}
 

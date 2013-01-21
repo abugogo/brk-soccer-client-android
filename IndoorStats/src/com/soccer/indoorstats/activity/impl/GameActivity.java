@@ -32,7 +32,6 @@ import android.widget.Toast;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
-import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.entities.impl.DAOGame;
 import com.soccer.entities.impl.PrintableLineup;
 import com.soccer.indoorstats.R;
@@ -88,10 +87,6 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		final Action ResetAction = new ResetGameAction();
 		actionBar.addAction(ResetAction);
-
-		final Action HomeAction = new IntentAction(this, new Intent(this,
-				HomeActivity.class), R.drawable.home_icon);
-		actionBar.addAction(HomeAction);
 
 		tvTextView = (TextView) findViewById(R.id.textViewTimer);
 
@@ -225,7 +220,7 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	private class TeamSelectionAction extends AbstractAction {
 		public TeamSelectionAction() {
-			super(R.drawable.input_output_arrows);
+			super(R.drawable.elevator);
 		}
 
 		@Override
@@ -247,7 +242,7 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	private class ResetGameAction extends AbstractAction {
 		public ResetGameAction() {
-			super(R.drawable.new_file);
+			super(R.drawable.rip);
 		}
 
 		@Override

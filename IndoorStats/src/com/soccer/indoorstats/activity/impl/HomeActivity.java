@@ -7,6 +7,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.AbstractAction;
+import com.markupartist.android.widget.ActionBar.Action;
 import com.soccer.db.local.DB_CONSTS;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
@@ -15,10 +18,33 @@ import com.soccer.preferences.SoccerPrefsActivity;
 
 public class HomeActivity extends Activity {
 
+	private ActionBar actionBar;
+	private Prefs sharedPrefs;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home_layout);
+		sharedPrefs = new Prefs(this);
+		
+		actionBar = (ActionBar) findViewById(R.id.actionbar);
+		String title = sharedPrefs.getPreference("account_name",
+				getString(R.string.game));
+		actionBar.setTitle(title);
+
+		final Action settingsAction = new SettingsAction();
+		actionBar.setHomeAction(settingsAction);
+	}
+	
+	private class SettingsAction extends AbstractAction {
+		public SettingsAction() {
+			super(R.drawable.settings);
+		}
+
+		@Override
+		public void performAction(View view) {
+			startActivity(new Intent(HomeActivity.this, SoccerPrefsActivity.class));
+		}
 	}
 	
 	@Override
