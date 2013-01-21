@@ -45,12 +45,6 @@
         android:typeface="sans" />
     <!-- Rightend Arrow -->
 
-    <TextView
-        android:id="@+id/gameDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/team2name" />
-
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"

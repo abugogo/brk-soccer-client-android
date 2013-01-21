@@ -9,17 +9,14 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TabHost;
-import android.widget.Toast;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
-import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.impl.GameActivity;
 import com.soccer.indoorstats.activity.impl.GroupActivity;
-import com.soccer.indoorstats.activity.impl.HomeActivity;
 
 public class StatsTabActivity extends TabActivity {
 	/** Called when the activity is first created. */
@@ -43,9 +40,7 @@ public class StatsTabActivity extends TabActivity {
 		 * IntentAction(this, new Intent(this, GameActivity.class),
 		 * R.drawable.game_icon); actionBar.addAction(GameAction);
 		 */
-		final Action HomeAction = new IntentAction(this, new Intent(this,
-				HomeActivity.class), R.drawable.home_icon);
-		actionBar.addAction(HomeAction);
+		
 		/* TabHost will have Tabs */
 		TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
 

@@ -103,7 +103,7 @@ public class TeamSelectionActivity extends ListActivity {
 
 	private class OkAction extends AbstractAction {
 		public OkAction() {
-			super(R.drawable.v);
+			super(R.drawable.save);
 		}
 
 		@Override
@@ -117,7 +117,7 @@ public class TeamSelectionActivity extends ListActivity {
 
 	private class CancelAction extends AbstractAction {
 		public CancelAction() {
-			super(R.drawable.x);
+			super(R.drawable.cancel);
 		}
 
 		@Override

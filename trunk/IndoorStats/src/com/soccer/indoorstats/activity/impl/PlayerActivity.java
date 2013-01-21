@@ -19,7 +19,6 @@ import android.widget.Toast;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
-import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.db.local.DB_CONSTS;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.ImageLoader;
@@ -61,10 +60,6 @@ public class PlayerActivity extends Activity {
 			final Action EditAction = new EditPlayerAction();
 			actionBar.addAction(EditAction);
 		}
-
-		final Action HomeAction = new IntentAction(this, new Intent(this,
-				HomeActivity.class), R.drawable.home_icon);
-		actionBar.addAction(HomeAction);
 
 		//buttom navigation bar
 		RadioButton radioButton;

@@ -15,6 +15,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.AbstractAction;
+import com.markupartist.android.widget.ActionBar.Action;
 import com.soccer.db.local.DB_CONSTS;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.services.LoginService;
@@ -26,6 +29,8 @@ import com.soccer.preferences.SoccerPrefsActivity;
 public class LoginActivity extends Activity {
 	Prefs sharedPrefs;
 	private ProgressDialog mProgDialog;
+	private ActionBar actionBar;
+	
 	private LoginService mBoundService;
 	private boolean mIsBound;
 
@@ -35,6 +40,22 @@ public class LoginActivity extends Activity {
 		setContentView(R.layout.activity_login);
 		sharedPrefs = new Prefs(this);
 		this.mProgDialog = new ProgressDialog(this);
+		actionBar = (ActionBar) findViewById(R.id.actionbar);
+		actionBar.setTitle("Soccer Time");
+
+		final Action settingsAction = new SettingsAction();
+		actionBar.setHomeAction(settingsAction);
+	}
+	
+	private class SettingsAction extends AbstractAction {
+		public SettingsAction() {
+			super(R.drawable.settings);
+		}
+
+		@Override
+		public void performAction(View view) {
+			startActivity(new Intent(LoginActivity.this, SoccerPrefsActivity.class));
+		}
 	}
 
 	@Override

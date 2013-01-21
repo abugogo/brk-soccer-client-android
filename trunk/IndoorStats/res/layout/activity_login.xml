@@ -4,13 +4,20 @@
     android:layout_height="match_parent"
     android:background="@drawable/app_bg" >
 
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar"
+        style="@style/ActionBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    
     <ImageView
         android:id="@+id/loginLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/editIdNumber"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="80dp"
+        android:layout_below="@id/actionbar"
         android:src="@drawable/soccer_time_logo" />
 
     <EditText
