@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/app_bg"
+    android:orientation="horizontal"
+     >
+
+    <LinearLayout
+        android:id="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dip"
+         >
+
+        <ImageView
+            android:id="@+id/record_image"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:src="@drawable/soccer_time_logo" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" >
+        
+        <TextView
+	        android:id="@+id/numCaption"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="12"
+	        android:textColor="#000000"
+	        android:textSize="12sp"
+	        android:textStyle="bold" />
+        
+    </FrameLayout>
+
+</RelativeLayout>

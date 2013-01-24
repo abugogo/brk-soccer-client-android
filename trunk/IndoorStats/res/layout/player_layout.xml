@@ -22,7 +22,6 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_alignParentLeft="true"
-	        android:layout_below="@id/actionbar"
 	        android:layout_marginRight="5dip"
 	        android:padding="3dip" >
 	
@@ -62,19 +61,86 @@
 	        android:textColor="#C0C0C0"
 	        android:textSize="15sp" />
 	
+	    <!-- player record seperator -->
+	    <TextView
+	        android:id="@+id/precordCaption"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@id/thumbnail"
+	        android:text="@string/player_record"
+	        android:textColor="#C0C0C0"
+	        android:textSize="15sp"
+	        android:textStyle="bold"
+	        android:typeface="sans" />
+	    
 	    <View
-	        android:id="@+id/sepa1"
+	        android:id="@+id/recordSeperator"
 	        android:layout_width="fill_parent"
 	        android:layout_height="2dip"
-	        android:layout_below="@id/thumbnail"
+	        android:layout_below="@id/precordCaption"
 	        android:background="#FFFFFFFF" />
 	
+           <!-- record list -->
+	    <ListView
+            android:id="@+id/recordlist"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+	        android:layout_below="@id/recordSeperator">
+        </ListView>
+	    
+	    <!-- Medals seperator -->
+	    <TextView
+	        android:id="@+id/pmedalsCaption"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@id/recordlist"
+	        android:text="@string/player_medals"
+	        android:textColor="#C0C0C0"
+	        android:textSize="15sp"
+	        android:textStyle="bold"
+	        android:typeface="sans" />
+	    
+	    <View
+	        android:id="@+id/medalsSeperator"
+	        android:layout_width="fill_parent"
+	        android:layout_height="2dip"
+	        android:layout_below="@id/pmedalsCaption"
+	        android:background="#FFFFFFFF" />
+	    
+           <!-- Medals list -->
+	    <ListView
+            android:id="@+id/medallist"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+	        android:layout_below="@id/medalsSeperator">
+        </ListView>
+
+	    	    <!-- personal info seperator -->
+	    <TextView
+	        android:id="@+id/personalInfoCaption"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@id/medallist"
+	        android:text="@string/player_personal_info"
+	        android:textColor="#C0C0C0"
+	        android:textSize="15sp"
+	        android:textStyle="bold"
+	        android:typeface="sans" />
+	    
+	    <View
+	        android:id="@+id/personalInfoSeperator"
+	        android:layout_width="fill_parent"
+	        android:layout_height="2dip"
+	        android:layout_below="@id/personalInfoCaption"
+	        android:background="#FFFFFFFF" />
+	    
+	    <!-- personal info -->
 	    <TextView
 	        android:id="@+id/ptel1Caption"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_alignLeft="@id/thumbnail"
-	        android:layout_below="@id/sepa1"
+	        android:layout_below="@id/personalInfoSeperator"
 	        android:layout_marginTop="12dip"
 	        android:text="@string/phone"
 	        android:textColor="#FFFFFF"

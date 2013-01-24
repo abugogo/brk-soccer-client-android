@@ -1,5 +1,7 @@
 package com.soccer.indoorstats.activity.impl;
 
+import java.util.LinkedList;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -12,6 +14,7 @@ import android.os.IBinder;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,10 +23,16 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.soccer.db.local.DB_CONSTS;
+import com.soccer.entities.IDAOLEvent.EventType;
+import com.soccer.entities.IDAOMedal.MedalEnum;
+import com.soccer.entities.impl.DAOLEvent;
+import com.soccer.entities.impl.DAOMedal;
 import com.soccer.entities.impl.DAOPlayer;
 import com.soccer.imageListUtils.ImageLoader;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
+import com.soccer.indoorstats.adapters.MedalListAdapter;
+import com.soccer.indoorstats.adapters.RecordListAdapter;
 import com.soccer.indoorstats.services.PlayerService;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.log.Logger;
@@ -38,6 +47,7 @@ public class PlayerActivity extends Activity {
 	private PlayerService mBoundService;
 	private boolean mIsBound;
 	private ActionBar actionBar;
+	private MedalListAdapter medalList;
 
 	public void onCreate(Bundle savedInstanceState) {
 		Logger.i("PlayerActivity onCreate");
@@ -61,6 +71,12 @@ public class PlayerActivity extends Activity {
 			actionBar.addAction(EditAction);
 		}
 
+//		final Action HomeAction = new IntentAction(this, new Intent(this,
+//				HomeActivity.class), R.drawable.home_icon);
+//		actionBar.addAction(HomeAction);
+		
+		setListsAdapters();
+		
 		//buttom navigation bar
 		RadioButton radioButton;
 		radioButton = (RadioButton) findViewById(R.id.btnGame);
@@ -147,6 +163,48 @@ public class PlayerActivity extends Activity {
 			}
 		}
 	}
+
+	private void setListsAdapters() {
+		
+		//Medal list
+		ListView medalLlstView = (ListView) findViewById(R.id.medallist);
+		LinkedList<DAOMedal> medalData = new LinkedList<DAOMedal>();
+		DAOMedal medal = new DAOMedal();
+		medal.setMedalType(MedalEnum.HATTRICK);
+		medalData.add(medal);
+		medal = new DAOMedal();
+		medal.setMedalType(MedalEnum.TEN_GAME_WIN_STREEK);
+		medalData.add(medal);
+		medal = new DAOMedal();
+		medal.setMedalType(MedalEnum.TWENTY_FIVE_GOALS);
+		medalData.add(medal);
+		
+		MedalListAdapter medalLstAdapter = new MedalListAdapter(this, medalData);
+		
+		medalLlstView.setAdapter(medalLstAdapter);
+		
+		//Record list
+		ListView recordlstView = (ListView) findViewById(R.id.recordlist);
+		LinkedList<DAOLEvent> recordData = new LinkedList<DAOLEvent>();
+		DAOLEvent evt = new DAOLEvent();
+		evt.setType(EventType.Goal);
+		recordData.add(evt);
+		evt = new DAOLEvent();
+		evt.setType(EventType.Cook);
+		recordData.add(evt);
+		evt = new DAOLEvent();
+		evt.setType(EventType.R_Card);
+		recordData.add(evt);
+		evt = new DAOLEvent();
+		evt.setType(EventType.Y_Card);
+		recordData.add(evt);
+		
+		RecordListAdapter recordlstAdapter = new RecordListAdapter(this, recordData);
+		
+		recordlstView.setAdapter(recordlstAdapter);
+
+	}
+
 	
 	private class EditPlayerAction extends AbstractAction {
 		public EditPlayerAction() {

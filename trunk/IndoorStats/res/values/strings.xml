@@ -27,4 +27,7 @@
 	<string name="user_id">User ID</string>
 	<string name="team1">Team1</string>
 	<string name="team2">Team2</string>
+	<string name="player_record">Record</string>
+	<string name="player_medals">Medals</string>
+	<string name="player_personal_info">Personal Info</string>
 </resources>
