@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Intent;
@@ -14,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.soccer.db.local.GameDbAdapter;
@@ -100,15 +100,14 @@ public class GameService extends BaseService implements IGameService {
 	}
 
 	@Override
-	public void getAllGames(int season, final RequestHandler<JSONArray> handler) {
+	public void getAllGames(int season, final RequestHandler<String> handler) {
 		try {
 			LoopjRestClient.get(this, sUrl.concat("/SoccerServer/rest/")
 					.concat(sharedPrefs.getPreference("account_name", ""))
-					.concat("/games"), null, new JsonHttpResponseHandler() {
-
+					.concat("/games"), null, new AsyncHttpResponseHandler() {
 				@Override
-				public void onSuccess(JSONArray res) {
-					handler.onSuccess(res);
+				public void onSuccess(int statusCode, String content) {
+					handler.onSuccess(content);
 				}
 
 				@Override

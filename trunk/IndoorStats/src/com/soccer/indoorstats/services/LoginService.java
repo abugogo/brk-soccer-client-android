@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.soccer.db.local.PlayersDbAdapter;
@@ -40,7 +41,7 @@ public class LoginService extends BaseService implements ILoginService {
 
 	@Override
 	public void login(String user, String password, final String account,
-			final RequestHandler<JSONArray> handler) {
+			final RequestHandler<String> handler) {
 		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
 		if (sUrl.equals("NULL")) {
 			sUrl = R_DB_CONSTS.SERVER_DEFAULT;
@@ -76,7 +77,7 @@ public class LoginService extends BaseService implements ILoginService {
 	}
 
 	private void onLoginSuccess(JSONObject res, String account,
-			RequestHandler<JSONArray> handler) {
+			RequestHandler<String> handler) {
 		try {
 			JSONArray acc_arr = res.getJSONArray("accounts");
 			int s = acc_arr.length();
@@ -91,7 +92,7 @@ public class LoginService extends BaseService implements ILoginService {
 	}
 
 	private void LoginToAccount(CharSequence accountName, String account,
-			final RequestHandler<JSONArray> handler) {
+			final RequestHandler<String> handler) {
 
 		sharedPrefs.setPreference("account_name", (String) accountName);
 		String sUrl = sharedPrefs.getPreference("server_port", "NULL");
@@ -102,11 +103,11 @@ public class LoginService extends BaseService implements ILoginService {
 		try {
 			LoopjRestClient.get(this, sUrl.concat("/SoccerServer/rest/")
 					.concat((String) accountName).concat("/players"), null,
-					new JsonHttpResponseHandler() {
+					new AsyncHttpResponseHandler() {
 						@Override
-						public void onSuccess(JSONArray res) {
-							onAccountLoginSuccess(res);
-							handler.onSuccess(res);
+						public void onSuccess(int statusCode, String content) {
+							onAccountLoginSuccess(content);
+							handler.onSuccess(content);
 						}
 
 						@Override
@@ -126,9 +127,9 @@ public class LoginService extends BaseService implements ILoginService {
 		}
 	}
 
-	private void onAccountLoginSuccess(JSONArray res) {
+	private void onAccountLoginSuccess(String content) {
 		// refresh players list
-		ArrayList<DAOPlayer> pArr = EntityManager.readPlayers(res.toString());
+		ArrayList<DAOPlayer> pArr = EntityManager.readPlayers(content);
 		SQLiteDatabase db = openDB();
 		LoadPlayers(pArr, db);
 		// remove app state

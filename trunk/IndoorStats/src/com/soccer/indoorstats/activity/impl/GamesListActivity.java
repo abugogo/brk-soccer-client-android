@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.JSONArray;
-
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,6 +13,7 @@ import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ListView;
@@ -22,8 +21,6 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
-import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.soccer.entities.DAOGameListEntry;
 import com.soccer.entities.EntityManager;
 import com.soccer.entities.IDAOGame.GameStatus;
@@ -125,14 +122,16 @@ public class GamesListActivity extends ListActivity {
 	private void fillData() {
 		final ListView list = (ListView) findViewById(android.R.id.list);
 		actionBar.setProgressBarVisibility(View.VISIBLE);
-		mBoundService.getAllGames(0, new RequestHandler<JSONArray>() {
+		mBoundService.getAllGames(0, new RequestHandler<String>() {
 
 			@Override
-			public void onSuccess(JSONArray arr) {
+			public void onSuccess(String sgames) {
 				Logger.i("Games retrievl success");
-				actionBar.setProgressBarVisibility(View.INVISIBLE);
-				ArrayList<DAOGame> gArr = EntityManager.readGames(arr
-						.toString());
+				long t1 = SystemClock.elapsedRealtime();
+				ArrayList<DAOGame> gArr = EntityManager.readGames(sgames);
+				long interval = SystemClock.elapsedRealtime() - t1;
+				Logger.i("Games readgames done in " + interval);
+				
 				if (gArr != null) {
 					Date lastDate = null;
 					DAOGameListEntry ge;
@@ -150,6 +149,8 @@ public class GamesListActivity extends ListActivity {
 							mGList);
 					list.setAdapter(adapter);
 				}
+				actionBar.setProgressBarVisibility(View.INVISIBLE);
+				
 			}
 
 			@Override
@@ -164,7 +165,7 @@ public class GamesListActivity extends ListActivity {
 	}
 
 	private boolean sameDay(Date d1, Date d2) {
-		if(d1 == null || d2 == null)
+		if (d1 == null || d2 == null)
 			return false;
 		return (d1.getDay() == d2.getDay() && d1.getMonth() == d2.getMonth() && d1
 				.getYear() == d2.getYear());
@@ -184,7 +185,8 @@ public class GamesListActivity extends ListActivity {
 				for (DAOGame g : lstFailed) {
 					DAOGameListEntry ge;
 					if (g.getStatus() != gs) {
-						ge = new DAOGameListEntry(true, g.getGameDate(), g.getStatus());
+						ge = new DAOGameListEntry(true, g.getGameDate(),
+								g.getStatus());
 						mGList.add(ge);
 						gs = g.getStatus();
 					}
