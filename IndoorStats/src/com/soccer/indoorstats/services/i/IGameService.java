@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.soccer.entities.IDAOGame.GameStatus;
@@ -16,6 +15,6 @@ public interface IGameService {
 	public ObjectInputStream getCurGameState();
 	public void saveGameState(ByteArrayOutputStream bos);
 	public void updateGame(DAOGame game, RequestHandler<JSONObject> handler);
-	public void getAllGames(int season, final RequestHandler<JSONArray> handler);
+	public void getAllGames(int season, final RequestHandler<String> handler);
 	public LinkedList<DAOGame> getGames(List<GameStatus> gs);
 }
