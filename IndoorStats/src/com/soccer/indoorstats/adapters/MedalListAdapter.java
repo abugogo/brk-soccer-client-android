@@ -31,15 +31,15 @@ public class MedalListAdapter extends SoccerBaseAdapter<DAOMedal>{
 		MedalEnum medal = data.get(position).getMedalType();
 		switch(medal){
 		
-		case HATTRICK:
+		case GOALS_PER_GAME:
 			medal_image.setImageResource(R.drawable.hattrik_icon);
 			break;
 			
-		case TWENTY_FIVE_GOALS:
+		case AGGR_GOALS:
 			medal_image.setImageResource(R.drawable.twentyfivegoals_icon);
 			break;
 			
-		case TEN_GAME_WIN_STREEK:
+		case WIN_STREEK:
 			medal_image.setImageResource(R.drawable.tengamewinstreek_icon);
 
 		}
