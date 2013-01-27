@@ -170,13 +170,13 @@ public class PlayerActivity extends Activity {
 		ListView medalLlstView = (ListView) findViewById(R.id.medallist);
 		LinkedList<DAOMedal> medalData = new LinkedList<DAOMedal>();
 		DAOMedal medal = new DAOMedal();
-		medal.setMedalType(MedalEnum.HATTRICK);
+		medal.setMedalType(MedalEnum.AGGR_GOALS);
 		medalData.add(medal);
 		medal = new DAOMedal();
-		medal.setMedalType(MedalEnum.TEN_GAME_WIN_STREEK);
+		medal.setMedalType(MedalEnum.GOALS_PER_GAME);
 		medalData.add(medal);
 		medal = new DAOMedal();
-		medal.setMedalType(MedalEnum.TWENTY_FIVE_GOALS);
+		medal.setMedalType(MedalEnum.WIN_STREEK);
 		medalData.add(medal);
 		
 		MedalListAdapter medalLstAdapter = new MedalListAdapter(this, medalData);
