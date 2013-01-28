@@ -6,7 +6,7 @@
         android:key="connstr_category"
         android:title="Connection String" >
         <com.soccer.preferences.CustSummaryPref
-            android:defaultValue="http://www.ellgad.com"
+            android:defaultValue="http://23.23.185.169:8080"
             android:dialogMessage="Provide details"
             android:inputType="textUri"
             android:key="server_port"
