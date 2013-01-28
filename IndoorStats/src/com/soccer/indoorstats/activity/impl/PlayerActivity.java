@@ -14,11 +14,11 @@ import android.os.IBinder;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.devsmart.android.ui.HorizontalListView;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.AbstractAction;
 import com.markupartist.android.widget.ActionBar.Action;
@@ -55,7 +55,7 @@ public class PlayerActivity extends Activity {
 		setContentView(R.layout.player_layout);
 		mPrefs = new Prefs(this);
 		Bundle b = getIntent().getExtras();
-		if(null != b)
+		if (null != b)
 			mPID = b.getString("pid");
 		if (mPID == null || "".equals(mPID))
 			mPID = mPrefs.getPreference(DB_CONSTS.KEY_ID, mPID);
@@ -71,13 +71,13 @@ public class PlayerActivity extends Activity {
 			actionBar.addAction(EditAction);
 		}
 
-//		final Action HomeAction = new IntentAction(this, new Intent(this,
-//				HomeActivity.class), R.drawable.home_icon);
-//		actionBar.addAction(HomeAction);
-		
+		// final Action HomeAction = new IntentAction(this, new Intent(this,
+		// HomeActivity.class), R.drawable.home_icon);
+		// actionBar.addAction(HomeAction);
+
 		setListsAdapters();
-		
-		//buttom navigation bar
+
+		// buttom navigation bar
 		RadioButton radioButton;
 		radioButton = (RadioButton) findViewById(R.id.btnGame);
 		radioButton
@@ -92,7 +92,6 @@ public class PlayerActivity extends Activity {
 		radioButton
 				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
 
-		
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		imageLoader = new ImageLoader(this.getApplicationContext());
 	}
@@ -132,7 +131,6 @@ public class PlayerActivity extends Activity {
 		}
 	};
 
-	
 	private void populateFields() {
 		Logger.i("PlayerActivity populateFields");
 		if (mPID != null && !mPID.equals("")) {
@@ -165,9 +163,9 @@ public class PlayerActivity extends Activity {
 	}
 
 	private void setListsAdapters() {
-		
-		//Medal list
-		ListView medalLlstView = (ListView) findViewById(R.id.medallist);
+
+		// Medal list
+		HorizontalListView medalLlstView = (HorizontalListView) findViewById(R.id.medallist);
 		LinkedList<DAOMedal> medalData = new LinkedList<DAOMedal>();
 		DAOMedal medal = new DAOMedal();
 		medal.setMedalType(MedalEnum.AGGR_GOALS);
@@ -178,13 +176,13 @@ public class PlayerActivity extends Activity {
 		medal = new DAOMedal();
 		medal.setMedalType(MedalEnum.WIN_STREEK);
 		medalData.add(medal);
-		
+
 		MedalListAdapter medalLstAdapter = new MedalListAdapter(this, medalData);
-		
+
 		medalLlstView.setAdapter(medalLstAdapter);
-		
-		//Record list
-		ListView recordlstView = (ListView) findViewById(R.id.recordlist);
+
+		// Record list
+		HorizontalListView recordlstView = (HorizontalListView) findViewById(R.id.recordlist);
 		LinkedList<DAOLEvent> recordData = new LinkedList<DAOLEvent>();
 		DAOLEvent evt = new DAOLEvent();
 		evt.setType(EventType.Goal);
@@ -198,14 +196,21 @@ public class PlayerActivity extends Activity {
 		evt = new DAOLEvent();
 		evt.setType(EventType.Y_Card);
 		recordData.add(evt);
-		
-		RecordListAdapter recordlstAdapter = new RecordListAdapter(this, recordData);
-		
+
+		RecordListAdapter recordlstAdapter = new RecordListAdapter(this,
+				recordData);
+
 		recordlstView.setAdapter(recordlstAdapter);
+
+		// test
+		/*HorizontalListView listview = (HorizontalListView) findViewById(R.id.horilistview);
+		TestItemsListAdapter adapter = new TestItemsListAdapter(this,
+				new LinkedList<String>(Arrays.asList("guy", "yossi", "klum",
+						"yossi2", "klum2", "yossi3", "klum3")));
+		listview.setAdapter(adapter);*/
 
 	}
 
-	
 	private class EditPlayerAction extends AbstractAction {
 		public EditPlayerAction() {
 			super(R.drawable.edit);
@@ -213,7 +218,8 @@ public class PlayerActivity extends Activity {
 
 		@Override
 		public void performAction(View view) {
-			Intent pupdateIntent = new Intent(PlayerActivity.this, PlayerUpdateActivity.class);
+			Intent pupdateIntent = new Intent(PlayerActivity.this,
+					PlayerUpdateActivity.class);
 			pupdateIntent.putExtra("pid", mPID);
 			startActivityForResult(pupdateIntent, 1);
 		}
