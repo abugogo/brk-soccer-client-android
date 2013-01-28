@@ -16,214 +16,231 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/rgroup_divider"
         android:layout_below="@id/actionbar" >
-    
-	    <LinearLayout
-	        android:id="@+id/thumbnail"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentLeft="true"
-	        android:layout_marginRight="5dip"
-	        android:padding="3dip" >
-	
-	        <ImageView
-	            android:id="@+id/pimage"
-	            android:layout_width="50dip"
-	            android:layout_height="50dip"
-	            android:contentDescription="@string/emptyString"
-	            android:src="@drawable/soccer_time_logo" />
-	    </LinearLayout>
-	
-	    <!-- First name of player -->
-	
-	    <TextView
-	        android:id="@+id/pfname"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignTop="@+id/thumbnail"
-	        android:layout_marginTop="10sp"
-	        android:layout_toRightOf="@+id/thumbnail"
-	        android:text=""
-	        android:textColor="#C0C0C0"
-	        android:textSize="15sp"
-	        android:textStyle="bold"
-	        android:typeface="sans" />
-	
-	    <!-- Last name of player -->
-	
-	    <TextView
-	        android:id="@+id/plname"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_below="@id/pfname"
-	        android:layout_marginTop="1dip"
-	        android:layout_toRightOf="@+id/thumbnail"
-	        android:text=""
-	        android:textColor="#C0C0C0"
-	        android:textSize="15sp" />
-	
-	    <!-- player record seperator -->
-	    <TextView
-	        android:id="@+id/precordCaption"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_below="@id/thumbnail"
-	        android:text="@string/player_record"
-	        android:textColor="#C0C0C0"
-	        android:textSize="15sp"
-	        android:textStyle="bold"
-	        android:typeface="sans" />
-	    
-	    <View
-	        android:id="@+id/recordSeperator"
-	        android:layout_width="fill_parent"
-	        android:layout_height="2dip"
-	        android:layout_below="@id/precordCaption"
-	        android:background="#FFFFFFFF" />
-	
-           <!-- record list -->
-	    <ListView
+
+        <LinearLayout
+            android:id="@+id/thumbnail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="5dip"
+            android:padding="3dip" >
+
+            <ImageView
+                android:id="@+id/pimage"
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:contentDescription="@string/emptyString"
+                android:src="@drawable/soccer_time_logo" />
+        </LinearLayout>
+
+        <!-- First name of player -->
+
+        <TextView
+            android:id="@+id/pfname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/thumbnail"
+            android:layout_marginTop="10sp"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:text=""
+            android:textColor="#C0C0C0"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:typeface="sans" />
+
+        <!-- Last name of player -->
+
+        <TextView
+            android:id="@+id/plname"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pfname"
+            android:layout_marginTop="1dip"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:text=""
+            android:textColor="#C0C0C0"
+            android:textSize="15sp" />
+
+        <!-- player record seperator -->
+
+        <TextView
+            android:id="@+id/precordCaption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/thumbnail"
+            android:text="@string/player_record"
+            android:textColor="#C0C0C0"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:typeface="sans" />
+
+        <View
+            android:id="@+id/recordSeperator"
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_below="@id/precordCaption"
+            android:background="#FFFFFFFF" />
+
+        <!-- record list -->
+
+        <!-- ListView
             android:id="@+id/recordlist"
             android:layout_width="match_parent"
             android:layout_height="50dip"
-	        android:layout_below="@id/recordSeperator">
-        </ListView>
-	    
-	    <!-- Medals seperator -->
-	    <TextView
-	        android:id="@+id/pmedalsCaption"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_below="@id/recordlist"
-	        android:text="@string/player_medals"
-	        android:textColor="#C0C0C0"
-	        android:textSize="15sp"
-	        android:textStyle="bold"
-	        android:typeface="sans" />
-	    
-	    <View
-	        android:id="@+id/medalsSeperator"
-	        android:layout_width="fill_parent"
-	        android:layout_height="2dip"
-	        android:layout_below="@id/pmedalsCaption"
-	        android:background="#FFFFFFFF" />
-	    
-           <!-- Medals list -->
-	    <ListView
+            android:layout_below="@id/recordSeperator" >
+        </ListView-->
+        
+        <com.devsmart.android.ui.HorizontalListView
+            android:id="@+id/recordlist"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:layout_below="@id/recordSeperator" />
+        
+
+        <!-- Medals seperator -->
+
+        <TextView
+            android:id="@+id/pmedalsCaption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/recordlist"
+            android:text="@string/player_medals"
+            android:textColor="#C0C0C0"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:typeface="sans" />
+
+        <View
+            android:id="@+id/medalsSeperator"
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_below="@id/pmedalsCaption"
+            android:background="#FFFFFFFF" />
+
+        <!-- Medals list -->
+		 <com.devsmart.android.ui.HorizontalListView
+		     android:id="@+id/medallist"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:layout_below="@id/medalsSeperator" />
+        <!-- ListView
             android:id="@+id/medallist"
             android:layout_width="match_parent"
             android:layout_height="50dip"
-	        android:layout_below="@id/medalsSeperator">
-        </ListView>
+            android:layout_below="@id/medalsSeperator" >
+        </ListView-->
 
-	    	    <!-- personal info seperator -->
-	    <TextView
-	        android:id="@+id/personalInfoCaption"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_below="@id/medallist"
-	        android:text="@string/player_personal_info"
-	        android:textColor="#C0C0C0"
-	        android:textSize="15sp"
-	        android:textStyle="bold"
-	        android:typeface="sans" />
-	    
-	    <View
-	        android:id="@+id/personalInfoSeperator"
-	        android:layout_width="fill_parent"
-	        android:layout_height="2dip"
-	        android:layout_below="@id/personalInfoCaption"
-	        android:background="#FFFFFFFF" />
-	    
-	    <!-- personal info -->
-	    <TextView
-	        android:id="@+id/ptel1Caption"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_alignLeft="@id/thumbnail"
-	        android:layout_below="@id/personalInfoSeperator"
-	        android:layout_marginTop="12dip"
-	        android:text="@string/phone"
-	        android:textColor="#FFFFFF"
-	        android:textSize="12sp" />
-	
-	    <TextView
-	        android:id="@+id/ptel1"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_alignTop="@id/ptel1Caption"
-	        android:layout_toRightOf="@+id/thumbnail"
-	        android:text=""
-	        android:textColor="#C0C0C0"
-	        android:textSize="12sp" />
-	
-	    <TextView
-	        android:id="@+id/emailCaption"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_alignLeft="@id/thumbnail"
-	        android:layout_below="@id/ptel1Caption"
-	        android:text="@string/email"
-	        android:textColor="#FFFFFF"
-	        android:textSize="12sp" />
-	
-	    <TextView
-	        android:id="@+id/email"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_alignTop="@id/emailCaption"
-	        android:layout_toRightOf="@+id/thumbnail"
-	        android:text=""
-	        android:textColor="#C0C0C0"
-	        android:textSize="12sp" />
-	
-	    <TextView
-	        android:id="@+id/bdayCaption"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_alignLeft="@id/thumbnail"
-	        android:layout_below="@id/emailCaption"
-	        android:text="@string/birthday"
-	        android:textColor="#FFFFFF"
-	        android:textSize="12sp" />
-	
-	    <TextView
-	        android:id="@+id/bday"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_alignTop="@id/bdayCaption"
-	        android:layout_toRightOf="@+id/thumbnail"
-	        android:text=""
-	        android:textColor="#C0C0C0"
-	        android:textSize="12sp" />
-	
-	    <TextView
-	        android:id="@+id/descCaption"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_alignLeft="@id/thumbnail"
-	        android:layout_below="@id/bday"
-	        android:text="@string/description"
-	        android:textColor="#FFFFFF"
-	        android:textSize="12sp" />
-	
-	    <TextView
-	        android:id="@+id/desc"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_alignTop="@id/descCaption"
-	        android:layout_toRightOf="@+id/thumbnail"
-	        android:text=""
-	        android:textColor="#C0C0C0"
-	        android:textSize="12sp" />
-	
-    <!-- Tel1 of player -->
-	</RelativeLayout>
-	
-  <include
+        <!-- personal info seperator -->
+
+        <TextView
+            android:id="@+id/personalInfoCaption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/medallist"
+            android:text="@string/player_personal_info"
+            android:textColor="#C0C0C0"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:typeface="sans" />
+
+        <View
+            android:id="@+id/personalInfoSeperator"
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_below="@id/personalInfoCaption"
+            android:background="#FFFFFFFF" />
+
+        <!-- personal info -->
+
+        <TextView
+            android:id="@+id/ptel1Caption"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/thumbnail"
+            android:layout_below="@id/personalInfoSeperator"
+            android:layout_marginTop="12dip"
+            android:text="@string/phone"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/ptel1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/ptel1Caption"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:text=""
+            android:textColor="#C0C0C0"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/emailCaption"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/thumbnail"
+            android:layout_below="@id/ptel1Caption"
+            android:text="@string/email"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/emailCaption"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:text=""
+            android:textColor="#C0C0C0"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/bdayCaption"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/thumbnail"
+            android:layout_below="@id/emailCaption"
+            android:text="@string/birthday"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/bday"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/bdayCaption"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:text=""
+            android:textColor="#C0C0C0"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/descCaption"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/thumbnail"
+            android:layout_below="@id/bday"
+            android:text="@string/description"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/desc"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/descCaption"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:text=""
+            android:textColor="#C0C0C0"
+            android:textSize="12sp" />
+
+        <!-- Tel1 of player -->
+    </RelativeLayout>
+
+    <include
         android:id="@+id/rgroup_divider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         layout="@layout/actnavbar" />
- 	
+
 </RelativeLayout>
