@@ -3,7 +3,6 @@
     android:id="@+id/pplayertaglayout"
     android:layout_width="fill_parent"
     android:layout_height="28dp"
-    android:background="@drawable/list_selector"
     android:clickable="true"
     android:orientation="horizontal"
     android:padding="5dip" >
