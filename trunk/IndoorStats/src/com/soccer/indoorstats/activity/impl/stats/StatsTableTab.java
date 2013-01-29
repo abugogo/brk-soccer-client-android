@@ -5,15 +5,17 @@ import java.util.Iterator;
 
 import org.json.JSONArray;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils.TruncateAt;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
@@ -30,7 +32,7 @@ import com.soccer.lib.SoccerException;
 import com.soccer.preferences.Prefs;
 import com.soccer.rest.LoopjRestClient;
 
-public class StatsTableTab extends Activity {
+public class StatsTableTab extends Fragment {
 	private ArrayList<ITableRow> m_pArr = null;
 	private Prefs mPrefs;
 	private ProgressDialog mProgDialog;
@@ -38,17 +40,34 @@ public class StatsTableTab extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.stats_strip_tab);
-		this.mProgDialog = new ProgressDialog(this);
+		this.mProgDialog = new ProgressDialog(getActivity());
 
 	}
+	
+	@Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.stats_strip_tab, container, false);
+		/*
+        TextView text = new TextView(getActivity());
+        text.setGravity(Gravity.CENTER);
+        text.setText(mContent);
+        text.setTextSize(20 * getResources().getDisplayMetrics().density);
+        text.setPadding(20, 20, 20, 20);
+
+        LinearLayout layout = new LinearLayout(getActivity());
+        layout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+        layout.setGravity(Gravity.CENTER);
+        layout.addView(text);*/
+
+        return layout;
+    }
 
 	@Override
-	protected void onResume() {
+	public void onResume() {
 		super.onResume();
 		if (m_pArr == null) {
 
-			mPrefs = new Prefs(this);
+			mPrefs = new Prefs(getActivity());
 			String sUrl = mPrefs.getPreference("server_port", "NULL");
 			if (sUrl.equals("NULL")) {
 				sUrl = R_DB_CONSTS.SERVER_DEFAULT;
@@ -57,7 +76,7 @@ public class StatsTableTab extends Activity {
 			try {
 				this.mProgDialog.setMessage("Getting Tables ...");
 				this.mProgDialog.show();
-				LoopjRestClient.get(this, sUrl.concat("/SoccerServer/rest/")
+				LoopjRestClient.get(getActivity(), sUrl.concat("/SoccerServer/rest/")
 						.concat(mPrefs.getPreference("account_name", ""))
 						.concat("/table/"), null,
 						new JsonHttpResponseHandler() {
@@ -81,71 +100,78 @@ public class StatsTableTab extends Activity {
 
 			} catch (Exception e) {
 				Logger.e("get current table failed", e);
-				showDialog(0, DlgUtils.prepareDlgBundle(e.getMessage()));
+				DlgUtils.showAlertMessage(getActivity(), "Get table failed", e.getMessage());
 			}
+		}
+		else {
+			fillData();
 		}
 	}
 
 	public void onGetTableSuccess(String result) {
 		try {
 			m_pArr = (ArrayList<ITableRow>) EntityManager.readTable(result);
-			TableLayout tblLayout = (TableLayout) findViewById(R.id.strip_table);
-			tblLayout.setColumnStretchable(5, true);
-			int i = 1;
-			TableRow tRow = null;
-			tRow = createTableRow("", "Player", "W", "D", "L", "Points");
-			tblLayout.addView(tRow, new TableLayout.LayoutParams(
-					LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-			if (m_pArr != null) {
-
-				for (Iterator<ITableRow> iter = m_pArr.iterator(); iter
-						.hasNext(); i++) {
-					com.soccer.entities.impl.TableRow tr = (com.soccer.entities.impl.TableRow) iter
-							.next();
-					tRow = createTableRow(tr, i);
-					tblLayout
-							.addView(tRow, new TableLayout.LayoutParams(
-									LayoutParams.FILL_PARENT,
-									LayoutParams.FILL_PARENT));
-				}
-			}
+			fillData();
 		} catch (SoccerException e) {
 			Logger.e("onSuccess of stats table tab failed", e);
 		}
 
 	}
 
+	private void fillData() {
+		TableLayout tblLayout = (TableLayout) getActivity().findViewById(R.id.strip_table);
+		tblLayout.setColumnStretchable(5, true);
+		int i = 1;
+		TableRow tRow = null;
+		tRow = createTableRow("", "Player", "W", "D", "L", "Points");
+		tblLayout.addView(tRow, new TableLayout.LayoutParams(
+				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		if (m_pArr != null) {
+
+			for (Iterator<ITableRow> iter = m_pArr.iterator(); iter
+					.hasNext(); i++) {
+				com.soccer.entities.impl.TableRow tr = (com.soccer.entities.impl.TableRow) iter
+						.next();
+				tRow = createTableRow(tr, i);
+				tblLayout
+						.addView(tRow, new TableLayout.LayoutParams(
+								LayoutParams.FILL_PARENT,
+								LayoutParams.FILL_PARENT));
+			}
+		}
+	}
+	
 	private TableRow createTableRow(String pos, String name, String wins,
 			String draws, String loses, String points) {
-		TableRow tRow = new TableRow(this);
+		TableRow tRow = new TableRow(getActivity());
 		tRow.setBackgroundResource(R.drawable.list_selector);
 
-		TextView v = new TextView(this);
+		TextView v = new TextView(getActivity());
 		v.setText(pos);
 		v.setTextColor(Color.BLACK);
 		tRow.addView(v);
-		v = new TextView(this);
+		v = new TextView(getActivity());
 		v.setWidth(145);
 		v.setEllipsize(TruncateAt.MARQUEE);
 		v.setText(name);
 		v.setTextColor(Color.BLACK);
 		tRow.addView(v);
-		v = new TextView(this);
+		v = new TextView(getActivity());
 		v.setWidth(30);
 		v.setText(wins);
 		v.setTextColor(Color.BLACK);
 		tRow.addView(v);
-		v = new TextView(this);
+		v = new TextView(getActivity());
 		v.setWidth(30);
 		v.setText(draws);
 		v.setTextColor(Color.BLACK);
 		tRow.addView(v);
-		v = new TextView(this);
+		v = new TextView(getActivity());
 		v.setWidth(30);
 		v.setText(loses);
 		v.setTextColor(Color.BLACK);
 		tRow.addView(v);
-		v = new TextView(this);
+		v = new TextView(getActivity());
 		v.setPadding(0, 0, 20, 0);
 		v.setWidth(65);
 		v.setText(points);
@@ -166,14 +192,14 @@ public class StatsTableTab extends Activity {
 	}
 
 	private void addTableRow(TableLayout tblLayout, View vi) {
-		TableRow tRow = new TableRow(this);
+		TableRow tRow = new TableRow(getActivity());
 		tRow.addView(vi);
 		tblLayout.addView(tRow);
 	}
 
 	private View createView(String pos, String name, String wins, String draws,
 			String loses, String points) {
-		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		View vi = inflater.inflate(R.layout.player_row_in_table, null);
 		TextView v = (TextView) vi.findViewById(R.id.tbl_pos);
