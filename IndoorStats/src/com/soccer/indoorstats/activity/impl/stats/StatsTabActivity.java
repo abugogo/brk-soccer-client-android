@@ -1,5 +1,7 @@
 package com.soccer.indoorstats.activity.impl.stats;
 
+import java.util.Locale;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -24,7 +26,7 @@ public class StatsTabActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.simple_tabs);
 
-		FragmentPagerAdapter adapter = new GoogleMusicAdapter(
+		FragmentPagerAdapter adapter = new FragmentTabSelector(
 				getSupportFragmentManager());
 
 		ViewPager pager = (ViewPager) findViewById(R.id.pager);
@@ -34,24 +36,47 @@ public class StatsTabActivity extends FragmentActivity {
 		indicator.setViewPager(pager);
 	}
 
-	class GoogleMusicAdapter extends FragmentPagerAdapter implements
+	class FragmentTabSelector extends FragmentPagerAdapter implements
 			IconPagerAdapter {
-		Fragment statsTblFragment = new StatsTableTab();
 
-		public GoogleMusicAdapter(FragmentManager fm) {
+		public FragmentTabSelector(FragmentManager fm) {
 			super(fm);
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			if (position == 0)
-				return statsTblFragment;
+			Fragment f = null;
+
+			switch (position) {
+			case 0:
+				f = new StatsTableTab();
+				break;
+			case 1:
+				f = new ScorersTableTab();
+				break;
+			case 2:
+				f = new AssistsTableTab();
+				break;
+			case 3:
+				f = new OwnGoalTableTab();
+				break;
+			case 4:
+				f = new YellowCardsTableTab();
+				break;
+			case 5:
+				f = new RedCardsTableTab();
+				break;
+			}
+			if (f != null) {
+				return f;
+			}
 			return TestFragment.newInstance(CONTENT[position % CONTENT.length]);
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			return CONTENT[position % CONTENT.length].toUpperCase();
+			return CONTENT[position % CONTENT.length].toUpperCase(Locale
+					.getDefault());
 		}
 
 		@Override

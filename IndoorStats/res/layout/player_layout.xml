@@ -14,7 +14,6 @@
         android:id="@+id/CenterScreenLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/rgroup_divider"
         android:layout_below="@id/actionbar" >
 
         <LinearLayout
@@ -236,11 +235,11 @@
         <!-- Tel1 of player -->
     </RelativeLayout>
 
-    <include
+    <!-- include
         android:id="@+id/rgroup_divider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        layout="@layout/actnavbar" />
+        layout="@layout/actnavbar" /-->
 
 </RelativeLayout>

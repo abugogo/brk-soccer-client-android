@@ -98,6 +98,8 @@
         </service>
         <service android:name=".services.GameService" >
         </service>
+        <service android:name=".services.StatsTableService" >
+        </service>
     </application>
 
 </manifest>

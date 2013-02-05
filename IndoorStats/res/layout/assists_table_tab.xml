@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/app_bg" >
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent" >
+
+        <TableLayout
+            android:id="@+id/assists_table"
+            style="@style/AppTheme"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/app_bg"
+            android:scrollbars="vertical" >
+        </TableLayout>
+    </ScrollView>
+
+</LinearLayout>
