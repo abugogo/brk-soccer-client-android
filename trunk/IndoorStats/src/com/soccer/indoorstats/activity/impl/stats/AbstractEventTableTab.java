@@ -2,8 +2,8 @@ package com.soccer.indoorstats.activity.impl.stats;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,44 +14,31 @@ import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils.TruncateAt;
 import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.soccer.entities.EntityManager;
-import com.soccer.entities.ITableRow;
+import com.soccer.entities.IDAOLEvent.EventType;
+import com.soccer.entities.impl.DAOAggrLEvents;
 import com.soccer.indoorstats.R;
 import com.soccer.indoorstats.services.StatsTableService;
 import com.soccer.indoorstats.services.handlers.RequestHandler;
 import com.soccer.indoorstats.utils.DlgUtils;
 import com.soccer.indoorstats.utils.log.Logger;
-import com.soccer.lib.SoccerException;
+//import android.app.ProgressDialog;
 
-public class StatsTableTab extends Fragment {
-	private ArrayList<ITableRow> m_pArr = null;
-	private ProgressDialog mProgDialog;
-	private StatsTableService mBoundStatsService;
-	private boolean mIsBound;
+public abstract class AbstractEventTableTab extends Fragment {
+	protected ArrayList<DAOAggrLEvents> m_pArr = null;
+	//protected ProgressDialog mProgDialog;
+	protected StatsTableService mBoundStatsService;
+	protected boolean mIsBound;
 
+	protected abstract EventType getEventType();
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.mProgDialog = new ProgressDialog(getActivity());
-
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		LinearLayout layout = (LinearLayout) inflater.inflate(
-				R.layout.prime_table_tab, container, false);
-
-		return layout;
+		//this.mProgDialog = new ProgressDialog(getActivity());
 	}
 
 	@Override
@@ -66,31 +53,26 @@ public class StatsTableTab extends Fragment {
 		doBindServices();
 	}
 
-	public void onGetTableSuccess(String result) {
-		try {
-			m_pArr = (ArrayList<ITableRow>) EntityManager.readTable(result);
-			fillData();
-			mProgDialog.dismiss();
-		} catch (SoccerException e) {
-			Logger.e("onSuccess of stats table tab failed", e);
-		}
-
+	public void onGetTableSuccess(List<DAOAggrLEvents> lst) {
+		m_pArr = new ArrayList<DAOAggrLEvents>(lst);
+		fillData();
+		//mProgDialog.dismiss();
 	}
 
-	private void fillData() {
-		TableLayout tblLayout = (TableLayout) getActivity().findViewById(
-				R.id.prime_table);
-		tblLayout.setColumnStretchable(5, true);
+	protected abstract void fillData();
+	
+	protected void innerFillData(TableLayout tblLayout, String type_title) {
+		tblLayout.setColumnStretchable(2, true);
 		int i = 1;
 		TableRow tRow = null;
-		tRow = createTableRow("", "Player", "W", "D", "L", "Points");
+		tRow = createTableRow("", "Player", type_title);
 		tblLayout.addView(tRow, new TableLayout.LayoutParams(
 				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		if (m_pArr != null) {
 
-			for (Iterator<ITableRow> iter = m_pArr.iterator(); iter.hasNext(); i++) {
-				com.soccer.entities.impl.TableRow tr = (com.soccer.entities.impl.TableRow) iter
-						.next();
+			for (Iterator<DAOAggrLEvents> iter = m_pArr.iterator(); iter
+					.hasNext(); i++) {
+				DAOAggrLEvents tr = (DAOAggrLEvents) iter.next();
 				tRow = createTableRow(tr, i);
 				tblLayout.addView(tRow, new TableLayout.LayoutParams(
 						LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
@@ -98,8 +80,7 @@ public class StatsTableTab extends Fragment {
 		}
 	}
 
-	private TableRow createTableRow(String pos, String name, String wins,
-			String draws, String loses, String points) {
+	private TableRow createTableRow(String pos, String name, String count) {
 		TableRow tRow = new TableRow(getActivity());
 		tRow.setBackgroundResource(R.drawable.list_selector);
 
@@ -113,25 +94,17 @@ public class StatsTableTab extends Fragment {
 		v.setText(name);
 		v.setTextColor(Color.BLACK);
 		tRow.addView(v);
+
 		v = new TextView(getActivity());
-		v.setWidth(30);
-		v.setText(wins);
-		v.setTextColor(Color.BLACK);
-		tRow.addView(v);
-		v = new TextView(getActivity());
-		v.setWidth(30);
-		v.setText(draws);
-		v.setTextColor(Color.BLACK);
-		tRow.addView(v);
-		v = new TextView(getActivity());
-		v.setWidth(30);
-		v.setText(loses);
-		v.setTextColor(Color.BLACK);
-		tRow.addView(v);
-		v = new TextView(getActivity());
-		v.setPadding(0, 0, 20, 0);
 		v.setWidth(90);
-		v.setText(points);
+		v.setText(count);
+		v.setTextColor(Color.BLACK);
+		v.setGravity(Gravity.RIGHT);
+		tRow.addView(v);
+		
+		v = new TextView(getActivity());
+		v.setWidth(90);
+		v.setText("   ");
 		v.setTextColor(Color.BLACK);
 		v.setGravity(Gravity.RIGHT);
 		tRow.addView(v);
@@ -139,17 +112,13 @@ public class StatsTableTab extends Fragment {
 		return tRow;
 	}
 
-	private TableRow createTableRow(com.soccer.entities.impl.TableRow tr,
-			int pos) {
-		return createTableRow(String.valueOf(pos),
-				tr.getFname() + " " + tr.getLname(),
-				String.valueOf(tr.getWins()),
-				String.valueOf(tr.getGames() - tr.getWins() - tr.getLosses()),
-				String.valueOf(tr.getLosses()), String.valueOf(tr.getPoints()));
+	private TableRow createTableRow(DAOAggrLEvents tr, int pos) {
+		return createTableRow(String.valueOf(pos), tr.getPlayerFName() + " "
+				+ tr.getPlayerLName(), String.valueOf(tr.getCount()));
 	}
 
 	public void onGetTableFailure(int responseCode, String result) {
-		mProgDialog.dismiss();
+		//mProgDialog.dismiss();
 		DlgUtils.showAlertMessage(getActivity(), "Failure", result);
 		Logger.w("failed to load tables: " + result + " " + responseCode);
 
@@ -157,17 +126,17 @@ public class StatsTableTab extends Fragment {
 
 	private ServiceConnection mStatsTableConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
-			
+
 			mBoundStatsService = (StatsTableService) ((StatsTableService.LocalBinder) service)
 					.getService();
 			if (m_pArr == null) {
-				mProgDialog.setMessage("Getting Tables ...");
-				mProgDialog.show();
-				mBoundStatsService.getPrimeTable(0,
-						new RequestHandler<String>() {
+				//mProgDialog.setMessage("Getting Tables ...");
+				//mProgDialog.show();
+				mBoundStatsService.getTable(0,
+						new RequestHandler<List<DAOAggrLEvents>>() {
 
 							@Override
-							public void onSuccess(String t) {
+							public void onSuccess(List<DAOAggrLEvents> t) {
 								onGetTableSuccess(t);
 							}
 
@@ -175,7 +144,7 @@ public class StatsTableTab extends Fragment {
 							public void onFailure(String reason, int errorCode) {
 								onGetTableFailure(errorCode, reason);
 							}
-						});
+						}, getEventType());
 			} else
 				fillData();
 		}
@@ -188,8 +157,9 @@ public class StatsTableTab extends Fragment {
 	private void doBindServices() {
 		if (!mIsBound) {
 			getActivity().bindService(
-					new Intent(getActivity().getApplicationContext(), StatsTableService.class),
-					mStatsTableConnection, Context.BIND_AUTO_CREATE);
+					new Intent(getActivity().getApplicationContext(),
+							StatsTableService.class), mStatsTableConnection,
+					Context.BIND_AUTO_CREATE);
 			mIsBound = true;
 
 		}

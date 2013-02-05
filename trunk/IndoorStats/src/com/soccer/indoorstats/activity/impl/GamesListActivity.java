@@ -15,10 +15,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 import com.soccer.entities.DAOGameListEntry;
@@ -26,7 +23,6 @@ import com.soccer.entities.EntityManager;
 import com.soccer.entities.IDAOGame.GameStatus;
 import com.soccer.entities.impl.DAOGame;
 import com.soccer.indoorstats.R;
-import com.soccer.indoorstats.activity.impl.stats.StatsTabActivity;
 import com.soccer.indoorstats.adapters.GamesListAdapter;
 import com.soccer.indoorstats.services.GameService;
 import com.soccer.indoorstats.services.handlers.RequestHandler;
@@ -52,53 +48,8 @@ public class GamesListActivity extends ListActivity {
 				getString(R.string.group));
 		actionBar.setTitle(title);
 
-		// bottom bar
-		RadioButton radioButton;
-		radioButton = (RadioButton) findViewById(R.id.btnGame);
-		radioButton
-				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
-		radioButton = (RadioButton) findViewById(R.id.btnGroup);
-		radioButton
-				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
-		radioButton = (RadioButton) findViewById(R.id.btnSeason);
-		radioButton
-				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
-		radioButton = (RadioButton) findViewById(R.id.btnStats);
-		radioButton
-				.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
-
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 	}
-
-	private CompoundButton.OnCheckedChangeListener btnNavBarOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
-		public void onCheckedChanged(CompoundButton buttonView,
-				boolean isChecked) {
-			if (isChecked) {
-				Toast.makeText(GamesListActivity.this, buttonView.getText(),
-						Toast.LENGTH_SHORT).show();
-
-				Intent appIntent = null;
-
-				switch (buttonView.getId()) {
-				case R.id.btnGame:
-					appIntent = new Intent(GamesListActivity.this,
-							GameActivity.class);
-					break;
-				case R.id.btnSeason:
-					Toast.makeText(GamesListActivity.this, "not implemented",
-							Toast.LENGTH_SHORT).show();
-					break;
-				case R.id.btnStats:
-					appIntent = new Intent(GamesListActivity.this,
-							StatsTabActivity.class);
-					break;
-				}
-				if (appIntent != null)
-					startActivity(appIntent);
-
-			}
-		}
-	};
 
 	@Override
 	protected void onPause() {
